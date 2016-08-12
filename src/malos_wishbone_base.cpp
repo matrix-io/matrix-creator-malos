@@ -95,10 +95,10 @@ void MalosWishboneBase::ConfigThread() {
 
         // Shall we set a timeout after the last ping?
         if (config.timeout_after_last_ping() > 0) {
-          timeut_after_last_ping_ =
+          timeout_after_last_ping_ =
               config.timeout_after_last_ping() * static_cast<float>(1000);
           std::cerr << "New timeout after last ping for " << driver_name_ << " "
-                    << timeut_after_last_ping_ << " ms." << std::endl;
+                    << timeout_after_last_ping_ << " ms." << std::endl;
         }
       } else {
         std::cerr << "Invalid configuration for " << driver_name_ << " driver."
@@ -132,7 +132,7 @@ void MalosWishboneBase::UpdateThread() {
 
 void MalosWishboneBase::KeepAliveThread() {
   while (true) {
-    is_active_ = zmq_pull_keepalive_->Poll(timeut_after_last_ping_);
+    is_active_ = zmq_pull_keepalive_->Poll(timeout_after_last_ping_);
     if (is_active_) {
       std::cerr << driver_name_ << " driver received ping." << std::endl;
       // Discard anything that was received. Just a ping, man.

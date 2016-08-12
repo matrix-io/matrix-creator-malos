@@ -34,7 +34,7 @@ class MalosWishboneBase {
   explicit MalosWishboneBase(const std::string& driver_name)
       : is_active_(false),
         delay_between_updates_(1000),
-        timeut_after_last_ping_(5000),
+        timeout_after_last_ping_(5000),
         driver_name_(driver_name) {}
 
   // Base port for all the 0MQ  channels.
@@ -67,7 +67,7 @@ class MalosWishboneBase {
   // Delay between updates in milliseconds.
   int delay_between_updates_;
   // Timeout after last ping.
-  int timeut_after_last_ping_;
+  int timeout_after_last_ping_;
   // Driver name.
   std::string driver_name_;
   // ZMQ channel where configuration is received.
