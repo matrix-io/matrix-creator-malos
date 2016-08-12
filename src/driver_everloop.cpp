@@ -29,7 +29,7 @@ bool EverloopDriver::ProcessConfig(const DriverConfig& config) {
 
   if (image.led_size() != matrix_hal::kMatrixCreatorNLeds) {
     std::string error_msg("35, Invalid number of leds for ");
-    error_msg += kWishboneDriverName;
+    error_msg += kEverloopDriverName;
     error_msg += ". MATRIX Creator has " +
                  std::to_string(matrix_hal::kMatrixCreatorNLeds) + " leds.";
     zmq_push_error_->Send(error_msg);

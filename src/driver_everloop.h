@@ -25,13 +25,13 @@
 #include "matrix_hal/wishbone_bus.h"
 #include "matrix_hal/everloop.h"
 
-const char kWishboneDriverName[] = "Wishbone";
+const char kEverloopDriverName[] = "Everloop";
 
 namespace matrix_malos {
 
 class EverloopDriver : public MalosWishboneBase {
  public:
-  EverloopDriver() : MalosWishboneBase(kWishboneDriverName) {}
+  EverloopDriver() : MalosWishboneBase(kEverloopDriverName) {}
 
   // Receive a copy of the shared wishbone bus. Not owned.
   void SetupWishboneBus(matrix_hal::WishboneBus* wishbone) override {

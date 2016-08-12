@@ -52,7 +52,7 @@ int RunServer() {
     return 1;
   }
 
-  HumidityDriver driver_everloop;
+  EverloopDriver driver_everloop;
   driver_everloop.SetupWishboneBus(wishbone_bus);
   if (!driver_everloop.Init(kBasePort + 4 * 2, kUnsecureBindScope)) {
     return 1;
