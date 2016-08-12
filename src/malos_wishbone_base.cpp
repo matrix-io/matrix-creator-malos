@@ -134,7 +134,6 @@ void MalosWishboneBase::KeepAliveThread() {
   while (true) {
     is_active_ = zmq_pull_keepalive_->Poll(timeout_after_last_ping_);
     if (is_active_) {
-      std::cerr << driver_name_ << " driver received ping." << std::endl;
       // Discard anything that was received. Just a ping, man.
       zmq_pull_keepalive_->Read();
     }
