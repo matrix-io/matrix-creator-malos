@@ -20,6 +20,36 @@ message DriverConfig {
   EverloopImage image = 3;
 }
 
+// Message used by MALOS to report its internal state and the configuration of
+// its drivers.
+message DriverInfo {
+  // Driver name.
+  string driver_name = 1;
+  // Base port: Port where the device is located.
+  // base_port => config channel (0MQ pull, you should push)
+  // base_port + 1 => keepalive channel (0MQ pull, you should push)
+  // base_port + 2 => error channel (0MQ push, you should pull)
+  // base_port + 3 => send update channel (0MQ push, you should pull)
+  int32 base_port = 2;
+
+  // Does the device provide updates? Some devices such as the everloop
+  // LED array don't provide updates.
+  bool provides_updates = 3;
+  // What is the device delay between updates? In milliseconds.
+  // This field only makes sense if provides_updates is set.
+  int32 delay_between_updates = 4;
+
+  // Does the device need pings (keepalive messages) to keep returning messages?
+  bool needs_pings = 5;
+  // This field only makes sense if needs_pings is set.
+  // If the device hasn't received keepalive messages in a time interenal
+  // bigger than this amount, the device will stop sending updates.
+  int32 timeout_after_last_ping = 6;
+
+  // Notes set by the driver. Meant to be read by humans.
+  string notes_for_human = 7;
+}
+
 // Dummy lecture.
 message Dummy {
   // Random value.

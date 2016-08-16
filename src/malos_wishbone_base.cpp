@@ -34,6 +34,8 @@ const int kSmallHighWaterMark = 4;
 const int kDefaultDelayWhenInactive = 50;
 
 bool MalosWishboneBase::Init(int base_port, const std::string& bind_scope) {
+  base_port_ = base_port;
+
   zmq_pull_config_.reset(new ZmqPuller());
   if (!zmq_pull_config_->Init(base_port, kOneThread, bind_scope)) {
     return false;
@@ -138,6 +140,16 @@ void MalosWishboneBase::KeepAliveThread() {
       zmq_pull_keepalive_->Read();
     }
   }
+}
+
+void MalosWishboneBase::FillOutDriverInfo(DriverInfo* driver_info) {
+  driver_info->set_driver_name(driver_name_);
+  driver_info->set_base_port(base_port_);
+  driver_info->set_provides_updates(provides_updates_);
+  driver_info->set_delay_between_updates(delay_between_updates_);
+  driver_info->set_needs_pings(needs_pings_);
+  driver_info->set_timeout_after_last_ping(timeout_after_last_ping_);
+  driver_info->set_notes_for_human(notes_for_human_);
 }
 
 }  // namespace matrix_malos

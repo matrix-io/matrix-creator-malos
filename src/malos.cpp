@@ -19,13 +19,14 @@
 #include <iostream>
 #include <thread>
 
+#include "./driver_manager.h"
 #include "./driver_imu.h"
 #include "./driver_humidity.h"
 #include "./driver_everloop.h"
 
 #include "matrix_hal/wishbone_bus.h"
 
-const int kBasePort = 20013;
+const int kBasePort = 20012;
 
 const char kUnsecureBindScope[] = "*";
 
@@ -40,23 +41,28 @@ int RunServer() {
   matrix_hal::WishboneBus* wishbone_bus = new matrix_hal::WishboneBus();
   wishbone_bus->SpiInit();
 
+  DriverManager driver_manager;
+
   ImuDriver driver_imu;
   driver_imu.SetupWishboneBus(wishbone_bus);
-  if (!driver_imu.Init(kBasePort, kUnsecureBindScope)) {
+  if (!driver_imu.Init(kBasePort + 1, kUnsecureBindScope)) {
     return 1;
   }
+  driver_manager.RegisterDriver(&driver_imu);
 
   HumidityDriver driver_humidity;
   driver_humidity.SetupWishboneBus(wishbone_bus);
-  if (!driver_humidity.Init(kBasePort + 4 * 1, kUnsecureBindScope)) {
+  if (!driver_humidity.Init(kBasePort + 4 * 1 + 1, kUnsecureBindScope)) {
     return 1;
   }
+  driver_manager.RegisterDriver(&driver_humidity);
 
   EverloopDriver driver_everloop;
   driver_everloop.SetupWishboneBus(wishbone_bus);
-  if (!driver_everloop.Init(kBasePort + 4 * 2, kUnsecureBindScope)) {
+  if (!driver_everloop.Init(kBasePort + 4 * 2 + 1, kUnsecureBindScope)) {
     return 1;
   }
+  driver_manager.RegisterDriver(&driver_everloop);
 
   // Busy waiting because we are detaching the 0MQ threads we create
   // during driver initializations. Is "for (;;) pause();" better?
