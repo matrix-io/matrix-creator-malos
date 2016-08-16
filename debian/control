@@ -1,0 +1,15 @@
+Source: matrix-creator-malos
+Section: embedded
+Priority: optional
+Maintainer: Admobilize <info@admobilize.com>
+Build-Depends: debhelper (>= 9), cmake
+Standards-Version: 3.9.5
+Homepage: https://github.com/matrix-io/matrix-creator-malos
+
+Package: matrix-creator-malos
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Allows queries to MATRIX Creator hardware via ZMQ.
+ Matrix Creator (https://creator.matrix.one) is a board that can be added
+ to a Raspberry Pi v2 or v3. This board has many sensors. This program
+ allows other programs to access the board hardware via ZMQ sockets.
