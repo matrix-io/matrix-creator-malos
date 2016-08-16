@@ -1,6 +1,3 @@
-// Warning! This is returning 0's.
-// Missing low level logic. We're on it.
-
 // This is how we connect to the creator. IP and port.
 // The IP is the IP I'm using and you need to edit it.
 // By default, MALOS has its 0MQ ports open to the world.
