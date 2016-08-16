@@ -29,7 +29,10 @@ namespace matrix_malos {
 
 class ImuDriver : public MalosWishboneBase {
  public:
-  ImuDriver() : MalosWishboneBase("IMU") {}
+  ImuDriver() : MalosWishboneBase("IMU") {
+    SetNotesForHuman(
+        "Provides yaw/pitch/roll. Check Imu message (protocol buffer");
+  }
 
   // Receive a copy of the shared wishbone bus. Not owned.
   void SetupWishboneBus(matrix_hal::WishboneBus* wishbone) override {

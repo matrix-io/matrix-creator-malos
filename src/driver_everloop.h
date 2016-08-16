@@ -31,7 +31,13 @@ namespace matrix_malos {
 
 class EverloopDriver : public MalosWishboneBase {
  public:
-  EverloopDriver() : MalosWishboneBase(kEverloopDriverName) {}
+  EverloopDriver() : MalosWishboneBase(kEverloopDriverName) {
+    SetProvidesUpdates(false);
+    SetNeedsKeepalives(false);
+    SetNotesForHuman(
+        "Write-only. There are 35 leds. Values range from 0 to 255. Check "
+        "message EverloopImage (protocol buffer");
+  }
 
   // Receive a copy of the shared wishbone bus. Not owned.
   void SetupWishboneBus(matrix_hal::WishboneBus* wishbone) override {

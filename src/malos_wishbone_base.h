@@ -59,8 +59,8 @@ class MalosWishboneBase {
   // This function should be overridden by drivers that use the wishbone bus.
   virtual void SetupWishboneBus(matrix_hal::WishboneBus*) {}
 
-  // This function should be overridden by drivers. Here is where they send
-  // updates.
+  // This function should be overridden by drivers. Where is where they send
+  // updates to subscribed processes.
   virtual bool SendUpdate() { return false; }
 
   // Process device-specific configuration present in the protocol buffer
@@ -68,13 +68,13 @@ class MalosWishboneBase {
   // Check the Everloop driver for an example.
   virtual bool ProcessConfig(const DriverConfig&) { return true; }
 
-  // Does the device provide updates? This is true by default. Used by derived
-  // classes to override.
-  virtual void SetProvidesUpdates(bool value) { provides_updates_ = value; }
+  // Does the device provide updates? This is true by default.
+  // Derived classes should call this in their constructors if needed.
+  void SetProvidesUpdates(bool value) { provides_updates_ = value; }
 
-  // Does the device need keepalive/ping messages? This is trye by default.
-  // Used by derived classes to override.
-  virtual void SetNeedsKeepalives(bool value) { needs_pings_ = value; }
+  // Does the device need keepalive/ping messages? This is true by default.
+  // Derived classes should call this in their constructors if needed.
+  void SetNeedsKeepalives(bool value) { needs_pings_ = value; }
 
   // Notes for human. Empty by default. This might be set by derived classes.
   virtual void SetNotesForHuman(const std::string& value) {

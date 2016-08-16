@@ -29,7 +29,11 @@ namespace matrix_malos {
 
 class HumidityDriver : public MalosWishboneBase {
  public:
-  HumidityDriver() : MalosWishboneBase("Humidity") {}
+  HumidityDriver() : MalosWishboneBase("Humidity") {
+    SetNotesForHuman(
+        "Provides humidity and temperature. Check Humidity message (protocol "
+        "buffer");
+  }
 
   // Receive a copy of the shared wishbone bus. Not owned.
   void SetupWishboneBus(matrix_hal::WishboneBus* wishbone) override {

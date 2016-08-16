@@ -64,12 +64,7 @@ int RunServer() {
   }
   driver_manager.RegisterDriver(&driver_everloop);
 
-  // Busy waiting because we are detaching the 0MQ threads we create
-  // during driver initializations. Is "for (;;) pause();" better?
-  // I don't know how pause changes ZMQ's interaction with signals.
-  while (true) {
-    std::this_thread::sleep_for(std::chrono::seconds(1000));
-  }
+  driver_manager.ServeInfoRequestsForEver();
 
   return 0;  // Never reached.
 }
