@@ -92,7 +92,7 @@ message Imu {
   float roll = 3;
 }
 
-// Value for a led.
+// Value for a led. Values range from 0 to 255.
 message LedValue {
   uint32 red = 1;
   uint32 green = 2;
