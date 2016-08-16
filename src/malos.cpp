@@ -42,6 +42,7 @@ int RunServer() {
   wishbone_bus->SpiInit();
 
   DriverManager driver_manager(kBasePort, kUnsecureBindScope);
+  std::cerr << "You can query specific driver info using port " + std::to_string(20012) << "." << std::endl;
 
   ImuDriver driver_imu;
   driver_imu.SetupWishboneBus(wishbone_bus);
