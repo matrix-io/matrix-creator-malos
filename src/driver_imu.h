@@ -31,7 +31,7 @@ class ImuDriver : public MalosWishboneBase {
  public:
   ImuDriver() : MalosWishboneBase("IMU") {
     SetNotesForHuman(
-        "Provides yaw/pitch/roll. Check Imu message (protocol buffer");
+        "Provides yaw/pitch/roll. Check Imu message (protocol buffer)");
   }
 
   // Receive a copy of the shared wishbone bus. Not owned.

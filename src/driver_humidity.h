@@ -32,7 +32,7 @@ class HumidityDriver : public MalosWishboneBase {
   HumidityDriver() : MalosWishboneBase("Humidity") {
     SetNotesForHuman(
         "Provides humidity and temperature. Check Humidity message (protocol "
-        "buffer");
+        "buffer)");
   }
 
   // Receive a copy of the shared wishbone bus. Not owned.
