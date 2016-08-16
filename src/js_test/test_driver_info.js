@@ -25,7 +25,6 @@ var matrixMalosBuilder = protoBuilder.build("matrix_malos")
 
 var zmq = require('zmq')
 
-// ********** Start configuration.
 var requestSocket = zmq.socket('req')
 
 requestSocket.on("message", function(reply) {
@@ -35,4 +34,4 @@ requestSocket.on("message", function(reply) {
 });
 
 requestSocket.connect('tcp://' + creator_ip + ':' + creator_info_base_port)
-requestSocket.send('a');
+requestSocket.send('');
