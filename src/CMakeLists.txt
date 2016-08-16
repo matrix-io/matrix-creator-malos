@@ -52,4 +52,4 @@ target_link_libraries(malos zmq_wrapper_lib)
 target_link_libraries(malos ${HAL_LIB} ${PROTOBUF_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 
 # Binary to be installed.
-install(FILES malos DESTINATION bin)
+install(TARGETS malos DESTINATION bin)
