@@ -50,6 +50,12 @@ message DriverInfo {
   string notes_for_human = 7;
 }
 
+// Information about all the available drivers.
+message MalosDriverInfo {
+  // The available drivers.
+  repeated DriverInfo info = 1;
+}
+
 // Dummy lecture.
 message Dummy {
   // Random value.

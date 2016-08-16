@@ -41,7 +41,7 @@ int RunServer() {
   matrix_hal::WishboneBus* wishbone_bus = new matrix_hal::WishboneBus();
   wishbone_bus->SpiInit();
 
-  DriverManager driver_manager;
+  DriverManager driver_manager(kBasePort, kUnsecureBindScope);
 
   ImuDriver driver_imu;
   driver_imu.SetupWishboneBus(wishbone_bus);

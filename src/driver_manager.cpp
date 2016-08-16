@@ -15,11 +15,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string>
 #include <vector>
+#include "third_party/zmq.hpp"
+
+#include "./src/malos.pb.h"
+
 #include "./driver_manager.h"
 
 namespace matrix_malos {
 
 void DriverManager::ServeInfoRequestsForEver() {
+  zmq::context_t context(1);
+  zmq::socket_t socket(context, ZMQ_REP);
+  socket.bind("tcp://" + bind_scope_ + ":" + std::to_string(driver_info_port_));
+
+  zmq::message_t request;
+  MalosDriverInfo all_driver_info;
+
+  while (true) {
+    all_driver_info.Clear();
+    // Blocking operation. Ignore request data, just reply.
+    socket.recv(&request);
+
+    // Gather info for all drivers.
+    for (const MalosWishboneBase* driver : drivers_) {
+      DriverInfo* new_info = all_driver_info.add_info();
+      driver->FillOutDriverInfo(new_info);
+    }
+
+    // TODO: In herit from zmq_push.cpp to avoid duplicating code.
+    // Maybe?
+    std::string buffer;
+    all_driver_info.SerializeToString(&buffer);
+    zmq::message_t message(buffer.size());
+    memcpy(message.data(), buffer.data(), buffer.size());
+    socket.send(message);
+  }
 }
+
 }  // namespace matrix_malos

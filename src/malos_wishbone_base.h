@@ -81,7 +81,8 @@ class MalosWishboneBase {
     notes_for_human_ = value;
   }
 
-  void FillOutDriverInfo(DriverInfo* driver_info);
+  // Fill out information about the driver.
+  void FillOutDriverInfo(DriverInfo* driver_info) const;
 
  private:
   // Base por of the driver.

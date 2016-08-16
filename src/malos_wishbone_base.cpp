@@ -142,7 +142,7 @@ void MalosWishboneBase::KeepAliveThread() {
   }
 }
 
-void MalosWishboneBase::FillOutDriverInfo(DriverInfo* driver_info) {
+void MalosWishboneBase::FillOutDriverInfo(DriverInfo* driver_info) const {
   driver_info->set_driver_name(driver_name_);
   driver_info->set_base_port(base_port_);
   driver_info->set_provides_updates(provides_updates_);

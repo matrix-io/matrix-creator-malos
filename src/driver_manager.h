@@ -18,6 +18,7 @@
 #ifndef SRC_DRIVER_MANAGER_H_
 #define SRC_DRIVER_MANAGER_H_
 
+#include <string>
 #include <vector>
 #include "./malos_wishbone_base.h"
 
@@ -25,6 +26,10 @@ namespace matrix_malos {
 
 class DriverManager {
  public:
+  explicit DriverManager(int port, const std::string bind_scope)
+      : driver_info_port_(port), bind_scope_(bind_scope) {}
+
+  // Register a driver.
   void RegisterDriver(const MalosWishboneBase* driver) {
     drivers_.push_back(driver);
   }
@@ -32,6 +37,11 @@ class DriverManager {
   void ServeInfoRequestsForEver();
 
  private:
+  // Port to respond queries about registered drivers.
+  int driver_info_port_;
+  // Bind scope (interfaces to listeon on).
+  std::string bind_scope_;
+  // Drivers that have been registered.
   std::vector<const MalosWishboneBase*> drivers_;
 };
 
