@@ -1,2 +1,4 @@
 - Grep for kUnsecureBindScope. We will accept connections from any network.
   This might not be what we want.
+  
+- Return error messages as protos instead of strings.
