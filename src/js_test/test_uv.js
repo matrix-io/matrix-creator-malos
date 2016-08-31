@@ -12,7 +12,7 @@
 // BasePort + 2 => Error port. Receive errros from device.
 // BasePort + 3 => Data port. Receive data from device.
 
-var creator_ip = '192.168.0.13'
+var creator_ip = '127.0.0.1'
 var creator_uv_base_port = 20013 + (4 * 4) // port for UV driver.
 
 var protoBuf = require("protobufjs")

@@ -12,7 +12,7 @@
 // BasePort + 2 => Error port. Receive errros from device.
 // BasePort + 3 => Data port. Receive data from device.
 
-var creator_ip = '192.168.0.13'
+var creator_ip = '127.0.0.1'
 var creator_pressure_base_port = 20013 + (4 * 3) // port for Pressure driver.
 
 var protoBuf = require("protobufjs")
@@ -38,9 +38,6 @@ errorSocket.on('message', function(error_message) {
 // ********** Start configuration.
 var configSocket = zmq.socket('push')
 configSocket.connect('tcp://' + creator_ip + ':' + creator_pressure_base_port)
-// Send invalid configurations twice. This should get us two errors back.
-configSocket.send('hello')
-configSocket.send('hello')
 // Now prepare valid configuration and send it.
 var driverConfigProto = new matrixMalosBuilder.DriverConfig
 // 2 seconds between updates.
