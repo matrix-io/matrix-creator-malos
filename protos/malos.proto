@@ -71,16 +71,30 @@ message Humidity {
   float temperature = 2;
 }
 
+
+// Basic UV radiation lecture.
+message UV{
+  // UV index.
+  float uv_index = 1;
+
+  // Risk of harm from unprotected sun exposure, for the average adult.
+  string risk = 2;
+}
+
+
 // Basic Pressure lecture.
 message Pressure {
   // Pressure.
   float pressure = 1;
 
+  // Altimeter.
+  float altitude = 2;
+
   // Temperature.
-  float temperature = 2;
+  float temperature = 3;
 }
 
-// Basic Pressure lecture.
+// Basic IMU lecture.
 message Imu {
   //Vertical axis (yaw)
   float yaw = 1;
