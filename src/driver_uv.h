@@ -32,7 +32,7 @@ class UVDriver : public MalosWishboneBase {
   UVDriver() : MalosWishboneBase("UV") {
     SetNotesForHuman(
         "Provides UV index. Check UV index message (protocol "
-        "buffer)");
+        "buffer). Also provides a string with the UV risk according to the OMS. See: https://www.epa.gov/sunsafety/uv-index-scale-0");
   }
 
   // Receive a copy of the shared wishbone bus. Not owned.

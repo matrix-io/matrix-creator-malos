@@ -31,6 +31,7 @@ bool UVDriver::SendUpdate() {
 
   UV uv_pb;
   uv_pb.set_uv_index(data.uv);
+  // uv_pb.set_oms_risk(oms_risk);
 
   std::string buffer;
   uv_pb.SerializeToString(&buffer);
