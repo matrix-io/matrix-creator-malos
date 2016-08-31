@@ -38,8 +38,10 @@ bool UVDriver::SendUpdate() {
     oms_risk = "Moderate";
   } else if (data.uv < 8.0) {
     oms_risk = "High";
-  } else {
+  } else if (data.uv < 11) {
     oms_risk = "Very High";
+  } else {
+    oms_risk = "Extreme";
   }
   uv_pb.set_oms_risk(oms_risk);
 
