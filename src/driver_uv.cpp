@@ -31,7 +31,17 @@ bool UVDriver::SendUpdate() {
 
   UV uv_pb;
   uv_pb.set_uv_index(data.uv);
-  // uv_pb.set_oms_risk(oms_risk);
+  std::string oms_risk;
+  if (data.uv < 3.0) {
+    oms_risk = "Low";
+  } else if (data.uv < 6.0) {
+    oms_risk = "Moderate";
+  } else if (data.uv < 8.0) {
+    oms_risk = "High";
+  } else {
+    oms_risk = "Very High";
+  }
+  uv_pb.set_oms_risk(oms_risk);
 
   std::string buffer;
   uv_pb.SerializeToString(&buffer);
