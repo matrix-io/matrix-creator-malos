@@ -25,7 +25,7 @@ malos > /dev/null 2>&1 &
 ```
 
 ### Clone and test examples
-Note: pre-requisite is NodeJS.
+Note: pre-requisite is NodeJS. Don't use the one shipped with raspbian becacuse it is too old. If you don't have it, please check a recipe included below.
 ```
 git clone https://github.com/matrix-io/matrix-creator-malos.git
 cd src/js_test
