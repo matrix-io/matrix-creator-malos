@@ -22,6 +22,8 @@
 #include "./driver_manager.h"
 #include "./driver_imu.h"
 #include "./driver_humidity.h"
+#include "./driver_pressure.h"
+#include "./driver_uv.h"
 #include "./driver_everloop.h"
 
 #include "matrix_hal/wishbone_bus.h"
@@ -60,12 +62,31 @@ int RunServer() {
   }
   driver_manager.RegisterDriver(&driver_humidity);
 
+
   EverloopDriver driver_everloop;
   driver_everloop.SetupWishboneBus(wishbone_bus);
   if (!driver_everloop.Init(kBasePort + 4 * 2 + 1, kUnsecureBindScope)) {
     return 1;
   }
   driver_manager.RegisterDriver(&driver_everloop);
+
+
+  PressureDriver driver_pressure;
+  driver_pressure.SetupWishboneBus(wishbone_bus);
+  if (!driver_pressure.Init(kBasePort + 4 * 3 + 1, kUnsecureBindScope)) {
+    return 1;
+  } 
+  driver_manager.RegisterDriver(&driver_pressure);
+
+
+  UVDriver driver_uv;
+  driver_uv.SetupWishboneBus(wishbone_bus);
+  if (!driver_uv.Init(kBasePort + 4 * 4 + 1, kUnsecureBindScope)) {
+    return 1;
+  } 
+
+  driver_manager.RegisterDriver(&driver_uv);
+
 
   driver_manager.ServeInfoRequestsForEver();
 
