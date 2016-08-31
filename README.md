@@ -56,7 +56,7 @@ pkill -9 malos
 You can use NodeJS from another computer (not the Raspberry) or from the raspberry itself.
 Check for the most recent version of Node.js, but today it is: https://nodejs.org/dist/v4.5.0/node-v4.5.0-linux-armv7l.tar.xz
 
-You can download it, uncompress it and then change the default PATH.
+You can download it, uncompress it and then change the default `PATH`.
 
 For instance (in the Raspberry):
 
