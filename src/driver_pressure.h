@@ -29,7 +29,7 @@ namespace matrix_malos {
 
 class PressureDriver : public MalosWishboneBase {
  public:
-  PressureDriver() : MalosWishboneBase("Humidity") {
+  PressureDriver() : MalosWishboneBase("Pressure") {
     SetNotesForHuman(
         "Provides barometer/altimeter and temperature. Check Pressure message "
         "(protocol "
