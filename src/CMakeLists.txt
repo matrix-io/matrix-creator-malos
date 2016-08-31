@@ -42,6 +42,8 @@ set(malos_src
   malos_wishbone_base.cpp malos_wishbone_base.h
   driver_imu.cpp driver_imu.h
   driver_humidity.cpp driver_humidity.h
+  driver_pressure.cpp driver_pressure.h
+  driver_uv.cpp driver_uv.h
   driver_everloop.cpp driver_everloop.h
   ${MALOS_PROTO_SRC} ${MALOS_PROTO_HEADER}
 )
