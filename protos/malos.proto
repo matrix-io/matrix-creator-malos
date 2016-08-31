@@ -78,7 +78,8 @@ message UV{
   float uv_index = 1;
 
   // Risk of harm from unprotected sun exposure, for the average adult.
-  string risk = 2;
+  // Accordin to the OMS table. https://www.epa.gov/sunsafety/uv-index-scale-0
+  string oms_risk = 2;
 }
 
 
