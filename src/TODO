@@ -2,3 +2,5 @@
   This might not be what we want.
   
 - Return error messages as protos instead of strings.
+
+- Use the public protocol buffers. Now there are two copies.
