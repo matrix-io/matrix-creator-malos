@@ -15,6 +15,9 @@ FIND_LIBRARY(ZMQ_LIB NAMES zmq PATHS
   /usr/local/lib
   /usr/local/lib/zmq
 )
+
+message(STATUS "ZMQ found => " "${ZMQ_LIB}")
+
 FIND_LIBRARY(HAL_LIB NAMES matrix_creator_hal PATHS
   /usr/local/lib
 )
