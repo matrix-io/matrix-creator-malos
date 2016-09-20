@@ -20,7 +20,7 @@ var zmq = require('zmq')
 var configSocket = zmq.socket('push')
 configSocket.connect('tcp://' + creator_ip + ':' + creator_everloop_base_port /* config */)
 
-var max_intensity = 6
+var max_intensity = 50
 var intensity_value = max_intensity
 
 function setEverloop() {
@@ -43,4 +43,4 @@ setInterval(function() {
   if (intensity_value < 0)
     intensity_value = max_intensity
   setEverloop()
-}, 100);
+}, 10);

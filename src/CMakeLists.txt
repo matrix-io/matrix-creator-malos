@@ -42,6 +42,7 @@ target_link_libraries(zmq_wrapper_lib ${ZMQ_LIB} ${CMAKE_THREAD_LIBS_INIT})
 set(malos_src
   malos.cpp
   driver_manager.cpp driver_manager.h
+  malos_base.cpp malos_base.h
   malos_wishbone_base.cpp malos_wishbone_base.h
   driver_imu.cpp driver_imu.h
   driver_humidity.cpp driver_humidity.h
