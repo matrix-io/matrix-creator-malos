@@ -10,14 +10,11 @@ find_package(Threads REQUIRED)
 
 # This won't find ZQM in custom locations.
 # FIXME(nelson.castillo): Improve.
-FIND_LIBRARY(ZMQ_LIB NAMES zmq PATHS
-  /usr/lib
-  /usr/local/lib
-  /usr/local/lib/zmq
-)
-FIND_LIBRARY(HAL_LIB NAMES matrix_creator_hal PATHS
-  /usr/local/lib
-)
+FIND_LIBRARY(ZMQ_LIB NAMES zmq)
+FIND_LIBRARY(HAL_LIB NAMES matrix_creator_hal)
+
+message(STATUS "ZMQ found => " "${ZMQ_LIB}")
+message(STATUS "HAL found => " "${HAL_LIB}")
 
 PROTOBUF_GENERATE_CPP(MALOS_PROTO_SRC MALOS_PROTO_HEADER ../protocol-buffers/malos/driver.proto)
 
