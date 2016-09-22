@@ -21,6 +21,7 @@
 #include <memory>
 
 #include "./malos_wishbone_base.h"
+#include "./tcp_client.h"
 
 const char kZigbeeBulbDriverName[] = "ZigbeeBulb";
 
@@ -39,6 +40,8 @@ class ZigbeeBulbDriver : public MalosWishboneBase {
   bool ProcessConfig(const DriverConfig& config) override;
 
  private:
+  // Tcp client.
+  std::unique_ptr<TcpClient> tcp_client_;
 };
 
 }  // namespace matrix_malos
