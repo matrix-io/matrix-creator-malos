@@ -15,29 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_DRIVER_TCP_CLIENT_H_
-#define SRC_DRIVER_TCP_CLIENT_H_
+#ifndef SRC_DRIVER_ZIGBEE_BULB_H_
+#define SRC_DRIVER_ZIGBEE_BULB_H_
 
-#include <string>
+#include <memory>
+
+#include "./malos_wishbone_base.h"
+
+const char kZigbeeBulbDriverName[] = "ZigbeeBulb";
 
 namespace matrix_malos {
 
-/**
-    TCP Client class
-*/
-class TcpClient {
+// FIXME: inherit from malos_base.h
+
+class ZigbeeBulbDriver : public MalosWishboneBase {
  public:
-  TcpClient() : sock_(-1), msg_error_("") {}
-  bool Connect(const std::string& address, int port);
-  bool Send(const std::string& data);
-  bool GetLine(std::string* line);
-  std::string GetErrorMessage() { return msg_error_; }
+  ZigbeeBulbDriver() : MalosWishboneBase(kZigbeeBulbDriverName) {
+    SetNeedsKeepalives(true);
+    SetNotesForHuman("Zigbee bulb driver. In development");
+  }
+
+  // Read configuration of LEDs (from the outside world).
+  bool ProcessConfig(const DriverConfig& config) override;
 
  private:
-  int sock_;
-  std::string msg_error_;
 };
 
 }  // namespace matrix_malos
 
-#endif  // SRC_DRIVER_TCP_CLIENT_H_
+#endif  // SRC_DRIVER_ZIGBEE_BULB_H_

@@ -15,29 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_DRIVER_TCP_CLIENT_H_
-#define SRC_DRIVER_TCP_CLIENT_H_
+#include <iostream>
 
-#include <string>
+#include "./driver_zigbee_bulb.h"
+
+#include "./src/malos.pb.h"
 
 namespace matrix_malos {
 
-/**
-    TCP Client class
-*/
-class TcpClient {
- public:
-  TcpClient() : sock_(-1), msg_error_("") {}
-  bool Connect(const std::string& address, int port);
-  bool Send(const std::string& data);
-  bool GetLine(std::string* line);
-  std::string GetErrorMessage() { return msg_error_; }
+bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
+  ZigbeeBulbConfig bulb_config(config.zigbee_bulb());
 
- private:
-  int sock_;
-  std::string msg_error_;
-};
+  std::cerr << "ZigbeeBulb Got configuration" << std::endl;
+  std::cerr << "Connect to" << bulb_config.address() << ":" << bulb_config.port() << std::endl;
+
+  return true;
+}
+  //matrix_hal::EverloopImage image_for_hal;
 
 }  // namespace matrix_malos
-
-#endif  // SRC_DRIVER_TCP_CLIENT_H_
