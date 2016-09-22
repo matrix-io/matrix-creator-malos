@@ -37,6 +37,7 @@ class TcpClient {
  private:
   int sock_;
   std::string msg_error_;
+  std::string buffer_;
 };
 
 }  // namespace matrix_malos

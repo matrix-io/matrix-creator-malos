@@ -123,40 +123,63 @@ bool TcpClient::Send(const std::string &data) {
   return true;
 }
 
+// FIXME: Better variable names. Improve select logic.
+
 bool TcpClient::GetLine(std::string *line) {
   struct timeval tv;
   fd_set readfds;
 
   tv.tv_sec = 0;
+  // FIXME: Use 0 here.
   tv.tv_usec = 500000;
 
   FD_ZERO(&readfds);
   FD_SET(sock_, &readfds);
 
+  bool bytes_to_read = true;
+
   // don't care about writefds and exceptfds:
   if (select(sock_ + 1, &readfds, NULL, NULL, &tv) == -1) {
-    return false;
+    bytes_to_read = false;
   }
 
-  int nbytes = 0;
-  char buf[2048];
+  if (bytes_to_read) {
+    int nbytes = 0;
+    char buf[512];
 
-  if ((nbytes = recv(sock_, buf, sizeof buf, 0)) <= 0) {
-    if (nbytes == 0) {
-      std::cerr << "Gateway socket hung up" << std::endl;
-    } else {
-      perror("recv");
+    if ((nbytes = recv(sock_, buf, sizeof buf, 0)) <= 0) {
+      if (nbytes == 0) {
+        std::cerr << "Gateway socket hung up" << std::endl;
+      } else {
+        perror("recv");
+      }
+      close(sock_);
+      sock_ = -1;
+    } else if (FD_ISSET(sock_, &readfds)) {
+      buffer_.append(buf, nbytes);
     }
-    close(sock_);  // bye!
-    sock_ = -1;
-    return false;
   }
-  if (FD_ISSET(sock_, &readfds)) {
-    std::string msg(buf, nbytes);
-    std::cerr << "Received: " << msg << std::endl;
-    return true;
-  } else
-    return false;
+
+  // FIXME: Remove trailing \n \r
+
+  bool line_to_return = false;
+  int ltrim_count = 0;
+  for (int i = 0; i < buffer_.size(); ++i) {
+    if  (buffer_.at(i) == '\n' || buffer_.at(i) == '\r') {
+      ++ltrim_count;
+    }
+  }
+
+  std::string ret;
+
+  // TODO(nelson.castillo): Use while.
+  for(int i = ltrim_count; i < buffer_.size(); ++i) {
+    if  (buffer_.at(i) == '\n' || buffer_.at(i) == '\r') {
+    }
+    ret.append(buffer_.at(i));
+    ++ltrim_count;
+  }
+  return false;
 }
 
 // FIXME: This function will be replace to manage partial reads.

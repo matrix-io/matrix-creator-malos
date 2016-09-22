@@ -68,7 +68,7 @@ void MalosBase::ConfigThread() {
   while (true) {
     if (zmq_pull_config_->Poll(ZmqPuller::WAIT_FOREVER)) {
       // FIXME(nelson.castillo): Do we have a deadlock?
-      //std::lock_guard<std::mutex> lock(config_mutex_);
+      // std::lock_guard<std::mutex> lock(config_mutex_);
       DriverConfig config;
       // Can we parse a configuration?
       if (!config.ParseFromString(zmq_pull_config_->Read())) {
@@ -114,7 +114,7 @@ void MalosBase::ConfigThread() {
 void MalosBase::UpdateThread() {
   while (true) {
     // FIXME(nelson.castillo): Do we have a deadlock?
-    //std::lock_guard<std::mutex> lock(config_mutex_);
+    // std::lock_guard<std::mutex> lock(config_mutex_);
     // If the device needs mandatory configuration, do not send updates until a
     // valid
     // configuration has been received.
