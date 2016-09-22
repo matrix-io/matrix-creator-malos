@@ -152,5 +152,4 @@ void MalosBase::FillOutDriverInfo(DriverInfo *driver_info) const {
   driver_info->set_notes_for_human(notes_for_human_);
 }
 
-} // namespace matrix_malos
-
+}  // namespace matrix_malos

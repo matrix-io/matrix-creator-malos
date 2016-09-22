@@ -17,12 +17,17 @@
 namespace matrix_malos {
 
 class MalosBase {
-public:
+ public:
   explicit MalosBase(const std::string &driver_name)
-      : base_port_(0), is_active_(false), provides_updates_(true),
-        delay_between_updates_(1000), needs_pings_(true),
-        timeout_after_last_ping_(5000), mandatory_configuration_(false),
-        has_been_configured_(false), driver_name_(driver_name),
+      : base_port_(0),
+        is_active_(false),
+        provides_updates_(true),
+        delay_between_updates_(1000),
+        needs_pings_(true),
+        timeout_after_last_ping_(5000),
+        mandatory_configuration_(false),
+        has_been_configured_(false),
+        driver_name_(driver_name),
         notes_for_human_("") {}
 
   // Base port for all the 0MQ  channels.
@@ -70,7 +75,7 @@ public:
   // Fill out information about the driver.
   void FillOutDriverInfo(DriverInfo *driver_info) const;
 
-private:
+ private:
   // Base por of the driver.
   int base_port_;
   // Is the driver active and sending updates?
@@ -100,14 +105,13 @@ private:
   // compatible so let's prevent them from being called at the same time.
   std::mutex config_mutex_;
 
-protected:
+ protected:
   // ZMQ channel where errors are sent.
   std::unique_ptr<ZmqPusher> zmq_push_error_;
   // ZMQ channel where actual data updates are sent.
   std::unique_ptr<ZmqPusher> zqm_push_update_;
 };
 
-} // namespace matrix_malos
+}  // namespace matrix_malos
 
-#endif // SRC_MALOS_BASE_H_
-
+#endif  // SRC_MALOS_BASE_H_

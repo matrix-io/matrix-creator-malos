@@ -18,6 +18,9 @@ message DriverConfig {
   // Values for LEDs. When configuring the driver you should leave
   // delay_between_updates and timeout_after_last_ping unchanged.
   EverloopImage image = 3;
+
+  // ZigBee configuration for bulbs.
+  ZigbeeBulbConfig zigbee_bulb = 4;
 }
 
 // Message used by MALOS to report its internal state and the configuration of
@@ -118,4 +121,9 @@ message LedValue {
 // The led array.
 message EverloopImage {
   repeated LedValue led = 1;
+}
+
+message ZigbeeBulbConfig {
+    string address = 1;
+    int32 port = 2;
 }
