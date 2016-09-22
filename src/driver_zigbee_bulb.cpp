@@ -19,7 +19,7 @@
 
 #include "./driver_zigbee_bulb.h"
 
-#include "./src/malos.pb.h"
+#include "./src/driver.pb.h"
 
 namespace matrix_malos {
 
