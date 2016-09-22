@@ -25,6 +25,7 @@
 #include "./driver_pressure.h"
 #include "./driver_uv.h"
 #include "./driver_everloop.h"
+#include "./driver_zigbee_bulb.h"
 
 #include "matrix_hal/wishbone_bus.h"
 
@@ -82,6 +83,12 @@ int RunServer() {
     return 1;
   }
   driver_manager.RegisterDriver(&driver_uv);
+
+  ZigbeeBulbDriver driver_zigbee_bulb;
+  if (!driver_zigbee_bulb.Init(kBasePort + 4 * 5 + 1, kUnsecureBindScope)) {
+    return 1;
+  }
+  driver_manager.RegisterDriver(&driver_zigbee_bulb);
 
   driver_manager.ServeInfoRequestsForEver();
 

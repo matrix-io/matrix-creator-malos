@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_DRIVER_EVERLOOP_H_
-#define SRC_DRIVER_EVERLOOP_H_
+#ifndef SRC_DRIVER_ZIGBEE_BULB_H_
+#define SRC_DRIVER_ZIGBEE_BULB_H_
 
 #include <memory>
 
@@ -25,6 +25,8 @@
 const char kZigbeeBulbDriverName[] = "ZigbeeBulb";
 
 namespace matrix_malos {
+
+// FIXME: inherit from malos_base.h
 
 class ZigbeeBulbDriver : public MalosWishboneBase {
  public:
@@ -41,4 +43,4 @@ class ZigbeeBulbDriver : public MalosWishboneBase {
 
 }  // namespace matrix_malos
 
-#endif  // SRC_DRIVER_EVERLOOP_H_
+#endif  // SRC_DRIVER_ZIGBEE_BULB_H_

@@ -26,6 +26,9 @@ namespace matrix_malos {
 bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
   ZigbeeBulbConfig bulb_config(config.zigbee_bulb());
 
+  std::cerr << "ZigbeeBulb Got configuration" << std::endl;
+  std::cerr << "Connect to" << bulb_config.address() << ":" << bulb_config.port() << std::endl;
+
   return true;
 }
   //matrix_hal::EverloopImage image_for_hal;
