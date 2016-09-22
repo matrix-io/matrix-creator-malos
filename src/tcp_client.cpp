@@ -123,44 +123,41 @@ bool TcpClient::Send(const std::string &data) {
   return true;
 }
 
-bool TcpClient::GetLine(std::string* line) {
-    struct timeval tv;
-    fd_set readfds;
+bool TcpClient::GetLine(std::string *line) {
+  struct timeval tv;
+  fd_set readfds;
 
-    tv.tv_sec = 0;
-    tv.tv_usec = 0;
+  tv.tv_sec = 0;
+  tv.tv_usec = 500000;
 
-    FD_ZERO(&readfds);
-    FD_SET(sock_, &readfds);
+  FD_ZERO(&readfds);
+  FD_SET(sock_, &readfds);
 
-    // don't care about writefds and exceptfds:
-    if (select(sock_+1, &readfds, NULL, NULL, &tv) == -1) {
-      return false;
+  // don't care about writefds and exceptfds:
+  if (select(sock_ + 1, &readfds, NULL, NULL, &tv) == -1) {
+    return false;
+  }
+
+  int nbytes = 0;
+  char buf[2048];
+
+  if ((nbytes = recv(sock_, buf, sizeof buf, 0)) <= 0) {
+    if (nbytes == 0) {
+      std::cerr << "Gateway socket hung up" << std::endl;
+    } else {
+      perror("recv");
     }
-
-    int nbytes = 0;
-    char buf[2048];
-
-    if ((nbytes = recv(sock_, buf, sizeof buf, 0)) <= 0) {
-      if (nbytes == 0) {
-         std::cerr << "Gateway socket hung up" << std::endl;
-       } else {
-         perror("recv");
-       }
-       close(sock_); // bye!
-       sock_ = -1;
-       return false;
-     }
-    if (FD_ISSET(sock_, &readfds)) {
-        std::string msg(buf, nbytes);
-        std::cerr << "Received " << msg << std::endl;
-        return true;
-    }
-    else
-        return false;
+    close(sock_);  // bye!
+    sock_ = -1;
+    return false;
+  }
+  if (FD_ISSET(sock_, &readfds)) {
+    std::string msg(buf, nbytes);
+    std::cerr << "Received: " << msg << std::endl;
+    return true;
+  } else
+    return false;
 }
-
-
 
 // FIXME: This function will be replace to manage partial reads.
 

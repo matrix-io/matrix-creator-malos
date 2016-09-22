@@ -33,6 +33,7 @@ class ZigbeeBulbDriver : public MalosWishboneBase {
  public:
   ZigbeeBulbDriver() : MalosWishboneBase(kZigbeeBulbDriverName) {
     SetNeedsKeepalives(true);
+    SetMandatoryConfiguration(true);
     SetNotesForHuman("Zigbee bulb driver. In development");
   }
 

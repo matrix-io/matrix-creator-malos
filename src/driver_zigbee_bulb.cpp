@@ -39,7 +39,11 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
   }
 
   std::string line;
-  tcp_client_->GetLine(&line);
+  while (1) {
+    tcp_client_->GetLine(&line);
+  }
+
+  std::cout << "GetLine returned" << std::endl;
 
   std::cout.flush();
 

@@ -15,7 +15,7 @@ var create_zigbee_base_port = 20013 + 20 // port for Zigbee bulb driver.
 20033
 
 var protoBuf = require("protobufjs");
-var protoBuilder = protoBuf.loadProtoFile('../../protos/malos.proto')
+var protoBuilder = protoBuf.loadProtoFile('../../protocol-buffers/malos/driver.proto')
 var matrixMalosBuilder = protoBuilder.build("matrix_malos")
 
 var zmq = require('zmq')
