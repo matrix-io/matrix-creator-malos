@@ -16,7 +16,7 @@ FIND_LIBRARY(HAL_LIB NAMES matrix_creator_hal)
 message(STATUS "ZMQ found => " "${ZMQ_LIB}")
 message(STATUS "HAL found => " "${HAL_LIB}")
 
-PROTOBUF_GENERATE_CPP(MALOS_PROTO_SRC MALOS_PROTO_HEADER ../protos/malos.proto)
+PROTOBUF_GENERATE_CPP(MALOS_PROTO_SRC MALOS_PROTO_HEADER ../protocol-buffers/malos/driver.proto)
 
 include_directories(
   ${PROJECT_BINARY_DIR} # Protos.

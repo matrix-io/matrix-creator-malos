@@ -19,7 +19,7 @@
 
 #include "./driver_everloop.h"
 
-#include "./src/malos.pb.h"
+#include "./src/driver.pb.h"
 #include "matrix_hal/everloop_image.h"
 
 namespace matrix_malos {

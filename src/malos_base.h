@@ -12,7 +12,7 @@
 #include "./zmq_push.h"
 #include "./zmq_pull.h"
 
-#include "./src/malos.pb.h"
+#include "./src/driver.pb.h"
 
 namespace matrix_malos {
 
