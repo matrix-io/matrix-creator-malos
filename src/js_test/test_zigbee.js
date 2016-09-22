@@ -10,7 +10,9 @@
 // BasePort + 3 => Data port. Receive data from device.
 
 var creator_ip = '127.0.0.1'
-var creator_everloop_base_port = 20013 + 8 // port for Everloop driver.
+var create_zigbee_base_port = 20013 + 20 // port for Zigbee bulb driver.
+
+20033
 
 var protoBuf = require("protobufjs");
 var protoBuilder = protoBuf.loadProtoFile('../../protocol-buffers/malos/driver.proto')
@@ -18,14 +20,29 @@ var matrixMalosBuilder = protoBuilder.build("matrix_malos")
 
 var zmq = require('zmq')
 var configSocket = zmq.socket('push')
-configSocket.connect('tcp://' + creator_ip + ':' + creator_everloop_base_port /* config */)
+configSocket.connect('tcp://' + creator_ip + ':' + create_zigbee_base_port /* config */)
 
-var max_intensity = 50
-var intensity_value = max_intensity
+var pingSocket = zmq.socket('push')
+pingSocket.connect('tcp://' + creator_ip + ':' + (create_zigbee_base_port + 1))
+process.stdout.write("Sending pings every 3 seconds");
+pingSocket.send(''); // Ping the first time.
+setInterval(function(){
+  pingSocket.send('');
+}, 3000);
 
-function setEverloop() {
+setTimeout(function() { 
     var config = new matrixMalosBuilder.DriverConfig
-    config.image = new matrixMalosBuilder.EverloopImage
+    var bulb_cfg = new matrixMalosBuilder.ZigbeeBulbConfig
+    bulb_cfg.set_address('127.0.0.1')
+    bulb_cfg.set_port(5001)
+    config.set_zigbee_bulb(bulb_cfg)
+    configSocket.send(config.encode().toBuffer());
+}, 2000);
+
+/*
+function setEverloop() {
+    var config = new matrixmalosbuilder.driverconfig
+    config.image = new matrixmalosbuilder.everloopimage
     for (var j = 0; j < 35; ++j) {
       var ledValue = new matrixMalosBuilder.LedValue;
       ledValue.setRed(0);
@@ -37,10 +54,15 @@ function setEverloop() {
     configSocket.send(config.encode().toBuffer());
 }
 
-setEverloop(intensity_value)
+
+StEverloop(intensity_value)
 setInterval(function() {
   intensity_value -= 1
   if (intensity_value < 0)
     intensity_value = max_intensity
   setEverloop()
 }, 10);
+
+*/
+
+

@@ -17,36 +17,38 @@
 
 #include <iostream>
 
-#include "./driver_everloop.h"
+#include "./driver_zigbee_bulb.h"
 
 #include "./src/driver.pb.h"
-#include "matrix_hal/everloop_image.h"
 
 namespace matrix_malos {
 
-bool EverloopDriver::ProcessConfig(const DriverConfig& config) {
-  EverloopImage image(config.image());
+bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
+  ZigbeeBulbConfig bulb_config(config.zigbee_bulb());
 
-  if (image.led_size() != matrix_hal::kMatrixCreatorNLeds) {
-    std::string error_msg("35, Invalid number of leds for ");
-    error_msg += kEverloopDriverName;
-    error_msg += ". MATRIX Creator has " +
-                 std::to_string(matrix_hal::kMatrixCreatorNLeds) + " leds.";
-    zmq_push_error_->Send(error_msg);
+  std::cout << "ZigbeeBulb Got configuration" << std::endl;
+  std::cout << "Connect to " << bulb_config.address() << ":"
+            << bulb_config.port() << std::endl;
+
+  tcp_client_.reset(new TcpClient());
+  if (tcp_client_->Connect(bulb_config.address(), bulb_config.port())) {
+    std::cout << "connected" << std::endl << std::flush;
+  } else {
+    std::cout << "NOT connected" << std::endl;
     return false;
   }
 
-  matrix_hal::EverloopImage image_for_hal;
-  int idx = 0;
-  for (const LedValue& value : image.led()) {
-    image_for_hal.leds[idx].red = value.red();
-    image_for_hal.leds[idx].green = value.green();
-    image_for_hal.leds[idx].blue = value.blue();
-    image_for_hal.leds[idx].white = value.white();
-    ++idx;
+  std::string line;
+  while (1) {
+    tcp_client_->GetLine(&line);
   }
 
-  return writer_->Write(&image_for_hal);
+  std::cout << "GetLine returned" << std::endl;
+
+  std::cout.flush();
+
+  return true;
 }
+// matrix_hal::EverloopImage image_for_hal;
 
 }  // namespace matrix_malos

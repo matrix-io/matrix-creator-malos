@@ -15,28 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "./driver_humidity.h"
+#ifndef SRC_DRIVER_TCP_CLIENT_H_
+#define SRC_DRIVER_TCP_CLIENT_H_
 
-#include "./src/driver.pb.h"
-#include "matrix_hal/humidity_data.h"
+#include <string>
 
 namespace matrix_malos {
 
-bool HumidityDriver::SendUpdate() {
-  matrix_hal::HumidityData data;
-  if (!reader_->Read(&data)) {
-    return false;
-  }
+/**
+    TCP Client class
+*/
+class TcpClient {
+ public:
+  TcpClient() : sock_(-1), msg_error_("") {}
+  ~TcpClient();
+  bool Connect(const std::string& address, int port);
+  bool Send(const std::string& data);
+  bool GetLine(std::string* line);
+  std::string GetErrorMessage() { return msg_error_; }
 
-  Humidity humidity_pb;
-  humidity_pb.set_humidity(data.humidity);
-  humidity_pb.set_temperature(data.temperature);
-
-  std::string buffer;
-  humidity_pb.SerializeToString(&buffer);
-  zqm_push_update_->Send(buffer);
-
-  return true;
-}
+ private:
+  int sock_;
+  std::string msg_error_;
+};
 
 }  // namespace matrix_malos
+
+#endif  // SRC_DRIVER_TCP_CLIENT_H_

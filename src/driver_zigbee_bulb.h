@@ -15,28 +15,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "./driver_humidity.h"
+#ifndef SRC_DRIVER_ZIGBEE_BULB_H_
+#define SRC_DRIVER_ZIGBEE_BULB_H_
 
-#include "./src/driver.pb.h"
-#include "matrix_hal/humidity_data.h"
+#include <memory>
+
+#include "./malos_wishbone_base.h"
+#include "./tcp_client.h"
+
+const char kZigbeeBulbDriverName[] = "ZigbeeBulb";
 
 namespace matrix_malos {
 
-bool HumidityDriver::SendUpdate() {
-  matrix_hal::HumidityData data;
-  if (!reader_->Read(&data)) {
-    return false;
+// FIXME: inherit from malos_base.h
+
+class ZigbeeBulbDriver : public MalosWishboneBase {
+ public:
+  ZigbeeBulbDriver() : MalosWishboneBase(kZigbeeBulbDriverName) {
+    SetNeedsKeepalives(true);
+    SetMandatoryConfiguration(true);
+    SetNotesForHuman("Zigbee bulb driver. In development");
   }
 
-  Humidity humidity_pb;
-  humidity_pb.set_humidity(data.humidity);
-  humidity_pb.set_temperature(data.temperature);
+  // Read configuration of LEDs (from the outside world).
+  bool ProcessConfig(const DriverConfig& config) override;
 
-  std::string buffer;
-  humidity_pb.SerializeToString(&buffer);
-  zqm_push_update_->Send(buffer);
-
-  return true;
-}
+ private:
+  // Tcp client.
+  std::unique_ptr<TcpClient> tcp_client_;
+};
 
 }  // namespace matrix_malos
+
+#endif  // SRC_DRIVER_ZIGBEE_BULB_H_

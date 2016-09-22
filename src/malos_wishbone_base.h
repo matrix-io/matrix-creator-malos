@@ -26,7 +26,7 @@
 
 #include "matrix_hal/wishbone_bus.h"
 #include "./malos_base.h"
-#include "./src/malos.pb.h"
+#include "./src/driver.pb.h"
 
 namespace matrix_malos {
 

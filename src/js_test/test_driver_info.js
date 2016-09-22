@@ -16,7 +16,7 @@ var protoBuf = require("protobufjs")
 
 
 // Parse proto file
-var protoBuilder = protoBuf.loadProtoFile('../../protos/malos.proto')
+var protoBuilder = protoBuf.loadProtoFile('../../protocol-buffers/malos/driver.proto')
 // Parse matrix_malos package (namespace).
 var matrixMalosBuilder = protoBuilder.build("matrix_malos")
 

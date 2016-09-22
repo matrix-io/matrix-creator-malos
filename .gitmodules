@@ -1,0 +1,3 @@
+[submodule "protocol-buffers"]
+	path = protocol-buffers
+	url = https://github.com/matrix-io/protocol-buffers.git
