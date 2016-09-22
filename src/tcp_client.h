@@ -29,14 +29,21 @@ class TcpClient {
  public:
   TcpClient() : sock_(-1), msg_error_("") {}
   ~TcpClient();
+  // Connect to peer.
   bool Connect(const std::string& address, int port);
+  // Sends data to peer.
   bool Send(const std::string& data);
+  // Get a line from sock_. This function does not return empty lines.
   bool GetLine(std::string* line);
+  // Returns the error message. ATM this is not reliable.
   std::string GetErrorMessage() { return msg_error_; }
 
  private:
+  // Socket.
   int sock_;
+  // Last error message. Experimental.
   std::string msg_error_;
+  // The buffer of bytes being read.
   std::string buffer_;
 };
 

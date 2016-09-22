@@ -160,24 +160,31 @@ bool TcpClient::GetLine(std::string *line) {
     }
   }
 
-  // FIXME: Remove trailing \n \r
-
-  bool line_to_return = false;
   int ltrim_count = 0;
-  for (int i = 0; i < buffer_.size(); ++i) {
-    if  (buffer_.at(i) == '\n' || buffer_.at(i) == '\r') {
+  for (int i = 0; i < static_cast<int>(buffer_.size()); ++i) {
+    if (buffer_.at(i) == '\n' || buffer_.at(i) == '\r') {
       ++ltrim_count;
     }
   }
 
   std::string ret;
+  bool can_return = false;
 
-  // TODO(nelson.castillo): Use while.
-  for(int i = ltrim_count; i < buffer_.size(); ++i) {
-    if  (buffer_.at(i) == '\n' || buffer_.at(i) == '\r') {
+  for (int i = ltrim_count; i < static_cast<int>(buffer_.size()); ++i) {
+    if (buffer_.at(i) == '\n' || buffer_.at(i) == '\r') {
+      if (ret.size() > 0) {
+        can_return = true;
+      }
+      break;
     }
-    ret.append(buffer_.at(i));
+    ret.append(1, buffer_.at(i));
     ++ltrim_count;
+  }
+
+  if (can_return) {
+    buffer_.erase(0, ltrim_count);
+    line->assign(ret);
+    return true;
   }
   return false;
 }
