@@ -37,6 +37,7 @@ setTimeout(function() {
     bulb_cfg.set_port(5001)
     config.set_zigbee_bulb(bulb_cfg)
     configSocket.send(config.encode().toBuffer());
+    config.set_delay_between_updates(0.2)
 }, 2000);
 
 /*
