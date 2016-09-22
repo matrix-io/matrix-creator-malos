@@ -10,11 +10,13 @@
 
 namespace matrix_malos {
 
-// How many threads for a given 0MQ context. Just one.
-const int kOneThread = 1;
+// FIXME: Why two threads? Why water mark so small?
+
+// How many threads for a given 0MQ context. Use two.
+const int kTwoThreads = 2;
 
 // Hight water mark. How many samples to queue (outgoing).
-const int kSmallHighWaterMark = 4;
+const int kSmallHighWaterMark = 10;
 
 // Default delay when inactive.
 const int kDefaultDelayWhenInactive = 100;
@@ -23,23 +25,23 @@ bool MalosBase::Init(int base_port, const std::string &bind_scope) {
   base_port_ = base_port;
 
   zmq_pull_config_.reset(new ZmqPuller());
-  if (!zmq_pull_config_->Init(base_port, kOneThread, bind_scope)) {
+  if (!zmq_pull_config_->Init(base_port, kTwoThreads, bind_scope)) {
     return false;
   }
 
   zmq_pull_keepalive_.reset(new ZmqPuller());
-  if (!zmq_pull_keepalive_->Init(base_port + 1, kOneThread, bind_scope)) {
+  if (!zmq_pull_keepalive_->Init(base_port + 1, kTwoThreads, bind_scope)) {
     return false;
   }
 
   zmq_push_error_.reset(new ZmqPusher());
-  if (!zmq_push_error_->Init(base_port + 2, kOneThread, kSmallHighWaterMark,
+  if (!zmq_push_error_->Init(base_port + 2, kTwoThreads, kSmallHighWaterMark,
                              bind_scope)) {
     return false;
   }
 
   zqm_push_update_.reset(new ZmqPusher());
-  if (!zqm_push_update_->Init(base_port + 3, kOneThread, kSmallHighWaterMark,
+  if (!zqm_push_update_->Init(base_port + 3, kTwoThreads, kSmallHighWaterMark,
                               bind_scope)) {
     return false;
   }

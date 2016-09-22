@@ -28,6 +28,7 @@ namespace matrix_malos {
 class TcpClient {
  public:
   TcpClient() : sock_(-1), msg_error_("") {}
+  ~TcpClient();
   bool Connect(const std::string& address, int port);
   bool Send(const std::string& data);
   bool GetLine(std::string* line);

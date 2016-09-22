@@ -26,11 +26,25 @@ namespace matrix_malos {
 bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
   ZigbeeBulbConfig bulb_config(config.zigbee_bulb());
 
-  std::cerr << "ZigbeeBulb Got configuration" << std::endl;
-  std::cerr << "Connect to" << bulb_config.address() << ":" << bulb_config.port() << std::endl;
+  std::cout << "ZigbeeBulb Got configuration" << std::endl;
+  std::cout << "Connect to " << bulb_config.address() << ":"
+            << bulb_config.port() << std::endl;
+
+  tcp_client_.reset(new TcpClient());
+  if (tcp_client_->Connect(bulb_config.address(), bulb_config.port())) {
+    std::cout << "connected" << std::endl << std::flush;
+  } else {
+    std::cout << "NOT connected" << std::endl;
+    return false;
+  }
+
+  std::string line;
+  tcp_client_->GetLine(&line);
+
+  std::cout.flush();
 
   return true;
 }
-  //matrix_hal::EverloopImage image_for_hal;
+// matrix_hal::EverloopImage image_for_hal;
 
 }  // namespace matrix_malos
