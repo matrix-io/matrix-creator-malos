@@ -4,3 +4,5 @@
 - Return error messages as protos instead of strings.
 
 - Use the public protocol buffers. Now there are two copies.
+
+- We need the MUTEX. What is happening? Removing for now.
