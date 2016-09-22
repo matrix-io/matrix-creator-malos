@@ -17,7 +17,7 @@
 
 #include "./driver_imu.h"
 
-#include "./src/malos.pb.h"
+#include "./src/driver.pb.h"
 #include "matrix_hal/imu_data.h"
 
 namespace matrix_malos {

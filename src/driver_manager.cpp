@@ -19,7 +19,7 @@
 #include <vector>
 #include "third_party/zmq.hpp"
 
-#include "./src/malos.pb.h"
+#include "./src/driver.pb.h"
 
 #include "./driver_manager.h"
 

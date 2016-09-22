@@ -17,7 +17,7 @@
 
 #include "./driver_humidity.h"
 
-#include "./src/malos.pb.h"
+#include "./src/driver.pb.h"
 #include "matrix_hal/humidity_data.h"
 
 namespace matrix_malos {

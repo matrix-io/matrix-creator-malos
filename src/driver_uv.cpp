@@ -18,7 +18,7 @@
 #include <string>
 #include "./driver_uv.h"
 
-#include "./src/malos.pb.h"
+#include "./src/driver.pb.h"
 #include "matrix_hal/uv_data.h"
 
 namespace matrix_malos {
