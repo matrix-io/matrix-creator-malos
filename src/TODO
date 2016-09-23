@@ -6,5 +6,3 @@
 - Use the public protocol buffers. Now there are two copies.
 
 - We need the MUTEX. What is happening? Removing for now.
-
-- Use cerr! We used cout just for a test.

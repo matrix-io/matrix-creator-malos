@@ -41,11 +41,12 @@ namespace matrix_malos {
 bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
   ZigbeeBulbConfig bulb_config(config.zigbee_bulb());
 
+  // When address is empty and port is -1 we got a command.
   if (bulb_config.address() == "" && bulb_config.port() == -1) {
-    std::cout << "ZigbeeBulb got command" << std::endl;
-    std::cout << "ZigbeeBulb id: " << bulb_config.command().short_id()
+    std::cerr << "ZigbeeBulb got command" << std::endl;
+    std::cerr << "ZigbeeBulb id: " << bulb_config.command().short_id()
               << std::endl;
-    std::cout << "ZigbeeBulb cmd: " << bulb_config.command().command()
+    std::cerr << "ZigbeeBulb cmd: " << bulb_config.command().command()
               << std::endl;
 
     if (bulb_config.command().command() == ZigBeeBulbCmd::OFF) {
@@ -62,19 +63,22 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
     return true;
   }
 
-  std::cout << "ZigbeeBulb Got configuration" << std::endl;
-  std::cout << "Connect to " << bulb_config.address() << ":"
+  // Otherwise a new connection is established.
+
+  std::cerr << "ZigbeeBulb Got configuration" << std::endl;
+  std::cerr << "Connect to " << bulb_config.address() << ":"
             << bulb_config.port() << std::endl;
 
   tcp_client_.reset(new TcpClient());
   if (tcp_client_->Connect(bulb_config.address(), bulb_config.port())) {
-    std::cout << "connected" << std::endl << std::flush;
+    std::cerr << "connected" << std::endl << std::flush;
   } else {
-    std::cout << "NOT connected" << std::endl;
+    std::cerr << "NOT connected" << std::endl;
+    zmq_push_error_->Send("Could not connect to ZigBee gateway at " + bulb_config.address() + std::to_string(bulb_config.port()));
     return false;
   }
 
-  std::cout.flush();
+  std::cerr.flush();
 
   return true;
 }
@@ -85,18 +89,18 @@ bool ZigbeeBulbDriver::SendUpdate() {
   std::string line;
   if (tcp_client_->GetLine(&line)) {
     line = Trim(line);
-    std::cout << "ZigBee: " << line << std::endl;
-    std::cout.flush();
+    std::cerr << "ZigBee: " << line << std::endl;
+    std::cerr.flush();
     // Check if the line countains an announcement.
     if (line.size() > sizeof AnnounceLine - 1 &&
         line.compare(0, sizeof AnnounceLine - 1, AnnounceLine) == 0) {
       line.erase(0, sizeof AnnounceLine - 1);
-      std::cout << "ZigbeeBulbDriver received announce for '" << line << "'"
+      std::cerr << "ZigbeeBulbDriver received announce for '" << line << "'"
                 << std::endl;
       // Fill out protocol buffer.
       ZigBeeAnnounce announce_pb;
       int device_id = stoi(line, 0, 16);
-      std::cout << line << " => " << device_id << std::endl;
+      std::cerr << line << " => " << device_id << std::endl;
       announce_pb.set_short_id(device_id);
       // Send the serialized proto.
       std::string buffer;
