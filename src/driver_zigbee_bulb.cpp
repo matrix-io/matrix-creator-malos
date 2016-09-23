@@ -43,6 +43,12 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
 
   // When address is empty and port is -1 we got a command.
   if (bulb_config.address() == "" && bulb_config.port() == -1) {
+    if (tcp_client_.get() == nullptr) {
+      zmq_push_error_->Send(
+          "ZigBee bulb driver hasn't been configured. Did you start MALOS?");
+      return false;
+    }
+
     std::cerr << "ZigbeeBulb got command" << std::endl;
     std::cerr << "ZigbeeBulb id: " << bulb_config.command().short_id()
               << std::endl;
@@ -74,7 +80,9 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
     std::cerr << "connected" << std::endl << std::flush;
   } else {
     std::cerr << "NOT connected" << std::endl;
-    zmq_push_error_->Send("Could not connect to ZigBee gateway at " + bulb_config.address() + std::to_string(bulb_config.port()));
+    zmq_push_error_->Send("Could not connect to ZigBee gateway at " +
+                          bulb_config.address() +
+                          std::to_string(bulb_config.port()));
     return false;
   }
 
@@ -87,7 +95,7 @@ const char AnnounceLine[] = "Device Announce: ";
 
 bool ZigbeeBulbDriver::SendUpdate() {
   std::string line;
-  if (tcp_client_->GetLine(&line)) {
+  while (tcp_client_->GetLine(&line)) {
     line = Trim(line);
     std::cerr << "ZigBee: " << line << std::endl;
     std::cerr.flush();

@@ -15,20 +15,29 @@ var creator_ip = '127.0.0.1'
 var create_zigbee_base_port = 20013 + 20 // port for Zigbee bulb driver.
 
 var protoBuf = require("protobufjs");
+var zmq = require('zmq')
+
 var protoBuilder = protoBuf.loadProtoFile('../../protocol-buffers/malos/driver.proto')
 var matrixMalosBuilder = protoBuilder.build("matrix_malos")
 
-var zmq = require('zmq')
+
+// Print the errors that the driver sends.
+var errorSocket = zmq.socket('sub')
+errorSocket.connect('tcp://' + creator_ip + ':' + (create_zigbee_base_port + 2))
+errorSocket.subscribe('')
+errorSocket.on('message', function(error_message) {
+  process.stdout.write('Message received: Zigbee bulb error: ' + error_message.toString('utf8') + "\n")
+});
+
 var configSocket = zmq.socket('push')
 configSocket.connect('tcp://' + creator_ip + ':' + create_zigbee_base_port /* config */)
-
 
 var config = new matrixMalosBuilder.DriverConfig
 var bulb_cfg = new matrixMalosBuilder.ZigbeeBulbConfig
 bulb_cfg.set_address('127.0.0.1')
 bulb_cfg.set_port(31558)
 config.set_zigbee_bulb(bulb_cfg)
-config.set_delay_between_updates(0.1)
+config.set_delay_between_updates(0.2)
 configSocket.send(config.encode().toBuffer());
 
 var pingSocket = zmq.socket('push')

@@ -84,7 +84,8 @@ void MalosBase::ConfigThread() {
       // malos-eye,
       // the camera and the detectors need to be configured.
       if (!ProcessConfig(config)) {
-        std::cerr << "Specific config for " << driver_name_ << " failed.";
+        std::cerr << "Specific config for " << driver_name_ << " failed."
+                  << std::endl;
         zmq_push_error_->Send("0, Invalid specific configuration for " +
                               driver_name_ + " driver.");
         has_been_configured_ = false;
