@@ -81,7 +81,7 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
   } else {
     std::cerr << "NOT connected" << std::endl;
     zmq_push_error_->Send("Could not connect to ZigBee gateway at " +
-                          bulb_config.address() +
+                          bulb_config.address() + ":" +
                           std::to_string(bulb_config.port()));
     return false;
   }

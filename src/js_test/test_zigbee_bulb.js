@@ -20,6 +20,9 @@ var zmq = require('zmq')
 var protoBuilder = protoBuf.loadProtoFile('../../protocol-buffers/malos/driver.proto')
 var matrixMalosBuilder = protoBuilder.build("matrix_malos")
 
+// Let's keep track of known bulbs so that we don't start background toggles
+// more than once for a given bulb.
+var knownBulbs = new Set()
 
 // Print the errors that the driver sends.
 var errorSocket = zmq.socket('sub')
@@ -54,30 +57,30 @@ updateSocket.connect('tcp://' + creator_ip + ':' + (create_zigbee_base_port + 3)
 updateSocket.subscribe('')
 updateSocket.on('message', function(buffer) {
   var data = new matrixMalosBuilder.ZigBeeAnnounce.decode(buffer)
+
   console.log(data)
   // { short_id: 6058, cluster_id: 0, zdo_command: 0, zdo_status: 0 }
 
-  // Check the message ZigBeeBulbCmd for the available commands. At the moment,
-  // only ON, OFF and TOGGLE are supported. This should change soon.
-  // https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto
+  if (!knownBulbs.has(data.short_id)) {
+      setInterval(function() {
+        var bulbCmd = new matrixMalosBuilder.ZigBeeBulbCmd
+        bulbCmd.short_id = data.short_id
+        // Check the message ZigBeeBulbCmd for the available commands. At the moment,
+        // only ON, OFF and TOGGLE are supported. This should change soon.
+        // https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto
+        bulbCmd.command = matrixMalosBuilder.ZigBeeBulbCmd.EnumCommands.TOGGLE
+        console.log('toggle')
+        var bulb_cfg_cmd = new matrixMalosBuilder.ZigbeeBulbConfig
+        bulb_cfg_cmd.set_address('')
+        bulb_cfg_cmd.set_port(-1)
+        bulb_cfg_cmd.set_command(bulbCmd)
 
-  var bulbCmd = new matrixMalosBuilder.ZigBeeBulbCmd
+        var config = new matrixMalosBuilder.DriverConfig
+        config.set_delay_between_updates(0.2)
+        config.set_zigbee_bulb(bulb_cfg_cmd)
+        configSocket.send(config.encode().toBuffer());
+      }, 2000);
+  }
 
-  bulbCmd.short_id = data.short_id 
-  bulbCmd.command = matrixMalosBuilder.ZigBeeBulbCmd.EnumCommands.OFF
-  console.log(bulbCmd)
-
-  var bulb_cfg_cmd = new matrixMalosBuilder.ZigbeeBulbConfig
-  bulb_cfg_cmd.set_address('')
-  bulb_cfg_cmd.set_port(-1)
-  bulb_cfg_cmd.set_command(bulbCmd)
-  config.set_zigbee_bulb(bulb_cfg_cmd)
-  configSocket.send(config.encode().toBuffer());
-
-
-  setInterval(function() {
-    bulbCmd.command = matrixMalosBuilder.ZigBeeBulbCmd.EnumCommands.TOGGLE
-    console.log('sending toggle')
-    configSocket.send(config.encode().toBuffer());
-  }, 2000);
+  knownBulbs.add(data.short_id)
 });
