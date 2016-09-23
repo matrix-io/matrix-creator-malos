@@ -65,6 +65,7 @@ updateSocket.on('message', function(buffer) {
 
   setInterval(function() {
     bulbCmd.command = matrixMalosBuilder.ZigBeeBulbCmd.EnumCommands.TOGGLE
+    console.log('sending toggle')
     configSocket.send(config.encode().toBuffer());
   }, 2000);
 
