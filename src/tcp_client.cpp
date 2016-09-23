@@ -131,19 +131,19 @@ bool TcpClient::GetLine(std::string *line) {
 
   tv.tv_sec = 0;
   // FIXME: Use 0 here.
-  tv.tv_usec = 500000;
+  tv.tv_usec = 0;
 
   FD_ZERO(&readfds);
   FD_SET(sock_, &readfds);
 
-  bool bytes_to_read = true;
+  bool select_trigger = true;
 
   // don't care about writefds and exceptfds:
   if (select(sock_ + 1, &readfds, NULL, NULL, &tv) == -1) {
-    bytes_to_read = false;
+    select_trigger = false;
   }
 
-  if (bytes_to_read) {
+  if (select_trigger && FD_ISSET(sock_, &readfds)) {
     int nbytes = 0;
     char buf[512];
 
@@ -155,7 +155,7 @@ bool TcpClient::GetLine(std::string *line) {
       }
       close(sock_);
       sock_ = -1;
-    } else if (FD_ISSET(sock_, &readfds)) {
+    } else {
       buffer_.append(buf, nbytes);
     }
   }
@@ -164,6 +164,8 @@ bool TcpClient::GetLine(std::string *line) {
   for (int i = 0; i < static_cast<int>(buffer_.size()); ++i) {
     if (buffer_.at(i) == '\n' || buffer_.at(i) == '\r') {
       ++ltrim_count;
+    } else {
+      break;
     }
   }
 
@@ -174,8 +176,8 @@ bool TcpClient::GetLine(std::string *line) {
     if (buffer_.at(i) == '\n' || buffer_.at(i) == '\r') {
       if (ret.size() > 0) {
         can_return = true;
+        break;
       }
-      break;
     }
     ret.append(1, buffer_.at(i));
     ++ltrim_count;

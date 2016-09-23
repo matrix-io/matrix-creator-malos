@@ -38,17 +38,18 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
     return false;
   }
 
-  std::string line;
-  while (1) {
-    tcp_client_->GetLine(&line);
-  }
-
-  std::cout << "GetLine returned" << std::endl;
-
   std::cout.flush();
 
   return true;
 }
-// matrix_hal::EverloopImage image_for_hal;
+
+bool ZigbeeBulbDriver::SendUpdate() {
+  std::string line;
+  if (tcp_client_->GetLine(&line)) {
+    std::cout << "GetLine :" << line << std::endl;
+    std::cout.flush();
+  }
+  return true;
+}
 
 }  // namespace matrix_malos

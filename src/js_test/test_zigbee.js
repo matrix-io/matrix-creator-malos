@@ -22,6 +22,15 @@ var zmq = require('zmq')
 var configSocket = zmq.socket('push')
 configSocket.connect('tcp://' + creator_ip + ':' + create_zigbee_base_port /* config */)
 
+
+var config = new matrixMalosBuilder.DriverConfig
+var bulb_cfg = new matrixMalosBuilder.ZigbeeBulbConfig
+bulb_cfg.set_address('127.0.0.1')
+bulb_cfg.set_port(5001)
+config.set_zigbee_bulb(bulb_cfg)
+config.set_delay_between_updates(0.2)
+configSocket.send(config.encode().toBuffer());
+
 var pingSocket = zmq.socket('push')
 pingSocket.connect('tcp://' + creator_ip + ':' + (create_zigbee_base_port + 1))
 process.stdout.write("Sending pings every 3 seconds");
@@ -29,16 +38,6 @@ pingSocket.send(''); // Ping the first time.
 setInterval(function(){
   pingSocket.send('');
 }, 3000);
-
-setTimeout(function() { 
-    var config = new matrixMalosBuilder.DriverConfig
-    var bulb_cfg = new matrixMalosBuilder.ZigbeeBulbConfig
-    bulb_cfg.set_address('127.0.0.1')
-    bulb_cfg.set_port(5001)
-    config.set_zigbee_bulb(bulb_cfg)
-    configSocket.send(config.encode().toBuffer());
-    config.set_delay_between_updates(0.2)
-}, 2000);
 
 /*
 function setEverloop() {
