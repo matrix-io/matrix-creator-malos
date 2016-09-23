@@ -39,6 +39,16 @@ setInterval(function(){
   pingSocket.send('');
 }, 3000);
 
+var updateSocket = zmq.socket('sub')
+updateSocket.connect('tcp://' + creator_ip + ':' + (create_zigbee_base_port + 3))
+updateSocket.subscribe('')
+updateSocket.on('message', function(buffer) {
+  var data = new matrixMalosBuilder.ZigBeeAnnounce.decode(buffer)
+  console.log(data)
+});
+
+
+
 /*
 function setEverloop() {
     var config = new matrixmalosbuilder.driverconfig

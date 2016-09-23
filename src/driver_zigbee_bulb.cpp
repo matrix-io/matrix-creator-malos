@@ -24,10 +24,14 @@
 namespace {
 
 // http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
-std::string Trim(const std::string &s)
-{
-  auto  wsfront=std::find_if_not(s.begin(),s.end(),[](int c){return std::isspace(c);});
-  return std::string(wsfront,std::find_if_not(s.rbegin(),std::string::const_reverse_iterator(wsfront),[](int c){return std::isspace(c);}).base());
+std::string Trim(const std::string& s) {
+  auto wsfront = std::find_if_not(s.begin(), s.end(),
+                                  [](int c) { return std::isspace(c); });
+  return std::string(
+      wsfront,
+      std::find_if_not(s.rbegin(), std::string::const_reverse_iterator(wsfront),
+                       [](int c) { return std::isspace(c); })
+          .base());
 }
 
 }  // namespace
@@ -62,15 +66,21 @@ bool ZigbeeBulbDriver::SendUpdate() {
     line = Trim(line);
     std::cout << "ZigBee: " << line << std::endl;
     std::cout.flush();
-    if (line.size() > sizeof AnnounceLine  - 1 &&
+    // Check if the line countains an announcement.
+    if (line.size() > sizeof AnnounceLine - 1 &&
         line.compare(0, sizeof AnnounceLine - 1, AnnounceLine) == 0) {
       line.erase(0, sizeof AnnounceLine - 1);
-      std::cout << "ZigbeeBulbDriver received announce for '" << line << "'" << std::endl;
-      // Send to JS.
-      ZigBeeAnnounce announce;
+      std::cout << "ZigbeeBulbDriver received announce for '" << line << "'"
+                << std::endl;
+      // Fill out protocol buffer.
+      ZigBeeAnnounce announce_pb;
       int device_id = stoi(line, 0, 16);
       std::cout << line << " => " << device_id << std::endl;
-      announce.set_short_id(device_id);
+      announce_pb.set_short_id(device_id);
+      // Send the serialized proto.
+      std::string buffer;
+      announce_pb.SerializeToString(&buffer);
+      zqm_push_update_->Send(buffer);
     }
   }
   // Device Announce: 0x17AA
