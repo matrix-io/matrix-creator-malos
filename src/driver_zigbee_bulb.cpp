@@ -50,10 +50,14 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
 
     if (bulb_config.command().command() == ZigBeeBulbCmd::OFF) {
       tcp_client_->Send("zcl on-off off\n");
-      char buf[128];
-      sprintf(buf, "send 0x%04x 0 1\n", bulb_config.command().short_id());
-      tcp_client_->Send(buf);
+    } else if (bulb_config.command().command() == ZigBeeBulbCmd::ON) {
+      tcp_client_->Send("zcl on-off on\n");
+    } else if (bulb_config.command().command() == ZigBeeBulbCmd::TOGGLE) {
+      tcp_client_->Send("zcl on-off toggle\n");
     }
+    char buf[128];
+    sprintf(buf, "send 0x%04x 0 1\n", bulb_config.command().short_id());
+    tcp_client_->Send(buf);
 
     return true;
   }

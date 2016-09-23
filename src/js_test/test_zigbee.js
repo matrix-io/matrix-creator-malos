@@ -39,6 +39,7 @@ setInterval(function(){
   pingSocket.send('');
 }, 3000);
 
+
 var updateSocket = zmq.socket('sub')
 updateSocket.connect('tcp://' + creator_ip + ':' + (create_zigbee_base_port + 3))
 updateSocket.subscribe('')
@@ -60,6 +61,12 @@ updateSocket.on('message', function(buffer) {
   bulb_cfg_cmd.set_command(bulbCmd)
   config.set_zigbee_bulb(bulb_cfg_cmd)
   configSocket.send(config.encode().toBuffer());
+
+
+  setInterval(function() {
+    bulbCmd.command = matrixMalosBuilder.ZigBeeBulbCmd.EnumCommands.TOGGLE
+    configSocket.send(config.encode().toBuffer());
+  }, 2000);
 
   //var bulbCmd = matrixMalosBuilder.build('ZigBeeBulbCmd')
   //var bulCmdOff = new bulbCmd('ZigBeeBulbCmd.EnumCommands.OFF')
