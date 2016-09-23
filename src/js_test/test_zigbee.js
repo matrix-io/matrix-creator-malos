@@ -45,6 +45,20 @@ updateSocket.subscribe('')
 updateSocket.on('message', function(buffer) {
   var data = new matrixMalosBuilder.ZigBeeAnnounce.decode(buffer)
   console.log(data)
+
+  var bulbCmd = new matrixMalosBuilder.ZigBeeBulbCmd
+  console.log(bulbCmd)
+  var buildOffCmd = new matrixMalosBuilder.ZigBeeBulbCmd
+  console.log(matrixMalosBuilder.ZigBeeBulbCmd)
+  //var bulbCmd = matrixMalosBuilder.build('ZigBeeBulbCmd')
+  //var bulCmdOff = new bulbCmd('ZigBeeBulbCmd.EnumCommands.OFF')
+  //console.log(bulCmdOff)
+
+  /*
+  bulbCommands = new matrixMalosBuilder.ZigBeeBulbCmd
+  var command_OFF = new bulbCommands
+  console.log(bulbCommands)
+  */
 });
 
 
