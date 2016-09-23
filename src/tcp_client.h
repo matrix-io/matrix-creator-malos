@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_DRIVER_TCP_CLIENT_H_
-#define SRC_DRIVER_TCP_CLIENT_H_
+#ifndef SRC_TCP_CLIENT_H_
+#define SRC_TCP_CLIENT_H_
 
 #include <string>
 
@@ -49,4 +49,4 @@ class TcpClient {
 
 }  // namespace matrix_malos
 
-#endif  // SRC_DRIVER_TCP_CLIENT_H_
+#endif  // SRC_TCP_CLIENT_H_

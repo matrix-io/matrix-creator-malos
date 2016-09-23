@@ -63,7 +63,8 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
       tcp_client_->Send("zcl on-off toggle\n");
     }
     char buf[128];
-    sprintf(buf, "send 0x%04x 0 1\n", bulb_config.command().short_id());
+    snprintf(buf, sizeof buf, "send 0x%04x 0 1\n",
+             bulb_config.command().short_id());
     tcp_client_->Send(buf);
 
     return true;
