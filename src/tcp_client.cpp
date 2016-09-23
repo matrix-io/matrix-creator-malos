@@ -190,22 +190,6 @@ bool TcpClient::GetLine(std::string *line) {
   }
   return false;
 }
-
-// FIXME: This function will be replace to manage partial reads.
-
-#if 0
-std::string TcpClient::receive(int size = 512) {
-  char buffer[size];
-
-  if (recv(sock_, buffer, sizeof(buffer), 0) < 0) {
-    msg_error_ = "recv failed";
-  } else {
-    msg_error_ = "";
-  }
-
-  return std::string(buffer);
-
-}
 #endif
 
 }  // namespace matrix_malos
