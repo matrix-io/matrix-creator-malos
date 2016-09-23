@@ -12,8 +12,6 @@
 var creator_ip = '127.0.0.1'
 var create_zigbee_base_port = 20013 + 20 // port for Zigbee bulb driver.
 
-20033
-
 var protoBuf = require("protobufjs");
 var protoBuilder = protoBuf.loadProtoFile('../../protocol-buffers/malos/driver.proto')
 var matrixMalosBuilder = protoBuilder.build("matrix_malos")
@@ -26,7 +24,7 @@ configSocket.connect('tcp://' + creator_ip + ':' + create_zigbee_base_port /* co
 var config = new matrixMalosBuilder.DriverConfig
 var bulb_cfg = new matrixMalosBuilder.ZigbeeBulbConfig
 bulb_cfg.set_address('127.0.0.1')
-bulb_cfg.set_port(5001)
+bulb_cfg.set_port(31558)
 config.set_zigbee_bulb(bulb_cfg)
 config.set_delay_between_updates(0.1)
 configSocket.send(config.encode().toBuffer());
