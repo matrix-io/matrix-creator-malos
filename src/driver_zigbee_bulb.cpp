@@ -45,7 +45,7 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
   if (bulb_config.address() == "" && bulb_config.port() == -1) {
     if (tcp_client_.get() == nullptr) {
       zmq_push_error_->Send(
-          "ZigBee bulb driver hasn't been configured. Did you start MALOS?");
+          "ZigBee bulb driver hasn't been configured. Did you restart MALOS?");
       return false;
     }
 
