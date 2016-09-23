@@ -48,6 +48,10 @@ updateSocket.on('message', function(buffer) {
   console.log(data)
   // { short_id: 6058, cluster_id: 0, zdo_command: 0, zdo_status: 0 }
 
+  // Check the message ZigBeeBulbCmd for the available commands. At the moment,
+  // only ON, OFF and TOGGLE are supported. This should change soon.
+  // https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto
+
   var bulbCmd = new matrixMalosBuilder.ZigBeeBulbCmd
 
   bulbCmd.short_id = data.short_id 
