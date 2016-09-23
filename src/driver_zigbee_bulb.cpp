@@ -41,6 +41,23 @@ namespace matrix_malos {
 bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
   ZigbeeBulbConfig bulb_config(config.zigbee_bulb());
 
+  if (bulb_config.address() == "" && bulb_config.port() == -1) {
+    std::cout << "ZigbeeBulb got command" << std::endl;
+    std::cout << "ZigbeeBulb id: " << bulb_config.command().short_id()
+              << std::endl;
+    std::cout << "ZigbeeBulb cmd: " << bulb_config.command().command()
+              << std::endl;
+
+    if (bulb_config.command().command() == ZigBeeBulbCmd::OFF) {
+      tcp_client_->Send("zcl on-off off\n");
+      char buf[128];
+      sprintf(buf, "send 0x%04x 0 1\n", bulb_config.command().short_id());
+      tcp_client_->Send(buf);
+    }
+
+    return true;
+  }
+
   std::cout << "ZigbeeBulb Got configuration" << std::endl;
   std::cout << "Connect to " << bulb_config.address() << ":"
             << bulb_config.port() << std::endl;

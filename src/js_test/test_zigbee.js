@@ -28,7 +28,7 @@ var bulb_cfg = new matrixMalosBuilder.ZigbeeBulbConfig
 bulb_cfg.set_address('127.0.0.1')
 bulb_cfg.set_port(5001)
 config.set_zigbee_bulb(bulb_cfg)
-config.set_delay_between_updates(0.2)
+config.set_delay_between_updates(0.1)
 configSocket.send(config.encode().toBuffer());
 
 var pingSocket = zmq.socket('push')
@@ -45,11 +45,22 @@ updateSocket.subscribe('')
 updateSocket.on('message', function(buffer) {
   var data = new matrixMalosBuilder.ZigBeeAnnounce.decode(buffer)
   console.log(data)
+  // { short_id: 6058, cluster_id: 0, zdo_command: 0, zdo_status: 0 }
 
   var bulbCmd = new matrixMalosBuilder.ZigBeeBulbCmd
+
+  // { short_id: 0, command: 0, params: [] }
+  bulbCmd.short_id = data.short_id 
+  bulbCmd.command = matrixMalosBuilder.ZigBeeBulbCmd.EnumCommands.OFF
   console.log(bulbCmd)
-  var buildOffCmd = new matrixMalosBuilder.ZigBeeBulbCmd
-  console.log(matrixMalosBuilder.ZigBeeBulbCmd)
+
+  var bulb_cfg_cmd = new matrixMalosBuilder.ZigbeeBulbConfig
+  bulb_cfg_cmd.set_address('')
+  bulb_cfg_cmd.set_port(-1)
+  bulb_cfg_cmd.set_command(bulbCmd)
+  config.set_zigbee_bulb(bulb_cfg_cmd)
+  configSocket.send(config.encode().toBuffer());
+
   //var bulbCmd = matrixMalosBuilder.build('ZigBeeBulbCmd')
   //var bulCmdOff = new bulbCmd('ZigBeeBulbCmd.EnumCommands.OFF')
   //console.log(bulCmdOff)
