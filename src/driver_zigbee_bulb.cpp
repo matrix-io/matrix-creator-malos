@@ -21,6 +21,17 @@
 
 #include "./src/driver.pb.h"
 
+namespace {
+
+// http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
+std::string Trim(const std::string &s)
+{
+  auto  wsfront=std::find_if_not(s.begin(),s.end(),[](int c){return std::isspace(c);});
+  return std::string(wsfront,std::find_if_not(s.rbegin(),std::string::const_reverse_iterator(wsfront),[](int c){return std::isspace(c);}).base());
+}
+
+}  // namespace
+
 namespace matrix_malos {
 
 bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
@@ -43,12 +54,26 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
   return true;
 }
 
+const char AnnounceLine[] = "Device Announce: ";
+
 bool ZigbeeBulbDriver::SendUpdate() {
   std::string line;
   if (tcp_client_->GetLine(&line)) {
-    std::cout << "GetLine :" << line << std::endl;
+    line = Trim(line);
+    std::cout << "ZigBee: " << line << std::endl;
     std::cout.flush();
+    if (line.size() > sizeof AnnounceLine  - 1 &&
+        line.compare(0, sizeof AnnounceLine - 1, AnnounceLine) == 0) {
+      line.erase(0, sizeof AnnounceLine - 1);
+      std::cout << "ZigbeeBulbDriver received announce for '" << line << "'" << std::endl;
+      // Send to JS.
+      ZigBeeAnnounce announce;
+      int device_id = stoi(line, 0, 16);
+      std::cout << line << " => " << device_id << std::endl;
+      announce.set_short_id(device_id);
+    }
   }
+  // Device Announce: 0x17AA
   return true;
 }
 

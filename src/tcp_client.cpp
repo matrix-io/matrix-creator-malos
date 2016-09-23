@@ -190,6 +190,5 @@ bool TcpClient::GetLine(std::string *line) {
   }
   return false;
 }
-#endif
 
 }  // namespace matrix_malos
