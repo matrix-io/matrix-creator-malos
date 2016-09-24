@@ -27,8 +27,6 @@
 
 #include <arpa/inet.h>
 
-#include <string.h>
-
 #include <string>
 #include <iostream>
 
@@ -123,57 +121,72 @@ bool TcpClient::Send(const std::string &data) {
   return true;
 }
 
+// FIXME: Better variable names. Improve select logic.
+
 bool TcpClient::GetLine(std::string *line) {
   struct timeval tv;
   fd_set readfds;
 
   tv.tv_sec = 0;
-  tv.tv_usec = 500000;
+  // FIXME: Use 0 here.
+  tv.tv_usec = 0;
 
   FD_ZERO(&readfds);
   FD_SET(sock_, &readfds);
 
+  bool select_trigger = true;
+
   // don't care about writefds and exceptfds:
   if (select(sock_ + 1, &readfds, NULL, NULL, &tv) == -1) {
-    return false;
+    select_trigger = false;
   }
 
-  int nbytes = 0;
-  char buf[2048];
+  if (select_trigger && FD_ISSET(sock_, &readfds)) {
+    int nbytes = 0;
+    char buf[512];
 
-  if ((nbytes = recv(sock_, buf, sizeof buf, 0)) <= 0) {
-    if (nbytes == 0) {
-      std::cerr << "Gateway socket hung up" << std::endl;
+    if ((nbytes = recv(sock_, buf, sizeof buf, 0)) <= 0) {
+      if (nbytes == 0) {
+        std::cerr << "Gateway socket hung up" << std::endl;
+      } else {
+        perror("recv");
+      }
+      close(sock_);
+      sock_ = -1;
     } else {
-      perror("recv");
+      buffer_.append(buf, nbytes);
     }
-    close(sock_);  // bye!
-    sock_ = -1;
-    return false;
   }
-  if (FD_ISSET(sock_, &readfds)) {
-    std::string msg(buf, nbytes);
-    std::cerr << "Received: " << msg << std::endl;
+
+  int ltrim_count = 0;
+  for (int i = 0; i < static_cast<int>(buffer_.size()); ++i) {
+    if (buffer_.at(i) == '\n' || buffer_.at(i) == '\r') {
+      ++ltrim_count;
+    } else {
+      break;
+    }
+  }
+
+  std::string ret;
+  bool can_return = false;
+
+  for (int i = ltrim_count; i < static_cast<int>(buffer_.size()); ++i) {
+    if (buffer_.at(i) == '\n' || buffer_.at(i) == '\r') {
+      if (ret.size() > 0) {
+        can_return = true;
+        break;
+      }
+    }
+    ret.append(1, buffer_.at(i));
+    ++ltrim_count;
+  }
+
+  if (can_return) {
+    buffer_.erase(0, ltrim_count);
+    line->assign(ret);
     return true;
-  } else
-    return false;
-}
-
-// FIXME: This function will be replace to manage partial reads.
-
-#if 0
-std::string TcpClient::receive(int size = 512) {
-  char buffer[size];
-
-  if (recv(sock_, buffer, sizeof(buffer), 0) < 0) {
-    msg_error_ = "recv failed";
-  } else {
-    msg_error_ = "";
   }
-
-  return std::string(buffer);
-
+  return false;
 }
-#endif
 
 }  // namespace matrix_malos

@@ -40,6 +40,9 @@ class ZigbeeBulbDriver : public MalosWishboneBase {
   // Read configuration of LEDs (from the outside world).
   bool ProcessConfig(const DriverConfig& config) override;
 
+  // Send updates. Checks for new messages from Zigbee.
+  bool SendUpdate() override;
+
  private:
   // Tcp client.
   std::unique_ptr<TcpClient> tcp_client_;

@@ -21,34 +21,104 @@
 
 #include "./src/driver.pb.h"
 
+namespace {
+
+// http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
+std::string Trim(const std::string& s) {
+  auto wsfront = std::find_if_not(s.begin(), s.end(),
+                                  [](int c) { return std::isspace(c); });
+  return std::string(
+      wsfront,
+      std::find_if_not(s.rbegin(), std::string::const_reverse_iterator(wsfront),
+                       [](int c) { return std::isspace(c); })
+          .base());
+}
+
+}  // namespace
+
 namespace matrix_malos {
 
 bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
   ZigbeeBulbConfig bulb_config(config.zigbee_bulb());
 
-  std::cout << "ZigbeeBulb Got configuration" << std::endl;
-  std::cout << "Connect to " << bulb_config.address() << ":"
+  // When address is empty and port is -1 we got a command.
+  if (bulb_config.address() == "" && bulb_config.port() == -1) {
+    if (tcp_client_.get() == nullptr) {
+      zmq_push_error_->Send(
+          "ZigBee bulb driver hasn't been configured. Did you restart MALOS?");
+      return false;
+    }
+
+    std::cerr << "ZigbeeBulb got command" << std::endl;
+    std::cerr << "ZigbeeBulb id: " << bulb_config.command().short_id()
+              << std::endl;
+    std::cerr << "ZigbeeBulb cmd: " << bulb_config.command().command()
+              << std::endl;
+
+    if (bulb_config.command().command() == ZigBeeBulbCmd::OFF) {
+      tcp_client_->Send("zcl on-off off\n");
+    } else if (bulb_config.command().command() == ZigBeeBulbCmd::ON) {
+      tcp_client_->Send("zcl on-off on\n");
+    } else if (bulb_config.command().command() == ZigBeeBulbCmd::TOGGLE) {
+      tcp_client_->Send("zcl on-off toggle\n");
+    }
+    char buf[128];
+    snprintf(buf, sizeof buf, "send 0x%04x 0 1\n",
+             bulb_config.command().short_id());
+    tcp_client_->Send(buf);
+
+    return true;
+  }
+
+  // Otherwise a new connection is established.
+
+  std::cerr << "ZigbeeBulb Got configuration" << std::endl;
+  std::cerr << "Connect to " << bulb_config.address() << ":"
             << bulb_config.port() << std::endl;
 
   tcp_client_.reset(new TcpClient());
   if (tcp_client_->Connect(bulb_config.address(), bulb_config.port())) {
-    std::cout << "connected" << std::endl << std::flush;
+    std::cerr << "connected" << std::endl << std::flush;
   } else {
-    std::cout << "NOT connected" << std::endl;
+    std::cerr << "NOT connected" << std::endl;
+    zmq_push_error_->Send("Could not connect to ZigBee gateway at " +
+                          bulb_config.address() + ":" +
+                          std::to_string(bulb_config.port()));
     return false;
   }
 
-  std::string line;
-  while (1) {
-    tcp_client_->GetLine(&line);
-  }
-
-  std::cout << "GetLine returned" << std::endl;
-
-  std::cout.flush();
+  std::cerr.flush();
 
   return true;
 }
-// matrix_hal::EverloopImage image_for_hal;
+
+const char AnnounceLine[] = "Device Announce: ";
+
+bool ZigbeeBulbDriver::SendUpdate() {
+  std::string line;
+  while (tcp_client_->GetLine(&line)) {
+    line = Trim(line);
+    std::cerr << "ZigBee: " << line << std::endl;
+    std::cerr.flush();
+    // Check if the line countains an announcement.
+    if (line.size() > sizeof AnnounceLine - 1 &&
+        line.compare(0, sizeof AnnounceLine - 1, AnnounceLine) == 0) {
+      line.erase(0, sizeof AnnounceLine - 1);
+      std::cerr << "ZigbeeBulbDriver received announce for '" << line << "'"
+                << std::endl;
+      // Fill out protocol buffer.
+      ZigBeeAnnounce announce_pb;
+      int device_id = stoi(line, 0, 16);
+      std::cerr << line << " => " << device_id << std::endl;
+      announce_pb.set_short_id(device_id);
+      // Send the serialized proto.
+      std::string buffer;
+      announce_pb.SerializeToString(&buffer);
+      zqm_push_update_->Send(buffer);
+    }
+  }
+  // Device Announce: 0x17AA
+  return true;
+}
 
 }  // namespace matrix_malos
