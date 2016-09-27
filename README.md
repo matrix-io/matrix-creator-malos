@@ -23,7 +23,8 @@ malos > /dev/null 2>&1 &
 ### Clone and test examples
 Note: pre-requisite is NodeJS. Don't use the one shipped with raspbian because it's a bit old. If you don't have it, please check a recipe included below.
 ```
-git clone https://github.com/matrix-io/matrix-creator-malos.git
+git clone https://github.com/matrix-io/matrix-creator-malos.git && cd matrix-creator-malos
+git submodule init && git submodule update
 cd src/js_test
 
 // humidity, temperatre
