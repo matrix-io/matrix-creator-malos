@@ -44,6 +44,8 @@ set(malos_src
   driver_uv.cpp driver_uv.h
   driver_everloop.cpp driver_everloop.h
   driver_zigbee_bulb.cpp driver_zigbee_bulb.h
+  driver_micarray_alsa.cpp driver_micarray_alsa.h
+  driver_micarray_alsa.cpp driver_micarray_alsa.h
   tcp_client.cpp tcp_client.h
   ${MALOS_PROTO_SRC} ${MALOS_PROTO_HEADER}
 )
@@ -52,6 +54,7 @@ add_executable(malos ${malos_src})
 set_property(TARGET malos PROPERTY CXX_STANDARD 11)
 target_link_libraries(malos zmq_wrapper_lib)
 target_link_libraries(malos ${HAL_LIB} ${PROTOBUF_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(malos wiringPi)
 
 # Binary to be installed.
 install(TARGETS malos DESTINATION bin)
