@@ -25,8 +25,36 @@
 namespace matrix_malos {
 
 bool MicArrayAlsaDriver::ProcessConfig(const DriverConfig& config) {
- // TODO (andres.calderon@admobilize.com):  handle SetGain
+  // TODO (andres.calderon@admobilize.com):  handle SetGain
   return true;
+}
+
+void MicArrayAlsaDriver::AlsaThread() {
+  for (uint16_t c = 0; c < mics_->Channels(); c++) {
+    std::string name = "/tmp/matrix_micarray_channel_" + std::to_string(c);
+
+    /* create the FIFO (named pipe) */
+    if (mkfifo(name.c_str(), 0666) != 0) {
+      /*std::cerr << "unable to create " << name << " FIFO." << std::endl;*/
+    }
+  }
+
+  int named_pipe_handle;
+  std::valarray<int16_t> buffer(mics_->NumberOfSamples());
+  while (true) {
+    mics_->Read(); /* Reading 8-mics buffer from de FPGA */
+    for (uint16_t c = 0; c < mics_->Channels(); c++) {
+      std::string name = "/tmp/matrix_micarray_channel_" + std::to_string(c);
+      named_pipe_handle = open(name.c_str(), O_WRONLY | O_NONBLOCK);
+
+      for (uint32_t s = 0; s < mics_->NumberOfSamples(); s++)
+        buffer[s] = mics_->At(s, c);
+
+      write(named_pipe_handle, &buffer[0],
+            sizeof(int16_t) * mics_->NumberOfSamples());
+      close(named_pipe_handle);
+    }
+  }
 }
 
 }  // namespace matrix_malos

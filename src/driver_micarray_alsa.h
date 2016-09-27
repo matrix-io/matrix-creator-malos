@@ -18,7 +18,12 @@
 #ifndef SRC_DRIVER_ALSA_H_
 #define SRC_DRIVER_ALSA_H_
 
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+
 #include <memory>
+#include <thread>
 
 #include "./malos_wishbone_base.h"
 
@@ -42,10 +47,17 @@ class MicArrayAlsaDriver : public MalosWishboneBase {
   void SetupWishboneBus(matrix_hal::WishboneBus* wishbone) override {
     mics_.reset(new matrix_hal::MicrophoneArray);
     mics_->Setup(wishbone);
+
+    // alsa thread.
+    std::thread alsa_thread(&MicArrayAlsaDriver::AlsaThread, this);
+    alsa_thread.detach();
   }
 
   // Read configuration of Mic Array (from the outside world).
   bool ProcessConfig(const DriverConfig& config) override;
+
+  // Thread that send audio stream to named pipes
+  void AlsaThread();
 
  private:
   // Microphone array driver
