@@ -52,6 +52,8 @@ setInterval(function(){
 }, 3000);
 
 
+var hue_and_sat = 0
+
 var updateSocket = zmq.socket('sub')
 updateSocket.connect('tcp://' + creator_ip + ':' + (create_zigbee_base_port + 3))
 updateSocket.subscribe('')
@@ -65,10 +67,18 @@ updateSocket.on('message', function(buffer) {
       setInterval(function() {
         var bulbCmd = new matrixMalosBuilder.ZigBeeBulbCmd
         bulbCmd.short_id = data.short_id
-        // Check the message ZigBeeBulbCmd for the available commands.
+        // Check the message ZigBeeBulbCmd for the available commands. 
         // https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto
-        bulbCmd.command = matrixMalosBuilder.ZigBeeBulbCmd.EnumCommands.TOGGLE
-        console.log('toggle')
+        bulbCmd.command = matrixMalosBuilder.ZigBeeBulbCmd.EnumCommands.COLOR
+        // Use 0xb for Philips bulbs. We haven't figured out how to use this parameter.
+        bulbCmd.endpoint = 0xb
+        // Params are: hue, saturation and transition time.
+        bulbCmd.params.push(hue_and_sat, hue_and_sat, 1)
+        console.log('hue_and_saturation ' + hue_and_sat)
+        hue_and_sat += 50
+        if (hue_and_sat > 255) {
+            hue_and_sat = 0
+        }
         var bulb_cfg_cmd = new matrixMalosBuilder.ZigbeeBulbConfig
         bulb_cfg_cmd.set_address('')
         bulb_cfg_cmd.set_port(-1)

@@ -71,7 +71,7 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
     } else if (bulb_config.command().command() == ZigBeeBulbCmd::LEVEL) {
       if (bulb_config.command().params_size() != 2) {
         zmq_push_error_->Send(
-            "Invalid number of parameters for LEVEL.  Two"
+            "Invalid number of parameters for LEVEL command.  Two"
             "parameters are required: level and transition time.");
         return false;
       }
@@ -91,6 +91,38 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
       std::snprintf(buf, sizeof buf, "zcl level-control mv-to-level %d %d",
                     bulb_config.command().params(0),
                     bulb_config.command().params(1));
+      command = buf;
+    } else if (bulb_config.command().command() == ZigBeeBulbCmd::COLOR) {
+      if (bulb_config.command().params_size() != 3) {
+        zmq_push_error_->Send(
+            "Invalid number of parameters for COLOR command.  Three"
+            "parameters are required: hue, saturation and transition time.");
+        return false;
+      }
+      if (bulb_config.command().params(0) > 255) {
+        zmq_push_error_->Send(
+            "Invalid hue for COLOR command. Hue needs values between 0 and "
+            "255");
+        return false;
+      }
+      if (bulb_config.command().params(1) > 255) {
+        zmq_push_error_->Send(
+            "Invalid saturation for COLOR command. Saturation needs values "
+            "between 0 and "
+            "255");
+        return false;
+      }
+      if (bulb_config.command().params(2) > 65535) {
+        zmq_push_error_->Send(
+            "Invalid transition time for COLOR command. Transition time needs "
+            "values between 0 and 65535");
+        return false;
+      }
+      char buf[128];
+      std::snprintf(
+          buf, sizeof buf, "zcl color-control movetohueandsat %d %d %d",
+          bulb_config.command().params(0), bulb_config.command().params(1),
+          bulb_config.command().params(2));
       command = buf;
     } else {
       zmq_push_error_->Send(

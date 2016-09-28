@@ -67,8 +67,7 @@ updateSocket.on('message', function(buffer) {
       setInterval(function() {
         var bulbCmd = new matrixMalosBuilder.ZigBeeBulbCmd
         bulbCmd.short_id = data.short_id
-        // Check the message ZigBeeBulbCmd for the available commands. At the moment,
-        // only ON, OFF and TOGGLE are supported. This should change soon.
+        // Check the message ZigBeeBulbCmd for the available commands.
         // https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto
         bulbCmd.command = matrixMalosBuilder.ZigBeeBulbCmd.EnumCommands.LEVEL
         // Use 0xb for Philips bulbs. We haven't figured out how to use this parameter.
