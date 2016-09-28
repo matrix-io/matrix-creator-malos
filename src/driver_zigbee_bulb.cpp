@@ -87,6 +87,7 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
             "values between 0 and 65535");
         return false;
       }
+      // TODO(nelson.castillo): Do not allocate in the stack.
       char buf[128];
       std::snprintf(buf, sizeof buf, "zcl level-control mv-to-level %d %d",
                     bulb_config.command().params(0),
@@ -118,6 +119,7 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
             "values between 0 and 65535");
         return false;
       }
+      // TODO(nelson.castillo): Do not allocate in the stack.
       char buf[128];
       std::snprintf(
           buf, sizeof buf, "zcl color-control movetohueandsat %d %d %d",
@@ -130,6 +132,7 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
           "driver.proto)");
       return false;
     }
+    // TODO(nelson.castillo): Do not allocate in the stack.
     char buf[128];
     if (bulb_config.command().endpoint() == 0) {
       // Generic bulb.
