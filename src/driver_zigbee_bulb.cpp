@@ -67,11 +67,7 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
     } else if (bulb_config.command().command() == ZigBeeBulbCmd::TOGGLE) {
       command = "zcl on-off toggle";
     } else if (bulb_config.command().command() == ZigBeeBulbCmd::IDENTIFY) {
-      char buf[128];
-      // TODO(nelson.castillo): Do not hardcode 5. Use a parameter.
-      std::snprintf(buf, sizeof buf, "zcl identify 0x%04x 5",
-                    bulb_config.command().short_id());
-      command = buf;
+      command = "zcl identify id 3";
     } else {
       zmq_push_error_->Send(
           "Invalid  command. Check the proto ZigBeeBulbCmd (file "
