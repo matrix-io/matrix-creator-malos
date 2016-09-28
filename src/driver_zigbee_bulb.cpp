@@ -55,16 +55,102 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
     std::cerr << "ZigbeeBulb cmd: " << bulb_config.command().command()
               << std::endl;
 
+    // TODO(nelson.castillo): Improve readability of this function.
+
+    // Only send the command if no errors are found.
+    std::string command;
+
     if (bulb_config.command().command() == ZigBeeBulbCmd::OFF) {
-      tcp_client_->Send("zcl on-off off\n");
+      command = "zcl on-off off";
     } else if (bulb_config.command().command() == ZigBeeBulbCmd::ON) {
-      tcp_client_->Send("zcl on-off on\n");
+      command = "zcl on-off on";
     } else if (bulb_config.command().command() == ZigBeeBulbCmd::TOGGLE) {
-      tcp_client_->Send("zcl on-off toggle\n");
+      command = "zcl on-off toggle";
+    } else if (bulb_config.command().command() == ZigBeeBulbCmd::IDENTIFY) {
+      command = "zcl identify id 3";
+    } else if (bulb_config.command().command() == ZigBeeBulbCmd::LEVEL) {
+      if (bulb_config.command().params_size() != 2) {
+        zmq_push_error_->Send(
+            "Invalid number of parameters for LEVEL command.  Two"
+            "parameters are required: level and transition time.");
+        return false;
+      }
+      if (bulb_config.command().params(0) > 255) {
+        zmq_push_error_->Send(
+            "Invalid level for LEVEL command. level needs values between 0 and "
+            "255");
+        return false;
+      }
+      if (bulb_config.command().params(1) > 65535) {
+        zmq_push_error_->Send(
+            "Invalid transition time for LEVEL command. Transition time needs "
+            "values between 0 and 65535");
+        return false;
+      }
+      // TODO(nelson.castillo): Do not allocate in the stack.
+      char buf[128];
+      std::snprintf(buf, sizeof buf, "zcl level-control mv-to-level %d %d",
+                    bulb_config.command().params(0),
+                    bulb_config.command().params(1));
+      command = buf;
+    } else if (bulb_config.command().command() == ZigBeeBulbCmd::COLOR) {
+      if (bulb_config.command().params_size() != 3) {
+        zmq_push_error_->Send(
+            "Invalid number of parameters for COLOR command.  Three"
+            "parameters are required: hue, saturation and transition time.");
+        return false;
+      }
+      if (bulb_config.command().params(0) > 255) {
+        zmq_push_error_->Send(
+            "Invalid hue for COLOR command. Hue needs values between 0 and "
+            "255");
+        return false;
+      }
+      if (bulb_config.command().params(1) > 255) {
+        zmq_push_error_->Send(
+            "Invalid saturation for COLOR command. Saturation needs values "
+            "between 0 and "
+            "255");
+        return false;
+      }
+      if (bulb_config.command().params(2) > 65535) {
+        zmq_push_error_->Send(
+            "Invalid transition time for COLOR command. Transition time needs "
+            "values between 0 and 65535");
+        return false;
+      }
+      // TODO(nelson.castillo): Do not allocate in the stack.
+      char buf[128];
+      std::snprintf(
+          buf, sizeof buf, "zcl color-control movetohueandsat %d %d %d",
+          bulb_config.command().params(0), bulb_config.command().params(1),
+          bulb_config.command().params(2));
+      command = buf;
+    } else {
+      zmq_push_error_->Send(
+          "invalid  command. check the proto zigbeebulbcmd (file "
+          "driver.proto)");
+      return false;
     }
+    // TODO(nelson.castillo): Do not allocate in the stack.
     char buf[128];
-    snprintf(buf, sizeof buf, "send 0x%04x 0 1\n",
-             bulb_config.command().short_id());
+    if (bulb_config.command().endpoint() == 0) {
+      // Generic bulb.
+      std::snprintf(buf, sizeof buf, "send 0x%04x 0 1\n",
+                    bulb_config.command().short_id());
+    } else if (bulb_config.command().endpoint() == 0xb) {
+      // Philips bulb. We haven't figured out how to use the endpoints yet.
+      std::snprintf(buf, sizeof buf, "send 0x%04x 0 0xb\n",
+                    bulb_config.command().short_id());
+    } else {
+      zmq_push_error_->Send(
+          "Invalid  endpoint. We only use 0x0 and 0xb. Should we use more? Let "
+          "us know! The enpoint:" +
+          std::to_string(bulb_config.command().endpoint()));
+      return false;
+    }
+
+    tcp_client_->Send(command + "\n");
     tcp_client_->Send(buf);
 
     return true;
