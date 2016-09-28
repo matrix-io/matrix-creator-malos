@@ -75,6 +75,18 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
             "parameters are required: level and transition time.");
         return false;
       }
+      if (bulb_config.command().params(0) > 255) {
+        zmq_push_error_->Send(
+            "Invalid level for LEVEL command. level needs values between 0 and "
+            "255");
+        return false;
+      }
+      if (bulb_config.command().params(1) > 65535) {
+        zmq_push_error_->Send(
+            "Invalid transition time for LEVEL command. Transition time needs "
+            "values between 0 and 65535");
+        return false;
+      }
       char buf[128];
       std::snprintf(buf, sizeof buf, "zcl level-control mv-to-level %d %d",
                     bulb_config.command().params(0),
