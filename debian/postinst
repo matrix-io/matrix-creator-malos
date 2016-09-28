@@ -1,0 +1,6 @@
+#!/bin/bash -e
+
+echo "Enabling MALOS service"
+systemctl enable matrix-creator-malos
+
+echo "Please restart your Raspberry Pi after installation"
