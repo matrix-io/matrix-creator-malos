@@ -55,16 +55,45 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
     std::cerr << "ZigbeeBulb cmd: " << bulb_config.command().command()
               << std::endl;
 
+    // TODO(nelson.castillo): Improve readability of this function.
+
+    // Only send the command if no errors are found.
+    std::string command;
+
     if (bulb_config.command().command() == ZigBeeBulbCmd::OFF) {
-      tcp_client_->Send("zcl on-off off\n");
+      command = "zcl on-off off";
     } else if (bulb_config.command().command() == ZigBeeBulbCmd::ON) {
-      tcp_client_->Send("zcl on-off on\n");
+      command = "zcl on-off on";
     } else if (bulb_config.command().command() == ZigBeeBulbCmd::TOGGLE) {
-      tcp_client_->Send("zcl on-off toggle\n");
+      command = "zcl on-off toggle";
+    } else if (bulb_config.command().command() == ZigBeeBulbCmd::IDENTIFY) {
+      char buf[128];
+      // TODO(nelson.castillo): Do not hardcode 5. Use a parameter.
+      std::snprintf(buf, sizeof buf, "zcl identify 0x%04x 5",
+                    bulb_config.command().short_id());
+      command = buf;
+    } else {
+      zmq_push_error_->Send(
+          "Invalid  command. Check the proto ZigBeeBulbCmd (file "
+          "driver.proto)");
+      return false;
     }
     char buf[128];
-    snprintf(buf, sizeof buf, "send 0x%04x 0 1\n",
-             bulb_config.command().short_id());
+    if (bulb_config.command().endpoint() == 0) {
+      // Generic bulb.
+      std::snprintf(buf, sizeof buf, "send 0x%04x 0 1\n",
+                    bulb_config.command().short_id());
+    } else if (bulb_config.command().endpoint() == 0xb) {
+      // Philips bulb.
+      std::snprintf(buf, sizeof buf, "send 0x%04x 0xb\n",
+                    bulb_config.command().short_id());
+    } else {
+      zmq_push_error_->Send("Invalid  endpoint " +
+                            std::to_string(bulb_config.command().endpoint()));
+      return false;
+    }
+
+    tcp_client_->Send(command + "\n");
     tcp_client_->Send(buf);
 
     return true;
