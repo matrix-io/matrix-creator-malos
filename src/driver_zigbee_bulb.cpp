@@ -68,9 +68,21 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
       command = "zcl on-off toggle";
     } else if (bulb_config.command().command() == ZigBeeBulbCmd::IDENTIFY) {
       command = "zcl identify id 3";
+    } else if (bulb_config.command().command() == ZigBeeBulbCmd::LEVEL) {
+      if (bulb_config.command().params_size() != 2) {
+        zmq_push_error_->Send(
+            "Invalid number of parameters for LEVEL.  Two"
+            "parameters are required: level and transition time.");
+        return false;
+      }
+      char buf[128];
+      std::snprintf(buf, sizeof buf, "zcl level-control mv-to-level %d %d",
+                    bulb_config.command().params(0),
+                    bulb_config.command().params(1));
+      command = buf;
     } else {
       zmq_push_error_->Send(
-          "Invalid  command. Check the proto ZigBeeBulbCmd (file "
+          "invalid  command. check the proto zigbeebulbcmd (file "
           "driver.proto)");
       return false;
     }
