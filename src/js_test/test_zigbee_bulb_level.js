@@ -71,7 +71,8 @@ updateSocket.on('message', function(buffer) {
         // only ON, OFF and TOGGLE are supported. This should change soon.
         // https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto
         bulbCmd.command = matrixMalosBuilder.ZigBeeBulbCmd.EnumCommands.LEVEL
-        bulbCmd.endpoint = 0 // Use 0xb for Philips bulbs.
+        // Use 0xb for Philips bulbs. We haven't figured out how to use this parameter.
+        bulbCmd.endpoint = 0
         // Params are: level, transition time.
         // Level granularity is bulb-specific
         bulbCmd.params.push(level, 1)

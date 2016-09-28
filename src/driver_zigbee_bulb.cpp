@@ -92,12 +92,14 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
       std::snprintf(buf, sizeof buf, "send 0x%04x 0 1\n",
                     bulb_config.command().short_id());
     } else if (bulb_config.command().endpoint() == 0xb) {
-      // Philips bulb.
-      std::snprintf(buf, sizeof buf, "send 0x%04x 0xb\n",
+      // Philips bulb. We haven't figured out how to use the endpoints yet.
+      std::snprintf(buf, sizeof buf, "send 0x%04x 0 0xb\n",
                     bulb_config.command().short_id());
     } else {
-      zmq_push_error_->Send("Invalid  endpoint " +
-                            std::to_string(bulb_config.command().endpoint()));
+      zmq_push_error_->Send(
+          "Invalid  endpoint. We only use 0x0 and 0xb. Should we use more? Let "
+          "us know! The enpoint:" +
+          std::to_string(bulb_config.command().endpoint()));
       return false;
     }
 
