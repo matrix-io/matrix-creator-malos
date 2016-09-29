@@ -36,7 +36,8 @@ bool LircDriver::ProcessConfig(const DriverConfig& config) {
   std::cout << "device :" << lirc.device() << "\t";
   std::cout << "command:" << lirc.command() << "\n";
 
-  system ("isend "+lirc.device()+" "+lirc.command()+"".c_str());
+  std::string str_irsend = "irsend SEND_ONCE "+lirc.device()+" "+lirc.command();
+  system (str_irsend.c_str());
 
   return true;
 
