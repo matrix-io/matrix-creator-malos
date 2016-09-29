@@ -20,7 +20,6 @@
 #include "./driver_lirc.h"
 
 #include "./src/driver.pb.h"
-#include "matrix_hal/lirc.h"
 
 namespace matrix_malos {
 
@@ -33,6 +32,9 @@ bool LircDriver::ProcessConfig(const DriverConfig& config) {
     zmq_push_error_->Send(error_msg);
     return false;
   }
+
+  std::cout << "device :" << lirc.device() << "\n";
+  std::cout << "command:" << lirc.command() << "\n";
 
   return true;
 
