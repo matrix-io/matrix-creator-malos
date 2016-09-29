@@ -32,20 +32,11 @@ class LircDriver : public MalosBase {
     );
   }
 
-  // Receive a copy of the shared wishbone bus. Not owned.
-  void SetupBus(matrix_hal::WishboneBus* wishbone) override {
-    writer_.reset(new matrix_hal::Everloop);
-    writer_->Setup(wishbone);
-  }
-
-  // Read configuration of LEDs (from the outside world).
+  // Read configuration of IR command (from the outside world).
   bool ProcessConfig(const DriverConfig& config) override;
 
- private:
-  // Everloop writer.
-  std::unique_ptr<matrix_hal::Everloop> writer_;
 };
 
 }  // namespace matrix_malos
 
-#endif  // SRC_DRIVER_EVERLOOP_H_
+#endif  // SRC_DRIVER_LIRC_H_
