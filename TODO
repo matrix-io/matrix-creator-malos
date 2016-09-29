@@ -1,0 +1,3 @@
+There is another TODO file inside of src/.
+
+- Install startup scripts in a proper way (the Debian way). Right now we're asking for a restart.

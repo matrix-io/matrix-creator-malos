@@ -52,6 +52,8 @@ setInterval(function(){
 }, 3000);
 
 
+var level = 1
+
 var updateSocket = zmq.socket('sub')
 updateSocket.connect('tcp://' + creator_ip + ':' + (create_zigbee_base_port + 3))
 updateSocket.subscribe('')
@@ -67,8 +69,17 @@ updateSocket.on('message', function(buffer) {
         bulbCmd.short_id = data.short_id
         // Check the message ZigBeeBulbCmd for the available commands.
         // https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto
-        bulbCmd.command = matrixMalosBuilder.ZigBeeBulbCmd.EnumCommands.TOGGLE
-        console.log('toggle')
+        bulbCmd.command = matrixMalosBuilder.ZigBeeBulbCmd.EnumCommands.LEVEL
+        // Use 0xb for Philips bulbs. We haven't figured out how to use this parameter.
+        bulbCmd.endpoint = 0
+        // Params are: level, transition time.
+        // Level granularity is bulb-specific
+        bulbCmd.params.push(level, 1)
+        console.log('level ' + level)
+        level += 50
+        if (level > 255) {
+            level = 0
+        }
         var bulb_cfg_cmd = new matrixMalosBuilder.ZigbeeBulbConfig
         bulb_cfg_cmd.set_address('')
         bulb_cfg_cmd.set_port(-1)

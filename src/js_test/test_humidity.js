@@ -38,10 +38,7 @@ errorSocket.on('message', function(error_message) {
 // ********** Start configuration.
 var configSocket = zmq.socket('push')
 configSocket.connect('tcp://' + creator_ip + ':' + creator_humidity_base_port)
-// Send invalid configurations twice. This should get us two errors back.
-configSocket.send('hello')
-configSocket.send('hello')
-// Now prepare valid configuration and send it.
+// Send driver configuration.
 var driverConfigProto = new matrixMalosBuilder.DriverConfig
 // 2 seconds between updates.
 driverConfigProto.delay_between_updates = 2.0
