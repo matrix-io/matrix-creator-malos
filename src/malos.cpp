@@ -26,6 +26,7 @@
 #include "./driver_uv.h"
 #include "./driver_everloop.h"
 #include "./driver_zigbee_bulb.h"
+#include "./driver_micarray_alsa.h"
 
 #include "matrix_hal/wishbone_bus.h"
 
@@ -89,6 +90,14 @@ int RunServer() {
     return 1;
   }
   driver_manager.RegisterDriver(&driver_zigbee_bulb);
+
+  MicArrayAlsaDriver driver_micarray_drive;
+  driver_micarray_drive.SetupWishboneBus(wishbone_bus);
+
+  if (!driver_micarray_drive.Init(kBasePort + 4 * 6 + 1, kUnsecureBindScope)) {
+    return 1;
+  }
+  driver_manager.RegisterDriver(&driver_micarray_drive);
 
   driver_manager.ServeInfoRequestsForEver();
 
