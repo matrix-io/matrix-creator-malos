@@ -22,9 +22,9 @@ const char kLircDriverName[] = "Lirc";
 
 namespace matrix_malos {
 
-class LircDriver : public MalosBase {
+class LircDriver : public MalosWishboneBase {
  public:
-  LircDriver() : MalosBase(kLircDriverName) {
+  LircDriver() : MalosWishboneBase(kLircDriverName) {
     SetProvidesUpdates(false);
     SetNeedsKeepalives(false);
     SetNotesForHuman(
