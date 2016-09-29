@@ -21,6 +21,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+namespace {
+
+static bool validLircSymbol(const std::string &cmd) {
+
+  for(const char c: cmd){
+    if(!isalnum(c)||c!='_')return false;
+  }
+
+  return true;
+
+} // namespace
+
 namespace matrix_malos {
 
 bool LircDriver::ProcessConfig(const DriverConfig& config) {
@@ -36,10 +48,20 @@ bool LircDriver::ProcessConfig(const DriverConfig& config) {
   std::cout << "device :" << lirc.device() << "\t";
   std::cout << "command:" << lirc.command() << "\n";
 
-  std::string str_irsend = "irsend SEND_ONCE "+lirc.device()+" "+lirc.command();
-  system (str_irsend.c_str());
+  if(validLircSymbol(lirc.device())&&validLircSymbol(lirc.command())){
 
-  return true;
+    std::string str_irsend = "irsend SEND_ONCE "+lirc.device()+" "+lirc.command();
+    system (str_irsend.c_str());
+
+    return true;
+  }
+  else{
+    std::string error_msg("command or device parameter invalid");
+    error_msg += kLircDriverName;
+    zmq_push_error_->Send(error_msg);
+
+    return false;
+  }
 
 }
 
