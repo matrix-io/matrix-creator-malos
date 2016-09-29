@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdlib.h>
+
 #include <iostream>
+
 #include "./driver_lirc.h"
 #include "./src/driver.pb.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 namespace {
 
@@ -30,12 +31,14 @@ static bool validLircSymbol(const std::string &cmd) {
   }
 
   return true;
+}
 
 } // namespace
 
 namespace matrix_malos {
 
 bool LircDriver::ProcessConfig(const DriverConfig& config) {
+
   LircParams lirc(config.lirc());
 
   if (lirc.device() == "" || lirc.command() == "") {
@@ -50,8 +53,9 @@ bool LircDriver::ProcessConfig(const DriverConfig& config) {
 
   if(validLircSymbol(lirc.device())&&validLircSymbol(lirc.command())){
 
-    std::string str_irsend = "irsend SEND_ONCE "+lirc.device()+" "+lirc.command();
-    system (str_irsend.c_str());
+    std::string str_irsend;
+    str_irsend = "irsend SEND_ONCE " + lirc.device() + " " + lirc.command();
+    if (system(str_irsend.c_str()) != -1) return true;
 
     return true;
   }
