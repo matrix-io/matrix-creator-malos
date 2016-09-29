@@ -30,13 +30,12 @@ class LircDriver : public MalosWishboneBase {
     SetProvidesUpdates(false);
     SetNeedsKeepalives(false);
     SetNotesForHuman(
-        "Write-read. Get list remotes and send commands via IR. In development"
-    );
+        "Write-read. Get list remotes and send commands via IR. In "
+        "development");
   }
 
   // Read configuration of IR command (from the outside world).
   bool ProcessConfig(const DriverConfig& config) override;
-
 };
 
 }  // namespace matrix_malos

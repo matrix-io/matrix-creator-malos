@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdlib.h>
+
 #include <iostream>
+
 #include "./driver_lirc.h"
 #include "./src/driver.pb.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 namespace matrix_malos {
 
@@ -33,14 +34,11 @@ bool LircDriver::ProcessConfig(const DriverConfig& config) {
     return false;
   }
 
-  std::cout << "device :" << lirc.device() << "\t";
-  std::cout << "command:" << lirc.command() << "\n";
+  std::string str_irsend;
+  str_irsend = "irsend SEND_ONCE " + lirc.device() + " " + lirc.command();
+  if (system(str_irsend.c_str()) != -1) return true;
 
-  std::string str_irsend = "irsend SEND_ONCE "+lirc.device()+" "+lirc.command();
-  system (str_irsend.c_str());
-
-  return true;
-
+  return false;
 }
 
 }  // namespace matrix_malos
