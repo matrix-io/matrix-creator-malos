@@ -18,6 +18,8 @@
 #ifndef SRC_DRIVER_LIRC_H_
 #define SRC_DRIVER_LIRC_H_
 
+#include "./malos_wishbone_base.h"
+
 const char kLircDriverName[] = "Lirc";
 
 namespace matrix_malos {

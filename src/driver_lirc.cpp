@@ -16,9 +16,7 @@
  */
 
 #include <iostream>
-
 #include "./driver_lirc.h"
-
 #include "./src/driver.pb.h"
 
 namespace matrix_malos {
