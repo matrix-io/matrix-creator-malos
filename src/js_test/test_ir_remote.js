@@ -20,9 +20,6 @@ var zmq = require('zmq')
 var configSocket = zmq.socket('push')
 configSocket.connect('tcp://' + creator_ip + ':' + creator_everloop_base_port /* config */)
 
-var max_intensity = 50
-var intensity_value = max_intensity
-
 function sendIrCommand() {
   var ir_cfg_cmd = new matrixMalosBuilder.LircParams
   ir_cfg_cmd.set_device('SONY')
@@ -34,7 +31,7 @@ function sendIrCommand() {
   configSocket.send(config.encode().toBuffer());
 }
 
-sendIrCommand(intensity_value)
+sendIrCommand()
 setInterval(function() {
   sendIrCommand()
-}, 10);
+}, 3000);
