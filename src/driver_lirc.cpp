@@ -18,6 +18,8 @@
 #include <iostream>
 #include "./driver_lirc.h"
 #include "./src/driver.pb.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 namespace matrix_malos {
 
@@ -31,8 +33,10 @@ bool LircDriver::ProcessConfig(const DriverConfig& config) {
     return false;
   }
 
-  std::cout << "device :" << lirc.device() << "\n";
+  std::cout << "device :" << lirc.device() << "\t";
   std::cout << "command:" << lirc.command() << "\n";
+
+  system ("isend "+lirc.device()+" "+lirc.command()+"".c_str());
 
   return true;
 
