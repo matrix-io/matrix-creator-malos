@@ -18,54 +18,46 @@
 #include <stdlib.h>
 
 #include <iostream>
+#include <string>
 
 #include "./driver_lirc.h"
 #include "./src/driver.pb.h"
 
-namespace {
+namespace matrix_malos {
 
-static bool validLircSymbol(const std::string &cmd) {
+const bool kLircDriverDebugEnabled = true;
 
-  for(const char c: cmd){
-    if(!(isalnum(c)||c=='_'))return false;
+bool LircDriver::ProcessConfig(const DriverConfig& config) {
+  LircParams lirc(config.lirc());
+
+  if (lirc.device() == "" || lirc.command() == "" ||
+      !isValidLircSymbol(lirc.device()) || !isValidLircSymbol(lirc.command())) {
+    std::string error_msg("device or command parameter is missing or invalid");
+    error_msg += kLircDriverName;
+    zmq_push_error_->Send(error_msg);
+    return false;
+  }
+
+  if (kLircDriverDebugEnabled) {
+    std::cout << "device :" << lirc.device() << "\t";
+    std::cout << "command:" << lirc.command() << std::endl;
+  }
+
+  std::string str_irsend;
+  str_irsend = "irsend SEND_ONCE " + lirc.device() + " " + lirc.command();
+
+  if (system(str_irsend.c_str()) == -1) {
+    std::string error_msg("ir command failed");
+    error_msg += kLircDriverName;
+    zmq_push_error_->Send(error_msg);
+    return false;
   }
   return true;
 }
 
-} // namespace
-
-namespace matrix_malos {
-
-bool LircDriver::ProcessConfig(const DriverConfig& config) {
-
-  LircParams lirc(config.lirc());
-
-  if (lirc.device() == "" || lirc.command() == "") {
-    std::string error_msg("device or command parameter is missing");
-    error_msg += kLircDriverName;
-    zmq_push_error_->Send(error_msg);
-    return false;
-  }
-
-  std::cout << "device :" << lirc.device() << "\t";
-  std::cout << "command:" << lirc.command() << "\n";
-
-  if(validLircSymbol(lirc.device())&&validLircSymbol(lirc.command())){
-
-    std::string str_irsend;
-    str_irsend = "irsend SEND_ONCE " + lirc.device() + " " + lirc.command();
-    if (system(str_irsend.c_str()) != -1) return true;
-
-    return false;
-  }
-  else{
-    std::string error_msg("command or device parameter invalid");
-    error_msg += kLircDriverName;
-    zmq_push_error_->Send(error_msg);
-
-    return false;
-  }
-
+bool LircDriver::isValidLircSymbol(const std::string word) {
+  for (const char c : word)
+    if (!(isalnum(c) || c == '_')) return false;
+  return true;
 }
-
 }  // namespace matrix_malos
