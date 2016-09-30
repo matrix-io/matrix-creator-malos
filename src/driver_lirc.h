@@ -18,6 +18,8 @@
 #ifndef SRC_DRIVER_LIRC_H_
 #define SRC_DRIVER_LIRC_H_
 
+#include <string>
+
 #include "./malos_wishbone_base.h"
 
 const char kLircDriverName[] = "Lirc";
@@ -36,6 +38,10 @@ class LircDriver : public MalosWishboneBase {
 
   // Read configuration of IR command (from the outside world).
   bool ProcessConfig(const DriverConfig& config) override;
+
+ private:
+  // Validation of lirsend parameters to avoid  shell injection.
+  bool isValidLircSymbol(const std::string word);
 };
 
 }  // namespace matrix_malos
