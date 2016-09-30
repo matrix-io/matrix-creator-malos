@@ -27,9 +27,8 @@ namespace {
 static bool validLircSymbol(const std::string &cmd) {
 
   for(const char c: cmd){
-    if(!isalnum(c)||c!='_')return false;
+    if(!(isalnum(c)||c=='_'))return false;
   }
-
   return true;
 }
 
@@ -57,7 +56,7 @@ bool LircDriver::ProcessConfig(const DriverConfig& config) {
     str_irsend = "irsend SEND_ONCE " + lirc.device() + " " + lirc.command();
     if (system(str_irsend.c_str()) != -1) return true;
 
-    return true;
+    return false;
   }
   else{
     std::string error_msg("command or device parameter invalid");
