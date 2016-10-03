@@ -26,7 +26,6 @@ function sendIrCommand() {
   ir_cfg_cmd.set_command('KEY_POWER')
 
   var config = new matrixMalosBuilder.DriverConfig
-  config.set_delay_between_updates(0.2)
   config.set_lirc(ir_cfg_cmd)
   configSocket.send(config.encode().toBuffer());
 }
