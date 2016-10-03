@@ -53,7 +53,7 @@ bool LircDriver::ProcessConfig(const DriverConfig& config) {
   return true;
 }
 
-bool LircDriver::isValidLircSymbol(const std::string word) {
+bool LircDriver::isValidLircSymbol(const std::string& word) {
   for (const char c : word)
     if (!(isalnum(c) || c == '_')) return false;
   return true;

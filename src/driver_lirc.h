@@ -41,7 +41,7 @@ class LircDriver : public MalosWishboneBase {
 
  private:
   // Validation of lirsend parameters to avoid  shell injection.
-  bool isValidLircSymbol(const std::string word);
+  bool isValidLircSymbol(const std::string& word);
 };
 
 }  // namespace matrix_malos
