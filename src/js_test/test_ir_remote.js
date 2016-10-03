@@ -9,7 +9,7 @@
 // BasePort + 2 => Error port. Receive errros from device.
 // BasePort + 3 => Data port. Receive data from device.
 
-var creator_ip = '192.168.0.15'
+var creator_ip = '127.0.0.1'
 var creator_everloop_base_port = 20013 + 28 // port for Everloop driver.
 
 var protoBuf = require("protobufjs");
