@@ -25,16 +25,14 @@
 
 namespace matrix_malos {
 
-const bool kLircDriverDebugEnabled = true;
+const bool kLircDriverDebugEnabled = false;
 
 bool LircDriver::ProcessConfig(const DriverConfig& config) {
   LircParams lirc(config.lirc());
 
   if (lirc.device() == "" || lirc.command() == "" ||
       !isValidLircSymbol(lirc.device()) || !isValidLircSymbol(lirc.command())) {
-    std::string error_msg("device or command parameter is missing or invalid");
-    error_msg += kLircDriverName;
-    zmq_push_error_->Send(error_msg);
+    zmq_push_error_->Send("device or command parameter is missing or invalid");
     return false;
   }
 
@@ -43,13 +41,10 @@ bool LircDriver::ProcessConfig(const DriverConfig& config) {
     std::cout << "command:" << lirc.command() << std::endl;
   }
 
-  std::string str_irsend;
-  str_irsend = "irsend SEND_ONCE " + lirc.device() + " " + lirc.command();
-
-  if (system(str_irsend.c_str()) == -1) {
-    std::string error_msg("ir command failed");
-    error_msg += kLircDriverName;
-    zmq_push_error_->Send(error_msg);
+  if (system(std::string("irsend SEND_ONCE " + lirc.device() + " " +
+                         lirc.command())
+                 .c_str()) == -1) {
+    zmq_push_error_->Send("ir command failed");
     return false;
   }
   return true;
