@@ -27,6 +27,7 @@
 #include "./driver_everloop.h"
 #include "./driver_zigbee_bulb.h"
 #include "./driver_micarray_alsa.h"
+#include "./driver_lirc.h"
 
 #include "matrix_hal/wishbone_bus.h"
 
@@ -98,6 +99,12 @@ int RunServer() {
     return 1;
   }
   driver_manager.RegisterDriver(&driver_micarray_drive);
+
+  LircDriver driver_lirc;
+  if (!driver_lirc.Init(kBasePort + 4 * 7 + 1, kUnsecureBindScope)) {
+    return 1;
+  }
+  driver_manager.RegisterDriver(&driver_lirc);
 
   driver_manager.ServeInfoRequestsForEver();
 

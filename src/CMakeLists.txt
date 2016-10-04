@@ -45,7 +45,7 @@ set(malos_src
   driver_everloop.cpp driver_everloop.h
   driver_zigbee_bulb.cpp driver_zigbee_bulb.h
   driver_micarray_alsa.cpp driver_micarray_alsa.h
-  driver_micarray_alsa.cpp driver_micarray_alsa.h
+  driver_lirc.cpp driver_lirc.h
   tcp_client.cpp tcp_client.h
   ${MALOS_PROTO_SRC} ${MALOS_PROTO_HEADER}
 )
