@@ -32,9 +32,9 @@ bool LircDriver::ProcessConfig(const DriverConfig& config) {
 
   if (lirc.device() == "" || lirc.command() == "" ||
       !isValidLircSymbol(lirc.device()) || !isValidLircSymbol(lirc.command())) {
-    zmq_push_error_->Send(std::string(
+    zmq_push_error_->Send(
         std::string(kLircDriverName) +
-        " error: Device or command parameter is missing or invalid."));
+        " error: Device or command parameter is missing or invalid.");
     return false;
   }
 
