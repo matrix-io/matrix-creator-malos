@@ -1,8 +1,8 @@
-matrix-creator-malos (0.1-1.4) unstable; urgency=medium
+matrix-creator-malos (0.1-4.4) unstable; urgency=medium
 
- Add LIRC.
- Add Mic array support.
- Add experimental Zigbee support.
+  Add LIRC.
+  Add Mic array support.
+  Add experimental Zigbee support.
 
  --  <pi@raspberrypi>  Tue, 04 Oct 2016 08:40:40 -0800
 
