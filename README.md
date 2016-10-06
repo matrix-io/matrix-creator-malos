@@ -37,13 +37,6 @@ node test_pressure.js
 // uv index, uv range
 node test_uv.js
 ```
-
-### Kill MALOS
-```
-// Kill malos process
-pkill -9 malos
-```
-
 -------------------------
 
 ### NodeJS Dependency (Testing Only)
