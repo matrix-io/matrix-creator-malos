@@ -15,10 +15,8 @@ sudo shutdown -r now
 ```
 
 ### Test MALOS
-Start it as a background process.
-```
-malos > /dev/null 2>&1 &
-```
+
+MALOS starts as a service, there is no need to start it by hand.
 
 ### Clone and test examples
 Note: pre-requisite is NodeJS. Don't use the one shipped with raspbian because it's a bit old. If you don't have it, please check a recipe included below.
