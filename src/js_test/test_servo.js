@@ -20,13 +20,19 @@ var zmq = require('zmq')
 var configSocket = zmq.socket('push')
 configSocket.connect('tcp://' + creator_ip + ':' + creator_everloop_base_port /* config */)
 
-function sendServoCommand() {
-  var servo_cfg_cmd = new matrixMalosBuilder.ServoParams
-  servo_cfg_cmd.set_pin(4)
-  servo_cfg_cmd.set_angle(30)
+var count=0
 
-  var config = new matrixMalosBuilder.DriverConfig
-  config.set_servo(servo_cfg_cmd)
+function sendServoCommand() {
+  var servo_cfg_cmd = new matrixMalosBuilder.ServoParams;
+  servo_cfg_cmd.set_pin(4);
+
+  process.nextTick(function() {count=count+10});
+  var angle=count%180;
+  console.log('angle:',angle);
+  servo_cfg_cmd.set_angle(angle);
+
+  var config = new matrixMalosBuilder.DriverConfig;
+  config.set_servo(servo_cfg_cmd);
   configSocket.send(config.encode().toBuffer());
 }
 
