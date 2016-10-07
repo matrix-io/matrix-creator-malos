@@ -29,6 +29,8 @@
 
 namespace matrix_malos {
 
+const bool kLircDriverDebugEnabled = true;
+
 bool ServoDriver::ProcessConfig(const DriverConfig& config) {
 
   ServoParams servo(config.servo());
@@ -51,7 +53,7 @@ bool ServoDriver::ProcessConfig(const DriverConfig& config) {
   int16_t duty_counter = 0;
 
   gpio.Bank(bank).SetPeriod(period_counter);
-  duty_counter = (2.75 * (servo.angle() + 170) + 20) * (period_counter / 1000);
+  duty_counter = (37.7 * servo.angle()) + 1800;
   std::cout << " Servo angle  : " << servo.angle() << "\t";
   std::cout << " Duty counter : " << duty_counter  << "\t";
   gpio.Bank(bank).SetDuty(channel, duty_counter);
