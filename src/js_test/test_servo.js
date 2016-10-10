@@ -9,7 +9,7 @@
 // BasePort + 2 => Error port. Receive errros from device.
 // BasePort + 3 => Data port. Receive data from device.
 
-var creator_ip = '192.168.2.128'
+var creator_ip = '127.0.0.1'
 var creator_everloop_base_port = 20013 + 32 // port for Everloop driver.
 
 var protoBuf = require("protobufjs");
@@ -27,7 +27,9 @@ function sendServoCommand() {
   servo_cfg_cmd.set_pin(4);
 
   process.nextTick(function() {count=count+10});
-  servo_cfg_cmd.set_angle(count%180)
+  var angle=count%180;
+  console.log('angle:',angle);
+  servo_cfg_cmd.set_angle(angle);
 
   var config = new matrixMalosBuilder.DriverConfig;
   config.set_servo(servo_cfg_cmd);
