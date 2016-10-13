@@ -13,7 +13,7 @@ Hardware abstraction layer for MATRIX Creator usable via 0MQ. Protocol buffers a
 
 ### Install MALOS
 ```
-sudo apt-get install matrix-creator-init matrix-creator-malos cmake g++ git
+sudo apt-get install matrix-creator-init matrix-creator-malos
 sudo shutdown -r now
 ```
 
