@@ -18,8 +18,6 @@
 #ifndef SRC_DRIVER_SERVO_H_
 #define SRC_DRIVER_SERVO_H_
 
-#include <string>
-
 #include "./malos_wishbone_base.h"
 #include "matrix_hal/wishbone_bus.h"
 #include "matrix_hal/gpio_control.h"
@@ -46,7 +44,7 @@ class ServoDriver : public MalosWishboneBase {
   bool ProcessConfig(const DriverConfig& config) override;
 
  private:
-  // Everloop writer.
+  // GPIO control
   std::unique_ptr<matrix_hal::GPIOControl> gpio_;
 };
 
