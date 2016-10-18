@@ -45,12 +45,9 @@ bool ServoDriver::ProcessConfig(const DriverConfig& config) {
 
   uint16_t period_counter = (kServoPeriod * kServoClockFrequency) /
                             ((1 << 5) * 2);  // period for 180 servo type on ms.
-  int16_t duty_counter = 0;
 
   gpio_->Bank(bank).SetPeriod(period_counter);
-  duty_counter = (kServoRatio * servo.angle()) + kServoOffset;
-  std::cout << " Servo angle  : " << servo.angle() << "\t";
-  std::cout << " Duty counter : " << duty_counter << "\n";
+  int16_t duty_counter = (kServoRatio * servo.angle()) + kServoOffset;
   gpio_->Bank(bank).SetDuty(channel, duty_counter);
 
   return true;

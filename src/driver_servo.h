@@ -33,8 +33,7 @@ class ServoDriver : public MalosWishboneBase {
   ServoDriver() : MalosWishboneBase(kServoDriverName) {
     SetProvidesUpdates(false);
     SetNeedsKeepalives(false);
-    SetNotesForHuman(
-        "Write-read. Servo handler. In development");
+    SetNotesForHuman("Write-read. Servo handler. In development");
   }
 
   // Receive a copy of the shared wishbone bus. Not owned.
@@ -43,13 +42,12 @@ class ServoDriver : public MalosWishboneBase {
     gpio_->Setup(wishbone);
   }
 
-  // Read configuration of LEDs (from the outside world).
+  // Read configuration of Servo command
   bool ProcessConfig(const DriverConfig& config) override;
 
  private:
   // Everloop writer.
   std::unique_ptr<matrix_hal::GPIOControl> gpio_;
-
 };
 
 }  // namespace matrix_malos
