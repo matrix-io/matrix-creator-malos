@@ -22,10 +22,14 @@
 #include "matrix_hal/everloop_image.h"
 #include "matrix_hal/gpio_control.h"
 
-#define INPUT 0
-#define OUTPUT 1
-#define PWM 1
-#define CLK_FRQ 200000000
+const int kGpioOutputMode = 1;
+const int kGpioPWMFunction = 1;
+const int kGpioPrescaler = 0x5;
+
+const int   kServoClockFrequency = 200000000;
+const float kServoRatio = 37.7;
+const int   kServoOffset = 1800;
+const float kServoPeriod = 0.02;
 
 namespace matrix_malos {
 
@@ -45,15 +49,15 @@ bool ServoDriver::ProcessConfig(const DriverConfig& config) {
   int16_t channel  = (int16_t)pin%4;
   int16_t bank     = (int16_t)pin/4;
 
-  gpio.SetMode(pin, OUTPUT);     // pin output mode 
-  gpio.SetFunction(pin, PWM);    // pin 4, PWM output */
-  gpio.SetPrescaler(bank, 0x5);  // set prescaler bank 0 */
+  gpio.SetMode(pin, kGpioOutputMode);
+  gpio.SetFunction(pin, kGpioPWMFunction);
+  gpio.SetPrescaler(bank, kGpioPrescaler);  // set prescaler bank */
 
-  uint16_t period_counter = (0.02 * CLK_FRQ) / ((1 << 5) * 2);
+  uint16_t period_counter = (kServoPeriod * kServoClockFrequency) / ((1 << 5) * 2);
   int16_t duty_counter = 0;
 
   gpio.Bank(bank).SetPeriod(period_counter);
-  duty_counter = (37.7 * servo.angle()) + 1800;
+  duty_counter = (kServoRatio * servo.angle()) + kServoOffset;
   std::cout << " Servo angle  : " << servo.angle() << "\t";
   std::cout << " Duty counter : " << duty_counter  << "\n";
   gpio.Bank(bank).SetDuty(channel, duty_counter);
