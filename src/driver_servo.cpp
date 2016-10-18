@@ -19,8 +19,6 @@
 
 #include "./driver_servo.h"
 #include "./src/driver.pb.h"
-#include "matrix_hal/everloop_image.h"
-#include "matrix_hal/gpio_control.h"
 
 const int kGpioOutputMode = 1;
 const int kGpioPWMFunction = 1;
@@ -37,30 +35,23 @@ const bool kServoDriverDebugEnabled = false;
 
 bool ServoDriver::ProcessConfig(const DriverConfig& config) {
   ServoParams servo(config.servo());
-
-  matrix_hal::WishboneBus bus;
-  bus.SpiInit();
-
-  matrix_hal::GPIOControl gpio;
-  gpio.Setup(&bus);
-
   int16_t pin = (int16_t)servo.pin();
   int16_t channel = (int16_t)pin % 4;
   int16_t bank = (int16_t)pin / 4;
 
-  gpio.SetMode(pin, kGpioOutputMode);
-  gpio.SetFunction(pin, kGpioPWMFunction);
-  gpio.SetPrescaler(bank, kGpioPrescaler);  // set prescaler bank */
+  gpio_->SetMode(pin, kGpioOutputMode);
+  gpio_->SetFunction(pin, kGpioPWMFunction);
+  gpio_->SetPrescaler(bank, kGpioPrescaler);  // set prescaler bank
 
-  uint16_t period_counter =
-      (kServoPeriod * kServoClockFrequency) / ((1 << 5) * 2);
+  uint16_t period_counter = (kServoPeriod * kServoClockFrequency) /
+                            ((1 << 5) * 2);  // period for 180 servo type on ms.
   int16_t duty_counter = 0;
 
-  gpio.Bank(bank).SetPeriod(period_counter);
+  gpio_->Bank(bank).SetPeriod(period_counter);
   duty_counter = (kServoRatio * servo.angle()) + kServoOffset;
   std::cout << " Servo angle  : " << servo.angle() << "\t";
   std::cout << " Duty counter : " << duty_counter << "\n";
-  gpio.Bank(bank).SetDuty(channel, duty_counter);
+  gpio_->Bank(bank).SetDuty(channel, duty_counter);
 
   return true;
 }

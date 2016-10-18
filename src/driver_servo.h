@@ -21,6 +21,8 @@
 #include <string>
 
 #include "./malos_wishbone_base.h"
+#include "matrix_hal/wishbone_bus.h"
+#include "matrix_hal/gpio_control.h"
 
 const char kServoDriverName[] = "Servo";
 
@@ -35,12 +37,19 @@ class ServoDriver : public MalosWishboneBase {
         "Write-read. Servo handler. In development");
   }
 
-  // Read configuration of IR command (from the outside world).
+  // Receive a copy of the shared wishbone bus. Not owned.
+  void SetupWishboneBus(matrix_hal::WishboneBus* wishbone) override {
+    gpio_.reset(new matrix_hal::GPIOControl);
+    gpio_->Setup(wishbone);
+  }
+
+  // Read configuration of LEDs (from the outside world).
   bool ProcessConfig(const DriverConfig& config) override;
 
  private:
-  // Validation of lirsend parameters to avoid  shell injection.
-  bool isValidLircSymbol(const std::string& word);
+  // Everloop writer.
+  std::unique_ptr<matrix_hal::GPIOControl> gpio_;
+
 };
 
 }  // namespace matrix_malos
