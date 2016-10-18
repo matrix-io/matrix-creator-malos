@@ -10,7 +10,7 @@
 // BasePort + 3 => Data port. Receive data from device.
 
 var creator_ip = '127.0.0.1'
-var creator_everloop_base_port = 20013 + 32 // port for Everloop driver.
+var creator_everloop_base_port = 20013 + 32 // port for Servo driver.
 
 var protoBuf = require("protobufjs");
 var protoBuilder = protoBuf.loadProtoFile('../../protocol-buffers/malos/driver.proto')
