@@ -11,32 +11,30 @@ sudo apt-get install libzmq3-dev xc3sprog matrix-creator-openocd wiringpi cmake 
 
 Hardware abstraction layer for MATRIX Creator usable via 0MQ. Protocol buffers are used for data exchange.
 
-### Install MALOS
+### Install
 ```
 sudo apt-get install matrix-creator-init matrix-creator-malos
 sudo shutdown -r now
 ```
 
-### Upgrade MALOS
+### Upgrade
 ```
 sudo apt-get update && sudo apt-get upgrade
 sudo shutdown -r now
 ```
-### Test MALOS
+**Note:** At this point, on next start, `malos` will be running as a service. 
 
-MALOS starts as a service.
-
-### Starting MALOS manually
+### Starting manually
 ```
-// if it's running as a service, kill it
+// malos runs as a service, but to stop it run...
 sudo pkill -9 malos
 
 // to run manually, just type `malos`
 malos
 ```
 
-### Clone and test examples
-Note: pre-requisite is NodeJS. Don't use the one shipped with raspbian because it's a bit old. If you don't have it, please check a recipe included below.
+### Examples
+**Note:** pre-requisite is NodeJS. Don't use the one shipped with raspbian because it's a bit old. If you don't have it, please check a recipe included below.
 ```
 git clone https://github.com/matrix-io/matrix-creator-malos.git && cd matrix-creator-malos
 git submodule init && git submodule update
@@ -184,16 +182,4 @@ updateSocket.on('message', function(buffer) {
 driver.proto // drivers
 hal.proto // sensors & controllers
 ```
-
-##### MALOS Interfaces
-* Everloop
-* Humidity
-* IMU
-* IR Remote
-* Microphone Array
-* Pressure
-* UV
-* Zigbee
-* NFC
-* Z-wave
 
