@@ -78,9 +78,13 @@ Registered driver ZigbeeBulb with port 20033.
 Registered driver MicArray_Alsa with port 20037.
 Registered driver Lirc with port 20041.
 ```
+##### Available Protobufs
+```
+driver.proto // drivers
+hal.proto // sensors & controllers
+```
 
 ##### Connecting to ZeroMQ with NodeJS
-
 **Note:** You'll need `protobufjs` and `zmq` npm packages.
 ```
 // This is how we connect to the creator. IP and port.
@@ -98,16 +102,37 @@ var creator_ip = '127.0.0.1'
 var creator_everloop_base_port = 20013 + 8 // port for Everloop driver.
 
 var protoBuf = require("protobufjs");
-var protoBuilder = protoBuf.loadProtoFile('../../protocol-buffers/malos/hal.proto')
+var protoBuilder = protoBuf.loadProtoFile('../../protocol-buffers/malos/driver.proto')
 var matrixMalosBuilder = protoBuilder.build("matrix_malos")
 
 var zmq = require('zmq')
 var configSocket = zmq.socket('push')
 configSocket.connect('tcp://' + creator_ip + ':' + creator_everloop_base_port /* config */)
 ```
-
-##### Available Protobufs
+##### Passing Commands to MALOS
 ```
-driver.proto // drivers & configuration 
-hal.proto // sensors
+var max_intensity = 50
+var intensity_value = max_intensity
+
+function setEverloop() {
+    var config = new matrixMalosBuilder.DriverConfig
+    config.image = new matrixMalosBuilder.EverloopImage
+    for (var j = 0; j < 35; ++j) {
+      var ledValue = new matrixMalosBuilder.LedValue;
+      ledValue.setRed(0);
+      ledValue.setGreen(intensity_value);
+      ledValue.setBlue(0);
+      ledValue.setWhite(0);
+      config.image.led.push(ledValue)
+    }
+    configSocket.send(config.encode().toBuffer());
+}
+
+setEverloop(intensity_value)
+setInterval(function() {
+  intensity_value -= 1
+  if (intensity_value < 0)
+    intensity_value = max_intensity
+  setEverloop()
+}, 10);
 ```
