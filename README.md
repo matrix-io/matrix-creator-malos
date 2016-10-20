@@ -79,9 +79,9 @@ Registered driver ZigbeeBulb with port 20033.
 Registered driver MicArray_Alsa with port 20037.
 Registered driver Lirc with port 20041.
 ```
-
-##### Connecting to ZeroMQ with NodeJS
-**Note:** You'll need `protobufjs` and `zmq` npm packages.
+### MALOS Examples
+##### Connecting to MALOS with NodeJS
+**Note:** You'll need `protobufjs` and `zmq` npm packages, and protobuf as a submodule. See the [Everloop Example](https://github.com/matrix-io/matrix-creator-malos/blob/master/src/js_test/test_everloop.js) for the full implementation of the code below.
 ```
 // This is how we connect to the creator. IP and port.
 // The IP is the IP I'm using and you need to edit it.
@@ -94,18 +94,21 @@ Registered driver Lirc with port 20041.
 // BasePort + 2 => Error port. Receive errros from device.
 // BasePort + 3 => Data port. Receive data from device.
 
+var protoBuf = require("protobufjs");
+var zmq = require('zmq');
+var configSocket = zmq.socket('push')
+
 var creator_ip = '127.0.0.1'
 var creator_everloop_base_port = 20013 + 8 // port for Everloop driver.
 
-var protoBuf = require("protobufjs");
+// relative to where you have the protobufs
 var protoBuilder = protoBuf.loadProtoFile('../../protocol-buffers/malos/driver.proto')
 
-//malos interface
+// malos interface
 var matrixMalosBuilder = protoBuilder.build("matrix_malos")
-
-var zmq = require('zmq')
-var configSocket = zmq.socket('push')
 configSocket.connect('tcp://' + creator_ip + ':' + creator_everloop_base_port /* config */)
+
+...
 ```
 ##### Passing Commands to MALOS
 ```
