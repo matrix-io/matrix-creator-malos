@@ -33,16 +33,17 @@ sudo pkill -9 malos
 malos
 ```
 ### Interfaces
-* Everloop
-* Humidity
-* IMU
-* IR Remote
-* Microphone Array
-* Pressure
-* UV
-* Zigbee
-* NFC
-* Z-wave
+* [Everloop](docs/everloop.md)
+* [Humidity](docs/humidity.md)
+* [IMU](docs/imu.md)
+* [IR](docs/lirc.md)
+* [Microphone Array](docs/microphone.md)
+* [Pressure](docs/pressure.md)
+* [UV](docs/uv.md)
+* [Zigbee](docs/humidity.md)
+* [NFC](docs/nfc.md)
+* [Z-wave](docs/zwave.md)
+* [GPIO](docs/gpio.md)
 
 ### Examples
 **Note:** pre-requisite is NodeJS. Don't use the one shipped with raspbian because it's a bit old. If you don't have it, please check a recipe included below.
