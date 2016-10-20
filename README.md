@@ -164,7 +164,7 @@ var updateSocket = zmq.socket('sub')
 updateSocket.connect('tcp://' + creator_ip + ':' + (creator_humidity_base_port + 3))
 updateSocket.subscribe('')
 updateSocket.on('message', function(buffer) {
-  // read Humidity (or Pressure, Imu, UV) 
+  // read Humidity (or Pressure, Imu, UV, etc...) 
   var data = new matrixMalosBuilder.Humidity.decode(buffer)
   console.log(data)
 });
