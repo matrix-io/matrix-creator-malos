@@ -66,8 +66,9 @@ n 6.5
 node -v
 ```
 
-### Writing Custom MALOS Integrations
+### Connecting to MALOS
 ##### ZeroMQ ports
+MALOS uses ZeroMQ to transfer information to and from the client interfacing with it.
 ```
 Registered driver IMU with port 20013.
 Registered driver Humidity with port 20017.
@@ -77,11 +78,6 @@ Registered driver UV with port 20029.
 Registered driver ZigbeeBulb with port 20033.
 Registered driver MicArray_Alsa with port 20037.
 Registered driver Lirc with port 20041.
-```
-##### Available Protobufs
-```
-driver.proto // drivers
-hal.proto // sensors & controllers
 ```
 
 ##### Connecting to ZeroMQ with NodeJS
@@ -141,4 +137,10 @@ setInterval(function() {
     intensity_value = max_intensity
   setEverloop()
 }, 10);
+```
+
+##### Available Protobufs
+```
+driver.proto // drivers
+hal.proto // sensors & controllers
 ```
