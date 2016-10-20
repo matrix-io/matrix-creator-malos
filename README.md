@@ -32,6 +32,17 @@ sudo pkill -9 malos
 // to run manually, just type `malos`
 malos
 ```
+### Interfaces
+* Everloop
+* Humidity
+* IMU
+* IR Remote
+* Microphone Array
+* Pressure
+* UV
+* Zigbee
+* NFC
+* Z-wave
 
 ### Examples
 **Note:** pre-requisite is NodeJS. Don't use the one shipped with raspbian because it's a bit old. If you don't have it, please check a recipe included below.
