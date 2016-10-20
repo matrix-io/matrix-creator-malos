@@ -48,19 +48,20 @@ node test_uv.js
 ```
 -------------------------
 
-### NodeJS Dependency (Testing Only)
-
-You can use NodeJS from another computer (not the Raspberry) or from the raspberry itself.
-Check for the most recent version of Node.js, but today it is: https://nodejs.org/dist/v4.5.0/node-v4.5.0-linux-armv7l.tar.xz
-
-You can download it, uncompress it and then change the default `PATH`.
+### NodeJS Dependency
 
 For instance (in the Raspberry):
 
-    mkdir nodejs && cd nodejs
-    wget -c https://nodejs.org/dist/v4.5.0/node-v4.5.0-linux-armv7l.tar.xz
-    xz -d node-v4.5.0-linux-armv7l.tar.xz
-    tar xvf node-v4.5.0-linux-armv7l.tar
-    export PATH=/home/pi/nodejs/node-v4.5.0-linux-armv7l/bin:$PATH
+```
+# Install npm (doesn't really matter what version, apt-get node is v0.10...)
+sudo apt-get install npm
 
-In this version the binary is called `node` and not `nodejs`. The IPs used in the examples are 127.0.0.1. Remember to edit them if you're accessing the Creator from another host and not from the Raspberry itself.
+# n is a node version manager
+sudo npm install -g n
+
+# node 6.5 is the latest target node version, also installs new npm
+n 6.5
+
+# check version
+node -v
+```
