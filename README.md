@@ -123,6 +123,8 @@ function setEverloop() {
     // Iteration over all 35 Everloop LEDs to turn them green.
     for (var j = 0; j < 35; ++j) {
       var ledValue = new matrixMalosBuilder.LedValue;
+
+      // set brightness/intensity of the color for each rgb LED.
       ledValue.setRed(0);
       ledValue.setGreen(intensity_value);
       ledValue.setBlue(0);
