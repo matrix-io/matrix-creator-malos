@@ -107,7 +107,6 @@ configSocket.connect('tcp://' + creator_ip + ':' + creator_everloop_base_port /*
 ```
 
 ##### Available Protobufs
-Protobufs are the interfaces used
 ```
 driver.proto // drivers & configuration 
 hal.proto // sensors
