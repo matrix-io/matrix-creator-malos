@@ -73,8 +73,7 @@ n 6.5
 # check version
 node -v
 ```
-
-### Connecting to MALOS
+# Using MALOS
 ##### 0MQ ports
 MALOS uses 0MQ to transfer information to and from the client interfacing with it. Below are a list of available ports MALOS allows you to interface with.
 ```
@@ -185,3 +184,16 @@ updateSocket.on('message', function(buffer) {
 driver.proto // drivers
 hal.proto // sensors & controllers
 ```
+
+##### MALOS Interfaces
+* Everloop
+* Humidity
+* IMU
+* IR Remote
+* Microphone Array
+* Pressure
+* UV
+* Zigbee
+* NFC
+* Z-wave
+
