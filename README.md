@@ -81,7 +81,7 @@ Registered driver Lirc with port 20041.
 
 ##### Connecting to ZeroMQ with NodeJS
 
-Note: You'll need `protobufjs` and `zmq` npm packages.
+**Note:** You'll need `protobufjs` and `zmq` npm packages.
 ```
 // This is how we connect to the creator. IP and port.
 // The IP is the IP I'm using and you need to edit it.
