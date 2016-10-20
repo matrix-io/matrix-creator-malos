@@ -144,6 +144,32 @@ setInterval(function() {
   setEverloop()
 }, 10);
 ```
+##### Reading from MALOS
+Below is a simple implementation via NodeJS to read a `humidity` from MALOS via ZeroMQ. See [Humidty Example](https://github.com/matrix-io/matrix-creator-malos/blob/master/src/js_test/test_humidity.js) for the full example.
+```
+// Start configuration for refresh rate, and heartbeat timeouts
+var configSocket = zmq.socket('push')
+configSocket.connect('tcp://' + creator_ip + ':' + creator_humidity_base_port)
+// Send driver configuration.
+var driverConfigProto = new matrixMalosBuilder.DriverConfig
+// 2 seconds between updates.
+driverConfigProto.delay_between_updates = 2.0
+// Stop sending updates 6 seconds after pings.
+driverConfigProto.timeout_after_last_ping = 6.0
+configSocket.send(driverConfigProto.encode().toBuffer())
+// ********** End configuration.
+
+// ********** Start updates - Here is where they are received.
+var updateSocket = zmq.socket('sub')
+updateSocket.connect('tcp://' + creator_ip + ':' + (creator_humidity_base_port + 3))
+updateSocket.subscribe('')
+updateSocket.on('message', function(buffer) {
+  var data = new matrixMalosBuilder.Humidity.decode(buffer)
+  console.log(data)
+});
+// ********** End updates
+```
+
 
 ##### Available Protobufs
 ```
