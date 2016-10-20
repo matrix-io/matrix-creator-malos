@@ -103,6 +103,8 @@ var creator_everloop_base_port = 20013 + 8 // port for Everloop driver.
 
 var protoBuf = require("protobufjs");
 var protoBuilder = protoBuf.loadProtoFile('../../protocol-buffers/malos/driver.proto')
+
+//malos interface
 var matrixMalosBuilder = protoBuilder.build("matrix_malos")
 
 var zmq = require('zmq')
@@ -117,13 +119,15 @@ var intensity_value = max_intensity
 function setEverloop() {
     var config = new matrixMalosBuilder.DriverConfig
     config.image = new matrixMalosBuilder.EverloopImage
+    
+    // Iteration over all 35 Everloop LEDs to turn them green.
     for (var j = 0; j < 35; ++j) {
       var ledValue = new matrixMalosBuilder.LedValue;
       ledValue.setRed(0);
       ledValue.setGreen(intensity_value);
       ledValue.setBlue(0);
       ledValue.setWhite(0);
-      config.image.led.push(ledValue)
+      config.image.led.push(ledValue);
     }
     configSocket.send(config.encode().toBuffer());
 }
