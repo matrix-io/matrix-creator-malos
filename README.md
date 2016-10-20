@@ -68,7 +68,7 @@ node -v
 
 ### Connecting to MALOS
 ##### ZeroMQ ports
-MALOS uses ZeroMQ to transfer information to and from the client interfacing with it.
+MALOS uses ZeroMQ to transfer information to and from the client interfacing with it. Below are a list of available ports MALOS allows you to interface with.
 ```
 Registered driver IMU with port 20013.
 Registered driver Humidity with port 20017.
