@@ -98,7 +98,7 @@ var creator_ip = '127.0.0.1'
 var creator_everloop_base_port = 20013 + 8 // port for Everloop driver.
 
 var protoBuf = require("protobufjs");
-var protoBuilder = protoBuf.loadProtoFile('../../protocol-buffers/malos/driver.proto')
+var protoBuilder = protoBuf.loadProtoFile('../../protocol-buffers/malos/hal.proto')
 var matrixMalosBuilder = protoBuilder.build("matrix_malos")
 
 var zmq = require('zmq')
