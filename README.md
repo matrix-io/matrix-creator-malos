@@ -111,7 +111,10 @@ configSocket.connect('tcp://' + creator_ip + ':' + creator_everloop_base_port /*
 ...
 ```
 ##### Passing Commands to MALOS
+Below is an example of some NodeJS interfacing with the Everloop via MALOS. See the [Everloop Example](https://github.com/matrix-io/matrix-creator-malos/blob/master/src/js_test/test_everloop.js) for the full implementation of the code below.
 ```
+...
+
 var max_intensity = 50
 var intensity_value = max_intensity
 
