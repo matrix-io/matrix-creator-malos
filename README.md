@@ -22,10 +22,18 @@ sudo shutdown -r now
 sudo apt-get update && sudo apt-get upgrade
 sudo shutdown -r now
 ```
-
 ### Test MALOS
 
-MALOS starts as a service, there is no need to start it by hand.
+MALOS starts as a service.
+
+### Starting MALOS manually
+```
+// if it's running as a service, kill it
+sudo pkill -9 malos
+
+// to run manually, just type `malos`
+malos
+```
 
 ### Clone and test examples
 Note: pre-requisite is NodeJS. Don't use the one shipped with raspbian because it's a bit old. If you don't have it, please check a recipe included below.
@@ -67,8 +75,8 @@ node -v
 ```
 
 ### Connecting to MALOS
-##### ZeroMQ ports
-MALOS uses ZeroMQ to transfer information to and from the client interfacing with it. Below are a list of available ports MALOS allows you to interface with.
+##### 0MQ ports
+MALOS uses 0MQ to transfer information to and from the client interfacing with it. Below are a list of available ports MALOS allows you to interface with.
 ```
 Registered driver IMU with port 20013.
 Registered driver Humidity with port 20017.
@@ -145,7 +153,7 @@ setInterval(function() {
 }, 10);
 ```
 ##### Reading from MALOS
-Below is a simple implementation via NodeJS to read a `humidity` from MALOS via ZeroMQ. See [Humidty Example](https://github.com/matrix-io/matrix-creator-malos/blob/master/src/js_test/test_humidity.js) for the full example.
+Below is a simple implementation via NodeJS to read a `humidity` from MALOS via 0MQ. See [Humidty Example](https://github.com/matrix-io/matrix-creator-malos/blob/master/src/js_test/test_humidity.js) for the full example.
 ```
 // Start configuration for refresh rate, and heartbeat timeouts
 var configSocket = zmq.socket('push')
