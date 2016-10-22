@@ -10,15 +10,15 @@ sudo apt-get install libzmq3-dev xc3sprog matrix-creator-openocd wiringpi cmake 
 # MALOS
 
 Hardware abstraction layer for MATRIX Creator usable via 0MQ.
-Protocol buffers are used for data exchange.
+[Protocol buffers](https://developers.google.com/protocol-buffers/docs/proto3) are used for data exchange.
 
-You can also use MALOS to to query sensors of the MATRIX Creator and to control the MATRIX Creator from any language that supports protocol buffers (version 3.X) and 0MQ,
+You can also use MALOS to to query sensors of the [MATRIX Creator](https://creator.matrix.one) and to control the MATRIX Creator from any language that supports protocol buffers (version 3.X) and 0MQ,
 Connections to MALOS can be made both from localhost (127.0.0.1) and from remote computers that are in the same network.
 
 ### Install
 ```
 sudo apt-get install matrix-creator-init matrix-creator-malos
-sudo shutdown -r now
+sudo reboot
 ```
 
 **Note:** At this point, on next start, `malos` will be running as a service.
@@ -26,7 +26,7 @@ sudo shutdown -r now
 ### Upgrade
 ```
 sudo apt-get update && sudo apt-get upgrade
-sudo shutdown -r now
+sudo reboot
 ```
 
 ### Starting manually
@@ -66,7 +66,7 @@ Each port reserves a range of 4 ports that are used for a driver. They are descr
 This is the first port of the driver and the one used to denote the `driver port`.
 It is used to configure the device and it makes sense for the devices that support configuration.
 It is a 0MQ PULL port.
-To send a configuration you need to send a valid message for the given driver. For instance, the
+To send a configuration you need to send a valid message (serialized to a string) for the given driver. For instance, the
 Everloop driver (LED array) uses a configuration message to set the LEDs.
 
 The message is named EverloopImage and it is in the file [driver.proto](https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto).
@@ -98,13 +98,14 @@ The valid values for led intensities range from 0 to 255, but we set red to 10 b
 
 Once the message of type EverloopImage is filled out it needs to be serialized as a string and sent to the 0MQ configuration port.
 
-If invalid values are used for the led values of the number of led values inside of EverloopImage is not 35 the configuration will be discarded
+If invalid values are used for the LED values of the number of LED values inside of EverloopImage is not 35 the configuration will be discarded
 and an error message will be generated and sent to the error channel described below.
+
+
 
 #### Error port
 
-Programs can subscribe to the 0MW error port. It is a PUSH port. The port number is obtained by adding 2 to the base port (Also known as driver port).
-It is a 0MQ PUSH port.
+Programs can subscribe to the 0MQ error port. It is a PUSH port. The port number is obtained by adding 2 to the base port (Also known as driver port).
 The errors are returned as strings but there's a pending task to change the error messages to a protocol buffer ([track issue](https://github.com/matrix-io/matrix-creator-malos/issues/21)).
 Please do not depend on errors reported as strings as we will change the errors to protocol buffers soon.
 
@@ -112,8 +113,9 @@ Please do not depend on errors reported as strings as we will change the errors 
 
 The port number is obtained by adding 1 to the base port (Also known as driver port). It is a PUSH port.
 
-In order to save CPU power and other resources some drivers require applications to send pings to it in order to keep it alive.
-The Everloop driver doesn't require pings. The IMU driver does.
+In order to save CPU power and other resources some drivers require applications to send pings to it in order to keep them alive.
+For most driveres it means that the driver keeps sending updates as fast as they have been configured to do so.
+The Everloop driver doesn't require keep-alive messages. The IMU driver does.
 
 Drivers that need keep-alive messages can be configured using the message that is used for all the configurations.
 The way to do it is set relevant field while doing other driver specific configuration (if this is required).
@@ -134,6 +136,11 @@ message DriverConfig {
 The field timeout_after_last_ping defaults to 5 seconds and it can be set during driver configuration.
 If a driver doesn't receive Clive messages after `timeout_after_last_ping` seconds  it will stop sending updates.
 This field is ignored by drivers that do not require keep alive messages. For instance, the Everloop driver ignores this setting.
+
+After the setting is done (or not if the default value of 5 seconds is OK) you can start sending keepalive messages to the
+driver by sending messages to the respective 0MQ port. Any message that is sent to this port will be discarded, so the
+empty string "" makes for a good keep-alive message.
+
 
 #### Data port
 
@@ -156,16 +163,16 @@ message UV{
 ```
 
 Drivers that subscribe to updates via 0MQ will receive a string with serialized messages of type UV (within the matrix_malos namespace).
-Then this message needs to be deserialized and the values will be used.
+Then this message needs to be deserialized and the values can be used.
 
 #### Workflow
 
-Wrapping up the protocol section, a driver can:
+Wrapping up the protocol section, a program that talks to MALOS can:
 
-* Configure the driver, if needed. (Or configure it many times if the drivers needs it).
+* Configure a driver if needed. Or configure it many times if the drivers needs it.
 * Subscribe to error messages if it is interested in them.
-* Sends keep-alive messages if those are needed by the driver.
-* Subscribes to updates from the driver if the drivers produces them.
+* Sends keep-alive messages if those are needed by the driver to remain active.
+* Subscribe to updates from the driver if the drivers produces them.
 
 ### Interfaces
 
