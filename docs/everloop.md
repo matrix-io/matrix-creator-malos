@@ -50,7 +50,7 @@ This driver doesn't send any data to a subscribed program.
 Enhanced description of the [sample source code](../src/js_test/test_everloop.js).
 
 
-First, define the address of the MATRIX Creator. In this case we make it be 127.0.0.1
+First, define the address of the MATRIX Creator. In this case we make it be `127.0.0.1`
 because we are connecting from the local host but it needs to be different if we
 connect from another computer. There is also the base port reserved by MALOS for
 the Everloop driver.
@@ -76,7 +76,7 @@ var configSocket = zmq.socket('push')
 configSocket.connect('tcp://' + creator_ip + ':' + creator_everloop_base_port /* config */)
 ```
 
-All the drivers are configured using the message `DriverConfig` (see [driver.prot](https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto)).
+All the drivers are configured using the message `DriverConfig` (see [driver.proto](https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto)).
 This is what the message looks like if we omit the fields that are not needed in this example.
 
     message DriverConfig {
