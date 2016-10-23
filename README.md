@@ -142,7 +142,7 @@ driver by sending messages to the respective 0MQ port. Any message that is sent 
 empty string "" makes for a good keep-alive message.
 
 
-#### Data port
+#### Data update port
 
 The port number is obtained by adding 3 to the base port (Also known as driver port). This port is used by drivers that
 send data (for instance Humidity and UV). Each driver uses a different message to report data to programs that subscribe

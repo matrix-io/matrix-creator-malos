@@ -76,8 +76,19 @@ var configSocket = zmq.socket('push')
 configSocket.connect('tcp://' + creator_ip + ':' + creator_everloop_base_port /* config */)
 ```
 
+Subscribe to errors. To trigger an error you can send an invalid configuration to the driver.
+
+```
+var errorSocket = zmq.socket('sub')
+errorSocket.connect('tcp://' + creator_ip + ':' + (creator_everloop_base_port + 2))
+errorSocket.subscribe('')
+errorSocket.on('message', function(error_message) {
+  process.stdout.write('Message received: Pressure error: ' + error_message.toString('utf8') + "\n")
+});
+```
+
 All the drivers are configured using the message `DriverConfig` (see [driver.proto](https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto)).
-This is what the message looks like if we omit the fields that are not needed in this example.
+This is what the message looks like if we omit the fields that are not used in this example.
 
     message DriverConfig {
       EverloopImage image = 3;
