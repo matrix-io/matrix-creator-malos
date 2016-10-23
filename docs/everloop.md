@@ -10,6 +10,8 @@ It follows the [MALOS protocol](../README.md#protocol).
 
 ### Protocol buffers
 
+The messages are defined in [driver.proto](https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto).
+
 ```
 message EverloopImage {
   repeated LedValue led = 1;

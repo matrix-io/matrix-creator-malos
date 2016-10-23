@@ -23,10 +23,12 @@ message Pressure {
 }
 ```
 
+The message is defined in [driver.proto](https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto).
+
 ### Keep-alives
 
 This driver needs keep-alive messages [as specified in the MALOS protocol](https:////github.com/matrix-io/matrix-creator-malos/blob/master/README.md#keep-alive-port).
-If you start sending keepalive messages it will start returning data so you can ommit the configuration for this device.
+If you start sending keep-alive messages it will start returning data so you can omit the configuration for this device.
 
 ### Errors
 
