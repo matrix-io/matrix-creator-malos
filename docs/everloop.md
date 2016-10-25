@@ -32,11 +32,11 @@ In order to set the LEDs of the Creator you need to perform the following steps.
 
     var config = new matrixMalosBuilder.DriverConfig
 
-#### Create the object that will hold the LED configuration.
+#### Create LED configuration object
 
     config.image = new matrixMalosBuilder.EverloopImage
 
-#### Set the LED state of each LED in the board.
+#### Set LED states
 
 The following steps needs to be repeated 35 times, once per LED.
 
@@ -45,7 +45,7 @@ as shown in the picture.
 
 ![Everloop LEDs](creator-front-everloop-leds.png)
 
-##### Create the object that holds the LED state
+##### Individual LED state
 
 First, create the object.
  
@@ -68,11 +68,11 @@ That is:
     ledValue.setBlue(blue_value)
     ledValue.setWhite(white_value)
 
-##### Send the configuration to the Everloop driver
+##### Send configuration
 
     config.image.led.push(ledValue)
 
-#### All the steps combined
+#### All steps combined
 
 The following snippet will make all the greens display the green color.
 
