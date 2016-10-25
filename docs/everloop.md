@@ -40,6 +40,11 @@ In order to set the LEDs of the Creator you need to perform the following steps.
 
 The following steps needs to be repeated 35 times, once per LED.
 
+The LEDs are counted starting from the left, clock-wise
+as shown in the picture.
+
+![Everloop LEDs](creator-front-everloop-leds.png)
+
 ##### Create the object that holds the LED state
 
 First, create the object.
@@ -100,10 +105,7 @@ message EverloopImage {
 ```
 
 The message `EverloopImage` needs to have exactly 35 messages of type `LedValue` in the repeated field `led`,
-corresponding to each of the LEDs present in the Creator. The LEDs are counted starting from the left, clock-wise
-as shown in the picture.
-
-![Everloop LEDs](creator-front-everloop-leds.png)
+corresponding to each of the LEDs present in the Creator.
 
 The message LedValue holds the color values for each LED and each value is in the range [0, 255].
 
