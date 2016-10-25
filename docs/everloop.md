@@ -53,7 +53,7 @@ This driver doesn't send any data to a subscribed program.
 
 ### JavaScript example
 
-This section provides an enhanced description of the relevant parts of the[sample source code](../src/js_test/test_everloop.js).
+This section provides an enhanced description of the relevant parts of the [sample source code](../src/js_test/test_everloop.js).
 Some variables used below are defined in the example (for instance matrixMalosBuilder).
 
 In order to set the LEDs of the Creator you need to perform the following steps.
@@ -83,7 +83,7 @@ Each of the following functions receives an integer in the range [0, 255].
 | ------------- |:-------------:|
 | setRed        | Set value of red component  |
 | setGreen      | Set value of green component |
-| SetBlue       | Set value of green component |
+| SetBlue       | Set value of blue component |
 | SeWhite       | Set value of white component |
 
 That is:
