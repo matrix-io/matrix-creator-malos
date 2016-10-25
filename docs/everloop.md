@@ -104,11 +104,11 @@ The following snippet will make all the greens display the green color.
     var config = new matrixMalosBuilder.DriverConfig
     config.image = new matrixMalosBuilder.EverloopImage
     for (var j = 0; j < 35; ++j) {
-      var ledValue = new matrixMalosBuilder.LedValue;
+      var ledValue = new matrixMalosBuilder.LedValue
       ledValue.setRed(0);
-      ledValue.setGreen(30);
-      ledValue.setBlue(0);
-      ledValue.setWhite(0);
+      ledValue.setGreen(30)
+      ledValue.setBlue(0)
+      ledValue.setWhite(0)
       config.image.led.push(ledValue)
     }
-    configSocket.send(config.encode().toBuffer());
+    configSocket.send(config.encode().toBuffer())
