@@ -8,36 +8,6 @@ It follows the [MALOS protocol](../README.md#protocol).
 20021
 ```
 
-### Protocol buffers
-
-There is a JavaScript example for the following details so you can skip this section if you're not familiar with protocol buffers and
-if you are impatient and want to see the LEDs working as soon as possible.
-
-The messages used by this driver are defined in [driver.proto](https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto).
-
-```
-message EverloopImage {
-  repeated LedValue led = 1;
-}
-```
-
-
-The message `EverloopImage` needs to have exactly 35 messages of type `LedValue` in the repeated field `led`,
-corresponding to each of the LEDs present in the Creator. The LEDs are counted starting from the left, clock-wise
-as shown in the picture.
-
-![Everloop LEDs](creator-front-everloop-leds.png)
-
-The message LedValue holds the color values for each LED and each value is in the range [0, 255].
-
-```
-message LedValue {
-  uint32 red = 1;
-  uint32 green = 2;
-  uint32 blue = 3;
-  uint32 white = 4;
-}
-```
 
 ### Keep-alives
 
@@ -58,7 +28,7 @@ Some variables used below are defined in the example (for instance matrixMalosBu
 
 In order to set the LEDs of the Creator you need to perform the following steps.
 
-#### Create a configuration that will be sent to the Everloop driver.
+#### Initialize configuration
 
     var config = new matrixMalosBuilder.DriverConfig
 
@@ -112,3 +82,36 @@ The following snippet will make all the greens display the green color.
       config.image.led.push(ledValue)
     }
     configSocket.send(config.encode().toBuffer())
+
+
+
+### Glossary
+
+#### Protocol buffers
+
+In this section we get into the details of the [protocol buffers](https://developers.google.com/protocol-buffers/docs/proto3) used by the
+JavaScript example to communicate with the Everloop driver.
+The messages used by this driver are defined in [driver.proto](https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto).
+
+```
+message EverloopImage {
+  repeated LedValue led = 1;
+}
+```
+
+The message `EverloopImage` needs to have exactly 35 messages of type `LedValue` in the repeated field `led`,
+corresponding to each of the LEDs present in the Creator. The LEDs are counted starting from the left, clock-wise
+as shown in the picture.
+
+![Everloop LEDs](creator-front-everloop-leds.png)
+
+The message LedValue holds the color values for each LED and each value is in the range [0, 255].
+
+```
+message LedValue {
+  uint32 red = 1;
+  uint32 green = 2;
+  uint32 blue = 3;
+  uint32 white = 4;
+}
+```
