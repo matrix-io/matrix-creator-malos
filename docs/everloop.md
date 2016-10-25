@@ -4,10 +4,10 @@ The Everloop driver controls the LED array of the MATRIX Creator.
 It follows the [MALOS protocol](../README.md#protocol).
 
 ### 0MQ Port
+
 ```
 20021
 ```
-
 
 ### Keep-alives
 
@@ -21,7 +21,7 @@ This driver report errors when an invalid configuration is sent.
 
 This driver doesn't send any data to a subscribed program.
 
-### JavaScript example
+### Example usage
 
 This section provides an enhanced description of the relevant parts of the [sample source code](../src/js_test/test_everloop.js).
 Some variables used below are defined in the example (for instance matrixMalosBuilder).
