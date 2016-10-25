@@ -61,16 +61,18 @@ Each of the following functions receives an integer in the range [0, 255].
 | SetBlue       | Set value of blue component |
 | SeWhite       | Set value of white component |
 
-That is:
+That is, repeat 35 times:
 
     ledValue.setRed(red_value)
     ledValue.setGreen(green_value)
     ledValue.setBlue(blue_value)
     ledValue.setWhite(white_value)
 
+    config.image.led.push(ledValue)
+
 ##### Send configuration
 
-    config.image.led.push(ledValue)
+configSocket.send(config.encode().toBuffer())
 
 #### All steps combined
 
