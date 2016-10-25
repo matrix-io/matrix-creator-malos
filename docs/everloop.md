@@ -105,7 +105,7 @@ The following snippet will make all the greens display the green color.
     config.image = new matrixMalosBuilder.EverloopImage
     for (var j = 0; j < 35; ++j) {
       var ledValue = new matrixMalosBuilder.LedValue
-      ledValue.setRed(0);
+      ledValue.setRed(0)
       ledValue.setGreen(30)
       ledValue.setBlue(0)
       ledValue.setWhite(0)
