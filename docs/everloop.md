@@ -34,7 +34,6 @@ git submodule update --init
 cd src/js_test/
 npm install
 node test_everloop.js
-
 ```
 
 In order to set the LEDs of the Creator you need to perform the following steps.
