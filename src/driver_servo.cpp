@@ -35,19 +35,20 @@ const bool kServoDriverDebugEnabled = false;
 
 bool ServoDriver::ProcessConfig(const DriverConfig& config) {
   ServoParams servo(config.servo());
-  int16_t pin = (int16_t)servo.pin();
-  int16_t channel = (int16_t)pin % 4;
-  int16_t bank = (int16_t)pin / 4;
+  const int16_t pin = servo.pin();
+  const int16_t channel = pin % 4;
+  const int16_t bank = pin / 4;
 
   gpio_->SetMode(pin, kGpioOutputMode);
   gpio_->SetFunction(pin, kGpioPWMFunction);
   gpio_->SetPrescaler(bank, kGpioPrescaler);  // set prescaler bank
 
-  uint16_t period_counter = (kServoPeriod * kServoClockFrequency) /
-                            ((1 << 5) * 2);  // period for 180 servo type on ms.
+  const uint16_t period_counter =
+      (kServoPeriod * kServoClockFrequency) /
+      ((1 << 5) * 2);  // period for 180 servo type on ms.
 
   gpio_->Bank(bank).SetPeriod(period_counter);
-  int16_t duty_counter = (kServoRatio * servo.angle()) + kServoOffset;
+  const int16_t duty_counter = (kServoRatio * servo.angle()) + kServoOffset;
   gpio_->Bank(bank).SetDuty(channel, duty_counter);
 
   return true;
