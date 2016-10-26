@@ -26,6 +26,18 @@ This driver doesn't send any data to a subscribed program.
 This section provides an enhanced description of the relevant parts of the [sample source code](../src/js_test/test_everloop.js).
 Some variables used below are defined in the example (for instance matrixMalosBuilder).
 
+To run the source code of this example you need to execute the following commands:
+
+```
+git clone https://github.com/matrix-io/matrix-creator-malos.git
+cd cd matrix-creator-malos
+git submodule init ; git submodule update
+cd src/js_test/
+npm install
+node test_everloop.js
+
+```
+
 In order to set the LEDs of the Creator you need to perform the following steps.
 
 #### Initialize configuration
