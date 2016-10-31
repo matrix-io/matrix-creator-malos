@@ -44,9 +44,14 @@ class HumidityDriver : public MalosWishboneBase {
   // Send update to 0MQ zqm_push_update_ queue when called.
   bool SendUpdate() override;
 
+  // Read configuration of Servo command
+  bool ProcessConfig(const DriverConfig& config) override;
+
  private:
   // Reader of Humidity data.
   std::unique_ptr<matrix_hal::HumiditySensor> reader_;
+  // Calibration temperature;
+  float calibration_ratio_;
 };
 
 }  // namespace matrix_malos
