@@ -52,6 +52,7 @@ class HumidityDriver : public MalosWishboneBase {
   std::unique_ptr<matrix_hal::HumiditySensor> reader_;
   // Calibration temperature;
   float calibration_ratio_;
+  bool calibrated_ = false;
 };
 
 }  // namespace matrix_malos

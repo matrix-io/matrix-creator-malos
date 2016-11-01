@@ -16,7 +16,6 @@
  */
 
 #include "./driver_humidity.h"
-
 #include "./src/driver.pb.h"
 #include "matrix_hal/humidity_data.h" 
 
@@ -51,20 +50,33 @@ bool HumidityDriver::SendUpdate() {
     return false;
   }
 
-  float cpu_temp = CPUTemp(); // Get the CPU Temperature
-  
-  // Calculate calibrated temperature
-  float temp_calib = calibration_ratio_ * (cpu_temp - data.temperature); 
-
-  // Calculate calibrated humidity using the calibrated temperature: 
-  // from http://hyperphysics.phy-astr.gsu.edu/hbase/kinetic/relhum.html#c4
-  float hum_calib = SatVaporDensityfromTemp(data.temperature)/SatVaporDensityfromTemp(temp_calib) * data.humidity;
-
   Humidity humidity_pb;
+
+  humidity_pb.set_calibrated(calibrated_);
   humidity_pb.set_humidity(data.humidity);
   humidity_pb.set_temperature(data.temperature);
-  humidity_pb.set_humidity_calib(hum_calib);
-  humidity_pb.set_temperature_calib(temp_calib);
+  
+
+  if(calibrated_){
+    float cpu_temp = CPUTemp(); // Get the CPU Temperature
+    // Calculate calibrated temperature
+    float temp_calib = data.temperature - calibration_ratio_ * (cpu_temp - data.temperature);  
+    // Calculate calibrated humidity using the calibrated temperature: 
+    // from http://hyperphysics.phy-astr.gsu.edu/hbase/kinetic/relhum.html#c4
+    float hum_calib = SatVaporDensityfromTemp(data.temperature)/SatVaporDensityfromTemp(temp_calib) * data.humidity;
+    printf("sensor: %f\n", data.temperature);
+    printf("temp_calib: %f\n", temp_calib);
+    printf("SatVD_sensor: %f\n", SatVaporDensityfromTemp(data.temperature));
+    printf("SatVD_temp_calib: %f\n", SatVaporDensityfromTemp(temp_calib));
+    printf("hum_calib: %f\n", hum_calib);
+
+    humidity_pb.set_humidity_calib(hum_calib);
+    humidity_pb.set_temperature_calib(temp_calib);
+  }
+  else{
+    humidity_pb.set_humidity_calib(data.humidity);
+    humidity_pb.set_temperature_calib(data.temperature);
+  }
 
   std::string buffer;
   humidity_pb.SerializeToString(&buffer);
@@ -73,23 +85,32 @@ bool HumidityDriver::SendUpdate() {
   return true;
 }
 
-bool HumidityDriver::ProcessConfig(const DriverConfig& config) {
+bool HumidityDriver::ProcessConfig(const DriverConfig& config) { 
   
-  TemperatureCalibParams temp_calib(config.temp_calib());
-  float current_temp = (int16_t)temp_calib.current_temp();
+  HumidityParams humidity_params(config.humidity());
 
+  if(!humidity_params.do_calibration())
+    return false;
+  
+  // Resetting the calibrated flag
+  calibrated_ = false;
+
+  float current_temp = (float)humidity_params.current_temp();
+  
   // Getting temperature data from the humidity sensor
   matrix_hal::HumidityData data;
   if (!reader_->Read(&data)) {
     return false;
   }
 
-  // Getting the CPU temperature
+  // Getting the CPU temperature 
   float cpu_temp = CPUTemp();
   if(cpu_temp == 0)
     return false;
 
+  // Calculating the ratio for future calibrations
   calibration_ratio_ = (data.temperature - current_temp )/(cpu_temp - data.temperature);
+  calibrated_ = true;
 
   return true;
 }
