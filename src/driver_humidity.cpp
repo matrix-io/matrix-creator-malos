@@ -21,14 +21,6 @@
 
 namespace matrix_malos {
 
-// Empirical fit of saturated vapor density versus Celsius Temperature from : http://hyperphysics.phy-astr.gsu.edu/hbase/kinetic/relhum.html#c3
-float SatVaporDensityfromTemp(float T){
-  return  5.018       +  
-          0.32321 * 1      * T +
-          8.1847  * 0.001  * T * T +
-          3.1243  * 0.0001 * T * T * T;
-}
-
 float CPUTemp(){
   
   FILE *temp_file;
@@ -49,32 +41,18 @@ bool HumidityDriver::SendUpdate() {
   if (!reader_->Read(&data)) {
     return false;
   }
-
   Humidity humidity_pb;
 
   humidity_pb.set_calibrated(calibrated_);
   humidity_pb.set_humidity(data.humidity);
   humidity_pb.set_temperature(data.temperature);
-  
 
   if(calibrated_){
     float cpu_temp = CPUTemp(); // Get the CPU Temperature
-    // Calculate calibrated temperature
+    // Calculate calibrated temperature using the ratio previously calculated 
     float temp_calib = data.temperature - calibration_ratio_ * (cpu_temp - data.temperature);  
-    // Calculate calibrated humidity using the calibrated temperature: 
-    // from http://hyperphysics.phy-astr.gsu.edu/hbase/kinetic/relhum.html#c4
-    float hum_calib = SatVaporDensityfromTemp(data.temperature)/SatVaporDensityfromTemp(temp_calib) * data.humidity;
-    printf("sensor: %f\n", data.temperature);
-    printf("temp_calib: %f\n", temp_calib);
-    printf("SatVD_sensor: %f\n", SatVaporDensityfromTemp(data.temperature));
-    printf("SatVD_temp_calib: %f\n", SatVaporDensityfromTemp(temp_calib));
-    printf("hum_calib: %f\n", hum_calib);
-
-    humidity_pb.set_humidity_calib(hum_calib);
     humidity_pb.set_temperature_calib(temp_calib);
-  }
-  else{
-    humidity_pb.set_humidity_calib(data.humidity);
+  } else{
     humidity_pb.set_temperature_calib(data.temperature);
   }
 
@@ -86,32 +64,27 @@ bool HumidityDriver::SendUpdate() {
 }
 
 bool HumidityDriver::ProcessConfig(const DriverConfig& config) { 
-  
   HumidityParams humidity_params(config.humidity());
-
+  // Check if calibration is needed
   if(!humidity_params.do_calibration())
     return false;
-  
   // Resetting the calibrated flag
   calibrated_ = false;
-
+  // Getting the current temperature to use in the calibration 
   float current_temp = (float)humidity_params.current_temp();
-  
   // Getting temperature data from the humidity sensor
   matrix_hal::HumidityData data;
   if (!reader_->Read(&data)) {
     return false;
   }
-
   // Getting the CPU temperature 
   float cpu_temp = CPUTemp();
   if(cpu_temp == 0)
     return false;
-
   // Calculating the ratio for future calibrations
   calibration_ratio_ = (data.temperature - current_temp )/(cpu_temp - data.temperature);
+  // Updating the calibrated flag
   calibrated_ = true;
-
   return true;
 }
 
