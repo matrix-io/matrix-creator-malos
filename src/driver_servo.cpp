@@ -35,7 +35,7 @@ const bool kServoDriverDebugEnabled = false;
 
 bool ServoDriver::ProcessConfig(const DriverConfig& config) {
   ServoParams servo(config.servo());
-  int16_t pin = (int16_t)servo.pin();
+  int16_t pin = static_cast<int16_t>(servo.pin());
   int16_t channel = (int16_t)pin % 4;
   int16_t bank = (int16_t)pin / 4;
 

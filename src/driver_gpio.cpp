@@ -26,7 +26,7 @@ const bool kGpioDriverDebugEnabled = false;
 
 bool GpioDriver::ProcessConfig(const DriverConfig& config) {
   GpioParams gpio_config(config.gpio());
-  int16_t pin = (int16_t)gpio_config.pin();
+  int16_t pin = static_cast<int16_t>(gpio_config.pin());
   int16_t mode = (int16_t)gpio_config.mode();
 
   gpio_->SetMode(pin, mode);
