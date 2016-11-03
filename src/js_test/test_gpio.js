@@ -26,8 +26,8 @@ updateSocket.connect('tcp://' + creator_ip + ':' + (creator_gpio_base_port + 3))
 updateSocket.subscribe('')
 
 updateSocket.on('message', function(gpio_buffer) {
-  var imuData = new matrixMalosBuilder.GpioParams.decode(gpio_buffer)
-  console.log('on pin 1 receive: ',imuData.value)
+  var gpioData = new matrixMalosBuilder.GpioParams.decode(gpio_buffer)
+  console.log('on pin 1 receive: ',gpioData.value)
 });
 
 var toggle=false
