@@ -38,21 +38,6 @@ bool ReadCpuTemperature(const std::string &file_name, float *temperature) {
   return true;
 }
 
-// float CPUTemp(){
-
-//   FILE *temp_file;
-//   double temp;
-//   temp_file = fopen ("/sys/class/thermal/thermal_zone0/temp", "r");
-
-//   if (temp_file == NULL)
-//     return 0;
-
-//   fscanf (temp_file, "%lf", &temp);
-//   fclose (temp_file);
-
-//   return (float)temp/1000.0;
-// }
-
 bool HumidityDriver::SendUpdate() {
   matrix_hal::HumidityData data;
   if (!reader_->Read(&data)) {
