@@ -34,7 +34,8 @@ class GpioDriver : public MalosWishboneBase {
     SetNotesForHuman("Write-read. Gpio handler. In development");
   }
 
-  // Receive a copy of the shared wishbone bus. Not owned.
+  // Load Gpio control for read value or write it
+  // in the first case a value is returned in the update channel.
   void SetupWishboneBus(matrix_hal::WishboneBus* wishbone) override {
     gpio_.reset(new matrix_hal::GPIOControl);
     gpio_->Setup(wishbone);
