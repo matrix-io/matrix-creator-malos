@@ -33,6 +33,8 @@ class HumidityDriver : public MalosWishboneBase {
     SetNotesForHuman(
         "Provides humidity and temperature. Check Humidity message (protocol "
         "buffer)");
+    calibration_ratio_ = 0.0;
+    calibrated_ = false;
   }
 
   // Receive a copy of the shared wishbone bus. Not owned.
@@ -44,7 +46,7 @@ class HumidityDriver : public MalosWishboneBase {
   // Send update to 0MQ zqm_push_update_ queue when called.
   bool SendUpdate() override;
 
-  // Read configuration of Servo command
+  // Read configuration of Humidity command
   bool ProcessConfig(const DriverConfig& config) override;
 
  private:
@@ -52,7 +54,7 @@ class HumidityDriver : public MalosWishboneBase {
   std::unique_ptr<matrix_hal::HumiditySensor> reader_;
   // Calibration temperature;
   float calibration_ratio_;
-  bool calibrated_ = false;
+  bool calibrated_;
 };
 
 }  // namespace matrix_malos
