@@ -14,27 +14,45 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+#include <fstream>
+#include <iostream>
 #include "./driver_humidity.h"
 #include "./src/driver.pb.h"
 #include "matrix_hal/humidity_data.h" 
 
 namespace matrix_malos {
 
-float CPUTemp(){
-  
-  FILE *temp_file;
-  double temp;
-  temp_file = fopen ("/sys/class/thermal/thermal_zone0/temp", "r");
-  
-  if (temp_file == NULL)
-    return 0;
-  
-  fscanf (temp_file, "%lf", &temp);
-  fclose (temp_file);
-  
-  return (float)temp/1000.0;
+const char kDefaultCpuTemperatureFileName[] =
+    "/sys/class/thermal/thermal_zone0/temp";
+
+bool ReadCpuTemperature(const std::string &file_name, float *temperature) {
+  std::ifstream input_file(file_name);
+
+  if (!input_file.is_open())
+    return false;
+
+  float cpu_temperature = 0;
+  input_file >> cpu_temperature;
+  // Maybe we should check that the cpu_temperature makes sense?
+  *temperature = static_cast<float>(cpu_temperature) / 1000.0f;
+
+  return true;
 }
+
+// float CPUTemp(){
+  
+//   FILE *temp_file;
+//   double temp;
+//   temp_file = fopen ("/sys/class/thermal/thermal_zone0/temp", "r");
+  
+//   if (temp_file == NULL)
+//     return 0;
+  
+//   fscanf (temp_file, "%lf", &temp);
+//   fclose (temp_file);
+  
+//   return (float)temp/1000.0;
+// }
 
 bool HumidityDriver::SendUpdate() {
   matrix_hal::HumidityData data;
@@ -47,10 +65,13 @@ bool HumidityDriver::SendUpdate() {
   humidity_pb.set_humidity(data.humidity);
   humidity_pb.set_temperature_raw(data.temperature);
 
+  float cpu_temperature = 0;
+  if(!ReadCpuTemperature(kDefaultCpuTemperatureFileName, &cpu_temperature))
+    return false;
+
   if(calibrated_){
-    float cpu_temp = CPUTemp(); // Get the CPU Temperature
     // Calculate calibrated temperature using the ratio previously calculated 
-    float temp_calib = data.temperature - calibration_ratio_ * (cpu_temp - data.temperature);  
+    float temp_calib = data.temperature - calibration_ratio_ * (cpu_temperature - data.temperature);  
     humidity_pb.set_temperature(temp_calib);
   } else{
     humidity_pb.set_temperature(data.temperature);
@@ -65,24 +86,34 @@ bool HumidityDriver::SendUpdate() {
 
 bool HumidityDriver::ProcessConfig(const DriverConfig& config) { 
   HumidityParams humidity_params(config.humidity());
+  
   // Check if calibration is needed
   if(!humidity_params.do_calibration())
     return false;
+  
   // Resetting the calibrated flag
   calibrated_ = false;
-  // Getting the current temperature to use in the calibration 
-  float current_temp = (float)humidity_params.current_temp();
+
   // Getting temperature data from the humidity sensor
   matrix_hal::HumidityData data;
-  if (!reader_->Read(&data)) {
+  if (!reader_->Read(&data))
     return false;
-  }
+  float sensor_temperature = data.temperature;
+
   // Getting the CPU temperature 
-  float cpu_temp = CPUTemp();
-  if(cpu_temp == 0)
+  float cpu_temperature = 0;
+  if(!ReadCpuTemperature(kDefaultCpuTemperatureFileName, &cpu_temperature))
     return false;
+
+  // Getting the current temperature to use in the calibration 
+  const float current_temperature = static_cast<float>(humidity_params.current_temp());
+  
+  // Check to avoid devide by zero
+  if(sensor_temperature == cpu_temperature)
+    sensor_temperature = cpu_temperature - 0.001;
   // Calculating the ratio for future calibrations
-  calibration_ratio_ = (data.temperature - current_temp )/(cpu_temp - data.temperature);
+  calibration_ratio_ = (sensor_temperature - current_temperature )/(cpu_temperature - sensor_temperature);
+  
   // Updating the calibrated flag
   calibrated_ = true;
   

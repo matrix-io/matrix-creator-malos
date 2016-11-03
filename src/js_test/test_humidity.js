@@ -46,9 +46,8 @@ driverConfigProto.delay_between_updates = 2.0
 driverConfigProto.timeout_after_last_ping = 6.0
 var hum_params_msg = new matrixMalosBuilder.HumidityParams
 //Real current temperature [Celsius] for calibration 
-hum_params_msg.current_temp = 21	
+hum_params_msg.current_temp = 23
 hum_params_msg.do_calibration = true
-
 driverConfigProto.set_humidity(hum_params_msg)
 // Send driver configuration.
 configSocket.send(driverConfigProto.encode().toBuffer())
