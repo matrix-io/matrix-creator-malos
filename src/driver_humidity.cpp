@@ -43,17 +43,17 @@ bool HumidityDriver::SendUpdate() {
   }
   Humidity humidity_pb;
 
-  humidity_pb.set_calibrated(calibrated_);
+  humidity_pb.set_temperature_is_calibrated(calibrated_);
   humidity_pb.set_humidity(data.humidity);
-  humidity_pb.set_temperature(data.temperature);
+  humidity_pb.set_temperature_raw(data.temperature);
 
   if(calibrated_){
     float cpu_temp = CPUTemp(); // Get the CPU Temperature
     // Calculate calibrated temperature using the ratio previously calculated 
     float temp_calib = data.temperature - calibration_ratio_ * (cpu_temp - data.temperature);  
-    humidity_pb.set_temperature_calib(temp_calib);
+    humidity_pb.set_temperature(temp_calib);
   } else{
-    humidity_pb.set_temperature_calib(data.temperature);
+    humidity_pb.set_temperature(data.temperature);
   }
 
   std::string buffer;
@@ -85,6 +85,7 @@ bool HumidityDriver::ProcessConfig(const DriverConfig& config) {
   calibration_ratio_ = (data.temperature - current_temp )/(cpu_temp - data.temperature);
   // Updating the calibrated flag
   calibrated_ = true;
+  
   return true;
 }
 
