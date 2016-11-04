@@ -95,7 +95,7 @@ bool HumidityDriver::ProcessConfig(const DriverConfig &config) {
 
   // Getting the current temperature to use in the calibration
   const float current_temperature =
-      static_cast<float>(humidity_params.current_temp());
+      static_cast<float>(humidity_params.current_temperature());
 
   // Check to avoid devide by zero
   if (ApproximatelyEqual(sensor_temperature, cpu_temperature, 0.1)) {
