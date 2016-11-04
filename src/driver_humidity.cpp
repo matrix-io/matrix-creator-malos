@@ -25,6 +25,10 @@ namespace matrix_malos {
 const char kDefaultCpuTemperatureFileName[] =
     "/sys/class/thermal/thermal_zone0/temp";
 
+bool ApproximatelyEqual(float a, float b, float epsilon) {
+  return fabs(a - b) <= ((fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
+}
+
 bool ReadCpuTemperature(const std::string &file_name, float *temperature) {
   std::ifstream input_file(file_name);
 
@@ -94,8 +98,9 @@ bool HumidityDriver::ProcessConfig(const DriverConfig &config) {
       static_cast<float>(humidity_params.current_temp());
 
   // Check to avoid devide by zero
-  if (std::abs(sensor_temperature - cpu_temperature) < 0.1f)
+  if (ApproximatelyEqual(sensor_temperature, cpu_temperature, 0.1)) {
     sensor_temperature = cpu_temperature - 0.1;
+  }
   // Calculating the ratio value to use when calibrating the temperature value
   calibration_ratio_ = (sensor_temperature - current_temperature) /
                        (cpu_temperature - sensor_temperature);
