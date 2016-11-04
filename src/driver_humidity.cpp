@@ -55,7 +55,7 @@ bool HumidityDriver::SendUpdate() {
 
   if (calibrated_) {
     // Calculate calibrated temperature using the ratio previously calculated
-    float temp_calib =
+    const float temp_calib =
         data.temperature -
         calibration_ratio_ * (cpu_temperature - data.temperature);
     humidity_pb.set_temperature(temp_calib);
@@ -94,9 +94,9 @@ bool HumidityDriver::ProcessConfig(const DriverConfig &config) {
       static_cast<float>(humidity_params.current_temp());
 
   // Check to avoid devide by zero
-  if (sensor_temperature == cpu_temperature)
-    sensor_temperature = cpu_temperature - 0.001;
-  // Calculating the ratio for future calibrations
+  if (std::abs(sensor_temperature - cpu_temperature) < 0.1f)
+    sensor_temperature = cpu_temperature - 0.1;
+  // Calculating the ratio value to use when calibrating the temperature value
   calibration_ratio_ = (sensor_temperature - current_temperature) /
                        (cpu_temperature - sensor_temperature);
 
