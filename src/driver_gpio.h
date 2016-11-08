@@ -18,6 +18,8 @@
 #ifndef SRC_DRIVER_GPIO_H_
 #define SRC_DRIVER_GPIO_H_
 
+#include <memory>
+
 #include "./malos_wishbone_base.h"
 #include "matrix_hal/wishbone_bus.h"
 #include "matrix_hal/gpio_control.h"
@@ -41,7 +43,7 @@ class GpioDriver : public MalosWishboneBase {
     gpio_->Setup(wishbone);
   }
 
-  // Read configuration of Gpio command
+  // Read configuration from GpioParams (from the outside world).
   bool ProcessConfig(const DriverConfig& config) override;
 
  private:
