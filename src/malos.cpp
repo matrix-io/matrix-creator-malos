@@ -29,6 +29,7 @@
 #include "./driver_micarray_alsa.h"
 #include "./driver_lirc.h"
 #include "./driver_servo.h"
+#include "./driver_gpio.h"
 
 #include "matrix_hal/wishbone_bus.h"
 
@@ -113,6 +114,13 @@ int RunServer() {
     return 1;
   }
   driver_manager.RegisterDriver(&driver_servo);
+
+  GpioDriver driver_gpio;
+  driver_gpio.SetupWishboneBus(wishbone_bus);
+  if (!driver_gpio.Init(kBasePort + 4 * 9 + 1, kUnsecureBindScope)) {
+    return 1;
+  }
+  driver_manager.RegisterDriver(&driver_gpio);
 
   driver_manager.ServeInfoRequestsForEver();
 
