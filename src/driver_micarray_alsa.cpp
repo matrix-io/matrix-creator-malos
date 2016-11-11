@@ -24,8 +24,27 @@
 
 namespace matrix_malos {
 
-bool MicArrayAlsaDriver::ProcessConfig(const DriverConfig& /*config*/) {
-  // TODO (andres.calderon@admobilize.com):  handle SetGain
+bool MicArrayAlsaDriver::ProcessConfig(const DriverConfig& config) {
+  MicArrayParams micarray_config(config.micarray());
+
+  const int16_t gain = static_cast<int16_t>(micarray_config.gain());
+
+  const float azimutal_angle =
+      static_cast<float>(micarray_config.azimutal_angle());
+
+  const float polar_angle = static_cast<float>(micarray_config.polar_angle());
+
+  const float radial_distance_mm =
+      static_cast<float>(micarray_config.radial_distance_mm());
+
+  const float sound_speed_mmseg =
+      static_cast<float>(micarray_config.sound_speed_mmseg());
+
+  mics_->SetGain(gain);
+
+  mics_->CalculateDelays(azimutal_angle, polar_angle, radial_distance_mm,
+                        sound_speed_mmseg);
+
   return true;
 }
 
