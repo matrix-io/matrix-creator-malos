@@ -30,7 +30,8 @@ bool MicArrayAlsaDriver::ProcessConfig(const DriverConfig& /*config*/) {
 }
 
 void MicArrayAlsaDriver::AlsaThread() {
-  for (uint16_t c = 0; c < mics_->Channels(); c++) {
+  // building fifo for each channel + fifo for the beamformed channel
+  for (uint16_t c = 0; c < mics_->Channels() + 1; c++) {
     std::string name = "/tmp/matrix_micarray_channel_" + std::to_string(c);
 
     /* create the FIFO (named pipe) */
@@ -63,6 +64,21 @@ void MicArrayAlsaDriver::AlsaThread() {
 
       close(named_pipe_handle);
     }
+
+    // Write to pipe beamformed channel
+    std::string name =
+        "/tmp/matrix_micarray_channel_" + std::to_string(mics_->Channels());
+    // TODO (andres.calderon@admobilize.com):  handle error
+    named_pipe_handle = open(name.c_str(), O_WRONLY | O_NONBLOCK);
+
+    for (uint32_t s = 0; s < mics_->NumberOfSamples(); s++)
+      buffer[s] = mics_->Beam(s);
+
+    // TODO (andres.calderon@admobilize.com):  handle error
+    write(named_pipe_handle, &buffer[0],
+          sizeof(int16_t) * mics_->NumberOfSamples());
+
+    close(named_pipe_handle);
   }
 }
 
