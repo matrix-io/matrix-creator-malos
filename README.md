@@ -12,7 +12,7 @@ sudo apt-get install libzmq3-dev xc3sprog matrix-creator-openocd wiringpi cmake 
 Hardware abstraction layer for MATRIX Creator usable via 0MQ.
 [Protocol buffers](https://developers.google.com/protocol-buffers/docs/proto3) are used for data exchange.
 
-You can also use MALOS to to query sensors of the [MATRIX Creator](https://creator.matrix.one) and to control the MATRIX Creator from any language that supports protocol buffers (version 3.X) and 0MQ,
+You can also use MALOS to query sensors of the [MATRIX Creator](https://creator.matrix.one) and to control the MATRIX Creator from any language that supports protocol buffers (version 3.X) and 0MQ,
 Connections to MALOS can be made both from localhost (127.0.0.1) and from remote computers that are in the same network.
 
 ### Install
@@ -183,7 +183,7 @@ Wrapping up the protocol section, a program that talks to MALOS can:
 * [Microphone Array](docs/microphone.md)
 * [Pressure](docs/pressure.md)
 * [UV](docs/uv.md)
-* [Zigbee](docs/humidity.md)
+* [Zigbee](docs/zigbee.md)
 * [NFC](docs/nfc.md)
 * [Z-wave](docs/zwave.md)
 * [GPIO](docs/gpio.md)
