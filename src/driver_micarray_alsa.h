@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_DRIVER_ALSA_H_
-#define SRC_DRIVER_ALSA_H_
+#ifndef SRC_DRIVER_MICARRAY_ALSA_H_
+#define SRC_DRIVER_MICARRAY_ALSA_H_
 
 #include <sys/stat.h>
 #include <unistd.h>
@@ -66,4 +66,4 @@ class MicArrayAlsaDriver : public MalosWishboneBase {
 
 }  // namespace matrix_malos
 
-#endif  // SRC_DRIVER_ALSA_H_
+#endif  // SRC_DRIVER_MICARRAY_ALSA_H_

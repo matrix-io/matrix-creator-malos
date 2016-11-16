@@ -40,8 +40,11 @@ configSocket.connect('tcp://' + creator_ip + ':' + creator_micarray_base_port /*
 
 function setupMicarray() {
   var micarray_cfg = new matrixMalosBuilder.MicArrayParams
-  
+ 
+  // setup gain for all microphones 
   micarray_cfg.set_gain(8)
+
+  // setup a sound source perpendicular to the MATRIX Creator
   micarray_cfg.set_azimutal_angle(0)
   micarray_cfg.set_polar_angle(0)
   micarray_cfg.set_radial_distance_mm(1000)
@@ -58,6 +61,7 @@ setupMicarray()
 //
 // ALSA recorder
 //
+// mic_channel8 is a beamformed channel using the delay and sum method
 var micInstance = mic({ 'device':'mic_channel8','rate': '16000', 'channels': '1', 'debug': true, 'exitOnSilence': 6 });
 var micInputStream = micInstance.getAudioStream();
 var outputFileStream = fs.WriteStream('output.wav');
