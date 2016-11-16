@@ -10,7 +10,7 @@
 // BasePort + 3 => Data port. Receive data from device.
 
 var creator_ip = '127.0.0.1'
-var creator_everloop_base_port = 20013 + 28 // port for Everloop driver.
+var creator_lirc_base_port = 20013 + 28 // port for Lirc driver.
 
 var protoBuf = require("protobufjs");
 var protoBuilder = protoBuf.loadProtoFile('../../protocol-buffers/malos/driver.proto')
@@ -18,7 +18,7 @@ var matrixMalosBuilder = protoBuilder.build("matrix_malos")
 
 var zmq = require('zmq')
 var configSocket = zmq.socket('push')
-configSocket.connect('tcp://' + creator_ip + ':' + creator_everloop_base_port /* config */)
+configSocket.connect('tcp://' + creator_ip + ':' + creator_lirc_base_port /* config */)
 
 function sendIrCommand() {
   var ir_cfg_cmd = new matrixMalosBuilder.LircParams
