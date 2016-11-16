@@ -30,17 +30,12 @@ namespace matrix_malos {
 bool MicArrayAlsaDriver::ProcessConfig(const DriverConfig& config) {
   MicArrayParams micarray_config(config.micarray());
 
-  const int16_t gain = static_cast<int16_t>(micarray_config.gain());
+  mics_->SetGain(static_cast<int16_t>(micarray_config.gain()));
 
-  mics_->SetGain(gain);
-
-  const float azimutal_angle = micarray_config.azimutal_angle();
-  const float polar_angle = micarray_config.polar_angle();
-  const float radial_distance_mm = micarray_config.radial_distance_mm();
-  const float sound_speed_mmseg = micarray_config.sound_speed_mmseg();
-
-  mics_->CalculateDelays(azimutal_angle, polar_angle, radial_distance_mm,
-                         sound_speed_mmseg);
+  mics_->CalculateDelays(micarray_config.azimutal_angle(),
+                         micarray_config.polar_angle(),
+                         micarray_config.radial_distance_mm(),
+                         micarray_config.sound_speed_mmseg());
 
   return true;
 }
@@ -48,7 +43,8 @@ bool MicArrayAlsaDriver::ProcessConfig(const DriverConfig& config) {
 void MicArrayAlsaDriver::AlsaThread() {
   // building fifo for each channel + fifo for the beamformed channel
   for (uint16_t c = 0; c < mics_->Channels() + 1; ++c) {
-    std::string name = "/tmp/matrix_micarray_channel_" + std::to_string(c);
+    const std::string name =
+        "/tmp/matrix_micarray_channel_" + std::to_string(c);
 
     /* create the FIFO (named pipe) */
     if (mkfifo(name.c_str(), 0666) != 0) {
@@ -67,7 +63,8 @@ void MicArrayAlsaDriver::AlsaThread() {
   while (true) {
     mics_->Read(); /* Reading 8-mics buffer from de FPGA */
     for (uint16_t c = 0; c < mics_->Channels(); ++c) {
-      std::string name = "/tmp/matrix_micarray_channel_" + std::to_string(c);
+      const std::string name =
+          "/tmp/matrix_micarray_channel_" + std::to_string(c);
       // TODO(andres.calderon@admobilize.com):  handle error
       named_pipe_handle = open(name.c_str(), O_WRONLY | O_NONBLOCK);
 
@@ -82,7 +79,7 @@ void MicArrayAlsaDriver::AlsaThread() {
     }
 
     // Write to pipe beamformed channel
-    std::string name =
+    const std::string name =
         "/tmp/matrix_micarray_channel_" + std::to_string(mics_->Channels());
     // TODO(andres.calderon@admobilize.com):  handle error
     named_pipe_handle = open(name.c_str(), O_WRONLY | O_NONBLOCK);
