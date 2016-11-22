@@ -1,9 +1,9 @@
-# Pressure
+# UV
 
 The UV driver reports values for:
 
-* UV Index scale used in the United States conforms with international guidelines for UVI reporting established by the World Health Organization.  From[UV Index Scale](https://www.epa.gov/sunsafety/uv-index-scale-0) 
-* UV Risk scale established by World Health Organization. From[UV Index Scale](https://www.epa.gov/sunsafety/uv-index-scale-0)
+* UV Index scale used in the United States conforms with international guidelines for UVI reporting established by the World Health Organization.  From [UV Index Scale](https://www.epa.gov/sunsafety/uv-index-scale-0) 
+* UV Risk scale established by World Health Organization. From [UV Index Scale](https://www.epa.gov/sunsafety/uv-index-scale-0)
 
 The driver follows the [MALOS protocol](../README.md#protocol).
 
@@ -35,7 +35,7 @@ This driver report errors when an invalid configuration is sent.
 
 ### Read
 
-The driver will send a serialized message of type `UV`.
+The driver will send a serialized message of type`UV`.
 
 ```
 message UV{
@@ -55,7 +55,7 @@ Sending pings every 5 seconds
 
 ### JavaScript example
 
-Enhanced description of the [sample source code](../src/js_test/test_pressure.js).
+Enhanced description of the [sample source code](../src/js_test/test_uv.js).
 
 First, define the address of the MATRIX Creator. In this case we make it be `127.0.0.1`
 because we are connecting from the local host but it needs to be different if we
@@ -84,7 +84,7 @@ Subscribe to the errors reported by the driver.
 var zmq = require('zmq')
 
 var errorSocket = zmq.socket('sub')
-errorSocket.connect('tcp://' + creator_ip + ':' + (creator_pressure_base_port + 2))
+errorSocket.connect('tcp://' + creator_ip + ':' + (creator_uv_base_port + 2))
 errorSocket.subscribe('')
 errorSocket.on('message', function(error_message) {
   process.stdout.write('Message received: Pressure error: ' + error_message.toString('utf8') + "\n")
@@ -103,7 +103,7 @@ and stop sending updates if it doesn't receive a keep-alive message for 6 second
 
 ```
 var configSocket = zmq.socket('push')
-configSocket.connect('tcp://' + creator_ip + ':' + creator_pressure_base_port)
+configSocket.connect('tcp://' + creator_ip + ':' + creator_uv_base_port)
 
 var driverConfigProto = new matrixMalosBuilder.DriverConfig
 
@@ -130,7 +130,7 @@ sending data updates.
 
 ```
 var pingSocket = zmq.socket('push')
-pingSocket.connect('tcp://' + creator_ip + ':' + (creator_pressure_base_port + 1))
+pingSocket.connect('tcp://' + creator_ip + ':' + (creator_uv_base_port + 1))
 process.stdout.write("Sending pings every 5 seconds");
 pingSocket.send(''); // Ping the first time.
 setInterval(function(){
