@@ -47,10 +47,12 @@ message UV{
 This is a sample output given by the example described below.
 
 ```
-$ node test_pressure.js 
+$ node test_uv.js 
 Sending pings every 5 seconds
-{ pressure: 74773.5, altitude: 2490.375, temperature: 35.9375 }
-{ pressure: 74776, altitude: 2490.3125, temperature: 35.9375 }
+{ uv_index: 0, oms_risk: 'Low' }
+{ uv_index: 0, oms_risk: 'Low' }
+{ uv_index: 0, oms_risk: 'Low' }
+{ uv_index: 0, oms_risk: 'Low' }
 ```
 
 ### JavaScript example
@@ -60,11 +62,11 @@ Enhanced description of the [sample source code](../src/js_test/test_uv.js).
 First, define the address of the MATRIX Creator. In this case we make it be `127.0.0.1`
 because we are connecting from the local host but it needs to be different if we
 connect from another computer. There is also the base port reserved by MALOS for
-the Pressure driver.
+the UV driver.
 
 ```
 var creator_ip = '127.0.0.1'
-var creator_pressure_base_port = 20013 + (4 * 3)
+var creator_uv_base_port = 20013 + (4 * 4) 
 ```
 
 Load the protocol buffers used in the example.
@@ -87,7 +89,7 @@ var errorSocket = zmq.socket('sub')
 errorSocket.connect('tcp://' + creator_ip + ':' + (creator_uv_base_port + 2))
 errorSocket.subscribe('')
 errorSocket.on('message', function(error_message) {
-  process.stdout.write('Message received: Pressure error: ' + error_message.toString('utf8') + "\n")
+  process.stdout.write('Message received: Pressure UV: ' + error_message.toString('utf8') + "\n")
 });
 ```
 All the drivers are configured using the message `DriverConfig` (see [driver.proto](https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto)).
@@ -118,7 +120,7 @@ The subscription is initiated by the line `updateSocket.subscribe('')`.
 
 ```
 var updateSocket = zmq.socket('sub')
-updateSocket.connect('tcp://' + creator_ip + ':' + (creator_pressure_base_port + 3))
+updateSocket.connect('tcp://' + creator_ip + ':' + (creator_uv_base_port + 3))
 updateSocket.subscribe('')
 updateSocket.on('message', function(buffer) {
   var data = new matrixMalosBuilder.UV.decode(buffer)
