@@ -89,7 +89,7 @@ var errorSocket = zmq.socket('sub')
 errorSocket.connect('tcp://' + creator_ip + ':' + (creator_uv_base_port + 2))
 errorSocket.subscribe('')
 errorSocket.on('message', function(error_message) {
-  process.stdout.write('Message received: Pressure UV: ' + error_message.toString('utf8') + "\n")
+  process.stdout.write('Message received: UV: ' + error_message.toString('utf8') + "\n")
 });
 ```
 All the drivers are configured using the message `DriverConfig` (see [driver.proto](https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto)).
