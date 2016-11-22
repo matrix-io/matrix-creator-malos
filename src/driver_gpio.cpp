@@ -54,7 +54,7 @@ bool GpioDriver::ProcessConfig(const DriverConfig& config) {
 
 bool GpioDriver::SendUpdate() {
   GpioParams gpiopb;
-  gpiopb.set_vector(gpio_->GetGPIOVector());
+  gpiopb.set_values(gpio_->GetGPIOValues());
   std::string buffer;
   gpiopb.SerializeToString(&buffer);
   zqm_push_update_->Send(buffer);
