@@ -36,10 +36,8 @@ bool GpioDriver::ProcessConfig(const DriverConfig& config) {
     std::string buffer;
     gpiopb.SerializeToString(&buffer);
     zqm_push_update_->Send(buffer);
-
   } else if (mode == GpioParams::OUTPUT) {
     gpio_->SetGPIOValue(pin, gpio_config.value());
-
   } else if (!(mode == GpioParams::OUTPUT || mode == GpioParams::INPUT)) {
     zmq_push_error_->Send(
         "invalid gpio mode. check the proto GpioParams (file "
