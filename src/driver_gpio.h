@@ -55,5 +55,4 @@ class GpioDriver : public MalosWishboneBase {
 };
 
 }  // namespace matrix_malos
-
 #endif  // SRC_DRIVER_GPIO_H_

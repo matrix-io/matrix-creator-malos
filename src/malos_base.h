@@ -115,4 +115,3 @@ class MalosBase {
 }  // namespace matrix_malos
 
 #endif  // SRC_MALOS_BASE_H_
-
