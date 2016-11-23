@@ -30,13 +30,7 @@ bool GpioDriver::ProcessConfig(const DriverConfig& config) {
   const int16_t pin = static_cast<int16_t>(gpio_config.pin());
   const int16_t mode = static_cast<int16_t>(gpio_config.mode());
 
-  if (mode == GpioParams::INPUT) {
-    GpioParams gpiopb;
-    gpiopb.set_value(gpio_->GetGPIOValue(pin));
-    std::string buffer;
-    gpiopb.SerializeToString(&buffer);
-    zqm_push_update_->Send(buffer);
-  } else if (mode == GpioParams::OUTPUT) {
+  if (mode == GpioParams::OUTPUT) {
     gpio_->SetGPIOValue(pin, gpio_config.value());
   } else if (!(mode == GpioParams::OUTPUT || mode == GpioParams::INPUT)) {
     zmq_push_error_->Send(
