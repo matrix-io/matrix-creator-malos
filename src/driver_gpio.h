@@ -43,6 +43,9 @@ class GpioDriver : public MalosWishboneBase {
     gpio_->Setup(wishbone);
   }
 
+  // Send GPIO input update to 0MQ zqm_push_update_ queue when called.
+  bool SendUpdate() override;
+
   // Read configuration from GpioParams (from the outside world).
   bool ProcessConfig(const DriverConfig& config) override;
 
@@ -52,5 +55,4 @@ class GpioDriver : public MalosWishboneBase {
 };
 
 }  // namespace matrix_malos
-
 #endif  // SRC_DRIVER_GPIO_H_

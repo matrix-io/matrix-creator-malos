@@ -30,22 +30,26 @@ bool GpioDriver::ProcessConfig(const DriverConfig& config) {
   const int16_t pin = static_cast<int16_t>(gpio_config.pin());
   const int16_t mode = static_cast<int16_t>(gpio_config.mode());
 
-  gpio_->SetMode(pin, mode);
-
-  if (mode == GpioParams::INPUT) {
-    GpioParams gpiopb;
-    gpiopb.set_value(gpio_->GetGPIOValue(pin));
-    std::string buffer;
-    gpiopb.SerializeToString(&buffer);
-    zqm_push_update_->Send(buffer);
-  } else if (mode == GpioParams::OUTPUT) {
+  if (mode == GpioParams::OUTPUT) {
     gpio_->SetGPIOValue(pin, gpio_config.value());
-  } else {
+  } else if (!(mode == GpioParams::OUTPUT || mode == GpioParams::INPUT)) {
     zmq_push_error_->Send(
         "invalid gpio mode. check the proto GpioParams (file "
         "driver.proto)");
     return false;
   }
+
+  gpio_->SetMode(pin, mode);
+
+  return true;
+}
+
+bool GpioDriver::SendUpdate() {
+  GpioParams gpiopb;
+  gpiopb.set_values(gpio_->GetGPIOValues());
+  std::string buffer;
+  gpiopb.SerializeToString(&buffer);
+  zqm_push_update_->Send(buffer);
 
   return true;
 }

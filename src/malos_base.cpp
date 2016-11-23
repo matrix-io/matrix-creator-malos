@@ -10,13 +10,11 @@
 
 namespace matrix_malos {
 
-// FIXME: Why two threads? Why water mark so small?
-
-// How many threads for a given 0MQ context. Use two.
-const int kTwoThreads = 2;
+// How many threads for a given 0MQ context. Just one.
+const int kOneThread = 1;
 
 // Hight water mark. How many samples to queue (outgoing).
-const int kSmallHighWaterMark = 10;
+const int kSmallHighWaterMark = 20;
 
 // Default delay when inactive.
 const int kDefaultDelayWhenInactive = 100;
@@ -25,23 +23,23 @@ bool MalosBase::Init(int base_port, const std::string &bind_scope) {
   base_port_ = base_port;
 
   zmq_pull_config_.reset(new ZmqPuller());
-  if (!zmq_pull_config_->Init(base_port, kTwoThreads, bind_scope)) {
+  if (!zmq_pull_config_->Init(base_port, kOneThread, bind_scope)) {
     return false;
   }
 
   zmq_pull_keepalive_.reset(new ZmqPuller());
-  if (!zmq_pull_keepalive_->Init(base_port + 1, kTwoThreads, bind_scope)) {
+  if (!zmq_pull_keepalive_->Init(base_port + 1, kOneThread, bind_scope)) {
     return false;
   }
 
   zmq_push_error_.reset(new ZmqPusher());
-  if (!zmq_push_error_->Init(base_port + 2, kTwoThreads, kSmallHighWaterMark,
+  if (!zmq_push_error_->Init(base_port + 2, kOneThread, kSmallHighWaterMark,
                              bind_scope)) {
     return false;
   }
 
   zqm_push_update_.reset(new ZmqPusher());
-  if (!zqm_push_update_->Init(base_port + 3, kTwoThreads, kSmallHighWaterMark,
+  if (!zqm_push_update_->Init(base_port + 3, kOneThread, kSmallHighWaterMark,
                               bind_scope)) {
     return false;
   }
@@ -67,8 +65,7 @@ void MalosBase::ConfigThread() {
   // derived classes.
   while (true) {
     if (zmq_pull_config_->Poll(ZmqPuller::WAIT_FOREVER)) {
-      // FIXME(nelson.castillo): Do we have a deadlock?
-      // std::lock_guard<std::mutex> lock(config_mutex_);
+      std::lock_guard<std::mutex> lock(config_mutex_);
       DriverConfig config;
       // Can we parse a configuration?
       if (!config.ParseFromString(zmq_pull_config_->Read())) {
@@ -84,8 +81,7 @@ void MalosBase::ConfigThread() {
       // malos-eye,
       // the camera and the detectors need to be configured.
       if (!ProcessConfig(config)) {
-        std::cerr << "Specific config for " << driver_name_ << " failed."
-                  << std::endl;
+        std::cerr << "Specific config for " << driver_name_ << " failed.";
         zmq_push_error_->Send("0, Invalid specific configuration for " +
                               driver_name_ + " driver.");
         has_been_configured_ = false;
@@ -114,16 +110,15 @@ void MalosBase::ConfigThread() {
 
 void MalosBase::UpdateThread() {
   while (true) {
-    // FIXME(nelson.castillo): Do we have a deadlock?
-    // std::lock_guard<std::mutex> lock(config_mutex_);
+    config_mutex_.lock();
     // If the device needs mandatory configuration, do not send updates until a
-    // valid
-    // configuration has been received.
+    // valid configuration has been received.
     if ((mandatory_configuration_ && !has_been_configured_) || !is_active_) {
       // We know this is not the best way to do this.
       // The thread should start when the driver is active and end when it's
       // not.
       // This introduces latency for the driver to start once it becomes active.
+      config_mutex_.unlock();
       std::this_thread::sleep_for(
           std::chrono::milliseconds(kDefaultDelayWhenInactive));
       continue;
@@ -132,6 +127,7 @@ void MalosBase::UpdateThread() {
       zmq_push_error_->Send("1, Could not send update for " + driver_name_ +
                             " driver.");
     }
+    config_mutex_.unlock();
     std::this_thread::sleep_for(
         std::chrono::milliseconds(delay_between_updates_));
   }
@@ -158,3 +154,4 @@ void MalosBase::FillOutDriverInfo(DriverInfo *driver_info) const {
 }
 
 }  // namespace matrix_malos
+
