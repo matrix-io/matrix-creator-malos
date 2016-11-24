@@ -8,6 +8,12 @@ The GPIO driver on current version support:<a href="https://github.com/matrix-io
 
 The driver follows the [MALOS protocol](../README.md#protocol).
 
+# GPIO basic electronic specs
+
+* voltage 3.3
+* current 100mA max
+* all GPIO pins needs pullups
+
 ### 0MQ Port
 ```
 20049
@@ -65,7 +71,7 @@ Sending pings every 5 seconds
 ==> pin 0 set to: true
 <== GPIO pins register:  1
 ```
-(pin0 set on true and all GPIO register return values field on 1, only pin 0 set 1)
+(pin0 set on true and GPIO register return values field on 1, only pin 0 set 1)
 
 ```
 $ node test_gpio.js 
@@ -73,7 +79,7 @@ Sending pings every 5 seconds
 ==> pin 0 set to: true
 <== GPIO pins register:  101
 ```
-(pin0 set on true, all GPIO register return values field on 3 (binary 101) pin 0 on 1, pin 2 on 1 all then on 0)
+(pin0 set on true and GPIO register return values field on 3 (binary 101) pin 0 on 1, pin 2 on 1 all then on 0)
 
 
 ### JavaScript example
@@ -114,7 +120,7 @@ errorSocket.on('message', function(error_message) {
 ```
 
 #### Configure GPIO pins modes and set values for GPIO outputs:
-all the drivers are configured using the message `driverconfig` (see [driver.proto](https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto)).
+All the drivers are configured using the message `driverconfig` (see [driver.proto](https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto)).
 ##### Output mode:
 
 instance driver config object 
