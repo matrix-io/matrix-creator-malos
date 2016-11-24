@@ -8,7 +8,7 @@ The GPIO driver on current version support:<a href="https://github.com/matrix-io
 
 The driver follows the [MALOS protocol](../README.md#protocol).
 
-# GPIO basic electronic specs
+### GPIO basic electronic specs
 
 * voltage 3.3
 * current 100mA max
@@ -198,6 +198,7 @@ updateSocket.on('message', function(gpio_buffer) {
 The driver will send on callback a serialized message of integer *values* which reprensets of state from all GPIO pins
 
 #### Keep-alive messages
+
 An empty keep-alive message is sent to the driver every 2 seconds to make sure it keeps
 sending data updates.
 
