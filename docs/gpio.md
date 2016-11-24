@@ -1,6 +1,6 @@
 # GPIO
 
-The GPIO driver on current version support:<a href="https://github.com/matrix-io/matrix-creator-malos/blob/av/doc_gpio/docs/gpio_diagram.jpg"><img src="https://github.com/matrix-io/matrix-creator-malos/blob/av/doc_gpio/docs/gpio_diagram.jpg" align="right" width="420" ><figcaption>Figure1. GPIO Diagram</figcaption></a>
+The GPIO driver on current version support:<a href="https://github.com/matrix-io/matrix-creator-malos/blob/av/doc_gpio/docs/gpio_diagram.jpg"><img src="https://github.com/matrix-io/matrix-creator-malos/blob/av/doc_gpio/docs/gpio_diagram.jpg" align="right" width="420" ></a>
 
 * GPIO pin input
 * GPIO pin output
