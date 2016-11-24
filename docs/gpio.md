@@ -1,6 +1,6 @@
 # GPIO
 
-The GPIO driver on current version support:<a href="https://github.com/matrix-io/matrix-creator-malos/blob/av/doc_gpio/docs/gpio_diagram.jpg"><img src="https://github.com/matrix-io/matrix-creator-malos/blob/av/doc_gpio/docs/gpio_diagram.jpg" align="right" width="420" ></a>
+The GPIO driver on current version support:<a href="https://github.com/matrix-io/matrix-creator-malos/blob/av/doc_gpio/docs/gpio_diagram.jpg"><img src="https://github.com/matrix-io/matrix-creator-malos/blob/av/doc_gpio/docs/gpio_diagram.jpg" align="right" width="420" ><figcaption>Figure1. GPIO Diagram</figcaption></a>
 
 * GPIO pin input
 * GPIO pin output
@@ -65,14 +65,15 @@ Sending pings every 5 seconds
 ==> pin 0 set to: true
 <== GPIO pins register:  1
 ```
-summary: pin0 set on true, all GPIO register return values field on 1 (only pin 0 set 1)
+(pin0 set on true and all GPIO register return values field on 1, only pin 0 set 1)
+
 ```
 $ node test_gpio.js 
 Sending pings every 5 seconds
 ==> pin 0 set to: true
 <== GPIO pins register:  101
 ```
-summary: pin0 set on true, all GPIO register return values field on 3 (binary 101) (pin 0 on 1, pin 2 on 1 all then on 0)
+(pin0 set on true, all GPIO register return values field on 3 (binary 101) pin 0 on 1, pin 2 on 1 all then on 0)
 
 
 ### JavaScript example
