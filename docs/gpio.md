@@ -1,6 +1,6 @@
 # GPIO
 
-The GPIO driver on current version support:<a href="https://github.com/matrix-io/matrix-creator-malos/blob/av/doc_gpio/docs/gpio_diagram.jpg"><img src="https://github.com/matrix-io/matrix-creator-malos/blob/av/doc_gpio/docs/gpio_diagram.jpg" align="right" width="420" ></a>
+The GPIO driver on current version supports:<a href="https://github.com/matrix-io/matrix-creator-malos/blob/av/doc_gpio/docs/gpio_diagram.jpg"><img src="https://github.com/matrix-io/matrix-creator-malos/blob/av/doc_gpio/docs/gpio_diagram.jpg" align="right" width="420" ></a>
 
 * GPIO pin input
 * GPIO pin output
@@ -10,9 +10,9 @@ The driver follows the [MALOS protocol](../README.md#protocol).
 
 ### GPIO basic electronic specs
 
-* voltage 3.3
+* voltage 3.3v
 * current 100mA max
-* all GPIO pins needs pullups
+* all GPIO pins need pullups
 
 ### 0MQ Port
 ```
