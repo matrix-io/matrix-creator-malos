@@ -50,12 +50,12 @@ If you start sending keep-alive messages it will start returning data every seco
 
 ### Errors
 
-This driver report errors when an invalid configuration is sent.
+This driver reports errors when an invalid configuration is sent.
 
 
 ### Write
 
-All pins on matrix creator starting like inputs. For change to outputs the driver need message for each pin on OUTPUT mode. (see Javascript example below)
+All pins on matrix creator start as inputs. For change to outputs the driver need message for each pin on OUTPUT mode. (see Javascript example below)
 
 
 ### Read
