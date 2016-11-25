@@ -77,9 +77,6 @@ bool HumidityDriver::SendUpdate() {
 bool HumidityDriver::ProcessConfig(const DriverConfig &config) {
   HumidityParams humidity_params(config.humidity());
 
-  // Check if calibration is needed
-  if (!humidity_params.do_calibration()) return false;
-
   // Resetting the calibrated flag
   calibrated_ = false;
 
