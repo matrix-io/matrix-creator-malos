@@ -8,10 +8,10 @@ The GPIO driver on current version supports:<a href="https://github.com/matrix-i
 
 The driver follows the [MALOS protocol](../README.md#protocol).
 
-### GPIO basic electronic specs
+### GPIO electrical characteristics
 
-* voltage 3.3v
-* current 100mA max
+* GPIO voltage: 0.60-4.10 VDC ([details](https://github.com/matrix-io/matrix-creator-quickstart/wiki/Data-Sheets))
+* current 10mA max
 * all GPIO pins need pullups
 
 ### 0MQ Port
