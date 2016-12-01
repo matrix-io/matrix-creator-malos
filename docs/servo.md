@@ -4,7 +4,7 @@ The Servo driver on current version supports:
 <a href="https://github.com/matrix-io/matrix-creator-malos/blob/av/doc_servo/docs/servo_diagram.jpg"><img src="https://github.com/matrix-io/matrix-creator-malos/blob/av/doc_servo/docs/servo_diagram.jpg" align="right" width="320" ></a>
 
 * Handle Servo via GPIO pin output
-* Set Servo angle (only 180ø servos)
+* Set Servo angle (180ø servo for the moment)
 
 The driver follows the [MALOS protocol](../README.md#protocol).
 
@@ -71,7 +71,7 @@ the Pressure driver.
 
 ```
 var creator_ip = '127.0.0.1'
-var creator_pressure_base_port = 20013 + 32
+var creator_servo_base_port = 20013 + 32
 ```
 
 #### Load the protocol buffers used in the example.
@@ -95,21 +95,27 @@ configSocket.connect('tcp://' + creator_ip + ':' + creator_servo_base_port /* co
 All the drivers are configured using the message `driverconfig` (see [driver.proto](https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto)).
 ```
 function sendServoCommand() {
+  // build servo params message
   var servo_cfg_cmd = new matrixMalosBuilder.ServoParams;
-  servo_cfg_cmd.set_pin(4);
-
+  // Servo attached on GPIO13 (for example)
+  servo_cfg_cmd.set_pin(13);
+  
+  // change angle on each tick
   process.nextTick(function() {count=count+10});
   var angle=count%180;
   console.log('angle:',angle);
+
+  // set servo angle
   servo_cfg_cmd.set_angle(angle);
-  
+ 
+  // build DriverConfig message
   var config = new matrixMalosBuilder.DriverConfig;
   config.set_servo(servo_cfg_cmd);
   configSocket.send(config.encode().toBuffer());
 }
 ```
 
-#### Send continous configuration:
+#### Send continuous configuration:
 
 ```
 sendServoCommand()
