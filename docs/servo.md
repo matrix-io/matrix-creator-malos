@@ -24,7 +24,7 @@ The driver follows the [MALOS protocol](../README.md#protocol).
 ```
 ### Protocol buffers
 
-```
+``` c_cpp
 // Servo handler params
 message ServoParams {
   // GPIO to config
@@ -48,7 +48,7 @@ All pins on matrix creator start as inputs. You need to change the default setti
 
 This is a sample output given by the example described below.
 
-```
+``` bash
 $ node test_servo.js 
 angle: 0
 angle: 10
@@ -69,14 +69,14 @@ because we are connecting from the local host but it needs to be different if we
 connect from another computer. There is also the base port reserved by MALOS for
 the Pressure driver.
 
-```
+``` javascript
 var creator_ip = '127.0.0.1'
 var creator_servo_base_port = 20013 + 32
 ```
 
 #### Load the protocol buffers used in the example.
 
-```
+``` javascript
 var protoBuf = require("protobufjs");
 // parse proto file
 var protoBuilder = protoBuf.loadProtoFile('../../protocol-buffers/malos/driver.proto')
@@ -85,7 +85,7 @@ var matrixMalosBuilder = protoBuilder.build("matrix_malos")
 ```
 
 #### Connection to servo driver
-```
+``` javascript
 var zmq = require('zmq')
 var configSocket = zmq.socket('push')
 configSocket.connect('tcp://' + creator_ip + ':' + creator_servo_base_port /* config */)
@@ -117,7 +117,7 @@ function sendServoCommand() {
 
 #### Send continuous configuration:
 
-```
+``` javascript
 sendServoCommand()
 setInterval(function() {
   sendServoCommand()
