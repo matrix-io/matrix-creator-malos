@@ -20,7 +20,7 @@ The driver follows the [MALOS protocol](../README.md#protocol).
 ```
 ### Protocol buffers
 
-``` c_cpp
+``` javascript
 // GPIO handler params
 message GpioParams {
   // GPIO to config

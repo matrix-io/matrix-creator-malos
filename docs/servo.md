@@ -24,7 +24,7 @@ The driver follows the [MALOS protocol](../README.md#protocol).
 ```
 ### Protocol buffers
 
-``` programming
+``` javascript
 // Servo handler params
 message ServoParams {
   // GPIO to config
