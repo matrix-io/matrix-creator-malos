@@ -93,7 +93,7 @@ configSocket.connect('tcp://' + creator_ip + ':' + creator_servo_base_port /* co
 
 #### Configure Servo GPIO pin and send angle:
 All the drivers are configured using the message `driverconfig` (see [driver.proto](https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto)).
-```
+``` javascript
 function sendServoCommand() {
   // build servo params message
   var servo_cfg_cmd = new matrixMalosBuilder.ServoParams;
