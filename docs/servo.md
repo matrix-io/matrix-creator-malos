@@ -2,6 +2,8 @@
 
 The Servo driver on current version supports:
 
+<a href="https://github.com/matrix-io/matrix-creator-malos/blob/av/doc_servo/docs/servo_diagram.jpg"><img src="https://github.com/matrix-io/matrix-creator-malos/blob/av/doc_servo/docs/servo_diagram.jpg" align="right" width="420" ></a>
+
 <a href="https://github.com/matrix-io/matrix-creator-malos/blob/master/docs/gpio_diagram.jpg"><img src="https://github.com/matrix-io/matrix-creator-malos/blob/master/docs/gpio_diagram.jpg" align="right" width="420" ></a>
 
 * Handle Servo via GPIO pin output
