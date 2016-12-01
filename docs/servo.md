@@ -1,10 +1,7 @@
 # GPIO
 
 The Servo driver on current version supports:
-
 <a href="https://github.com/matrix-io/matrix-creator-malos/blob/av/doc_servo/docs/servo_diagram.jpg"><img src="https://github.com/matrix-io/matrix-creator-malos/blob/av/doc_servo/docs/servo_diagram.jpg" align="right" width="420" ></a>
-
-<a href="https://github.com/matrix-io/matrix-creator-malos/blob/master/docs/gpio_diagram.jpg"><img src="https://github.com/matrix-io/matrix-creator-malos/blob/master/docs/gpio_diagram.jpg" align="right" width="420" ></a>
 
 * Handle Servo via GPIO pin output
 * Set Servo angle (only 180ø servos)
@@ -17,6 +14,9 @@ The driver follows the [MALOS protocol](../README.md#protocol).
 * current 10mA max
 * all GPIO pins need pullups
 * requiere external source for servo
+
+<a href="https://github.com/matrix-io/matrix-creator-malos/blob/master/docs/gpio_diagram.jpg"><img src="https://github.com/matrix-io/matrix-creator-malos/blob/master/docs/gpio_diagram.jpg" align="right" width="420" ></a>
+
 
 ### 0MQ Port
 ```
