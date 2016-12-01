@@ -93,7 +93,7 @@ the Pressure driver.
 
 ```
 var creator_ip = '127.0.0.1'
-var creator_pressure_base_port = 20013 + 36
+var creator_gpio_base_port = 20013 + 36
 ```
 
 #### Load the protocol buffers used in the example.
