@@ -56,6 +56,7 @@ Registered driver UV with port 20029.
 Registered driver ZigbeeBulb with port 20033.
 Registered driver MicArray_Alsa with port 20037.
 Registered driver Lirc with port 20041.
+Registered driver Servo with port 20045.
 ```
 
 Each port reserves a range of 4 ports that are used for a driver. They are described in the following sections.
