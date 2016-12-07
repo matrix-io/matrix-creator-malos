@@ -73,7 +73,7 @@ Everloop driver (LED array) uses a configuration message to set the LEDs.
 The message is named EverloopImage and it is in the file [driver.proto](https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto).
 The message follows:
 
-```
+``` javascript
 message LedValue {
   uint32 red = 1;
   uint32 green = 2;
@@ -298,7 +298,7 @@ setInterval(function() {
 ```
 ##### Reading from MALOS
 Below is a simple implementation via NodeJS to read a `humidity` from MALOS via 0MQ. See [Humidty Example](https://github.com/matrix-io/matrix-creator-malos/blob/master/src/js_test/test_humidity.js) for the full example.
-``` javascript
+``` 
 // Start configuration for refresh rate, and heartbeat timeouts
 var configSocket = zmq.socket('push')
 configSocket.connect('tcp://' + creator_ip + ':' + creator_humidity_base_port)
