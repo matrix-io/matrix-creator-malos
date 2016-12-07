@@ -16,7 +16,7 @@ You can also use MALOS to query sensors of the [MATRIX Creator](https://creator.
 Connections to MALOS can be made both from localhost (127.0.0.1) and from remote computers that are in the same network.
 
 ### Install
-```
+```bash
 sudo apt-get install matrix-creator-init matrix-creator-malos
 sudo reboot
 ```
@@ -24,7 +24,7 @@ sudo reboot
 **Note:** At this point, on next start, `malos` will be running as a service.
 
 ### Upgrade
-```
+```bash
 sudo apt-get update && sudo apt-get upgrade
 sudo reboot
 ```
