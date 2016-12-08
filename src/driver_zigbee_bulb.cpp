@@ -34,7 +34,22 @@ std::string Trim(const std::string& s) {
           .base());
 }
 
+// http://stackoverflow.com/questions/478898/how-to-execute-a-command-and-get-output-of-command-within-c-using-posix
+std::string exec(const char* cmd) {
+    char buffer[128];
+    std::string result = "";
+    std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
+    if (!pipe) return ""; //throw std::runtime_error("popen() failed!");
+    while (!feof(pipe.get())) {
+        if (fgets(buffer, 128, pipe.get()) != NULL)
+            result += buffer;
+    }
+    return result;
+}
+
 }  // namespace
+
+
 
 namespace matrix_malos {
 
@@ -47,6 +62,17 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
   std::string command;
 
   if (zigbee_msg.type() == ZigBeeMsg::ZCL) {
+    
+    if (zigbee_msg.zcl_cmd().type() == ZigBeeMsg::ZCLCmd::ON_OFF) {
+      command = "zcl on-off";
+      if (zigbee_msg.zcl_cmd().type() == ZigBeeMsg::ZCLCmd::ON_OFF) {
+        
+      }
+    
+    } else if (zigbee_msg.zcl_cmd().type() == ZigBeeMsg::ZCLCmd::ON_OFF) {
+      command = "network leave";
+    
+    }
 
   } else if (zigbee_msg.type() == ZigBeeMsg::ZLL) {
 
@@ -71,16 +97,17 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
       command = buf;
 
     } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::NODE_INFO) {
-      command = "network leave";
+      command = "plugin device-database print-all";
 
     } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::DISCOVERY_INFO) {
       command = "plugin device-database print-all";
 
     } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::RESET_PROXY) {
-      
+      system("sudo pkill ZigBeeGateway");
+      system("sudo /usr/share/admobilize/matrix-creator/blob/ZigBeeGateway -n 1 -p ttyS0 -v");
 
     } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::IS_PROXY_ACTIVE) {
-      /* code */
+      /* Check if ZigBeeGateway is running*/
     }
 
   }
