@@ -39,8 +39,53 @@ std::string Trim(const std::string& s) {
 namespace matrix_malos {
 
 bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
-  ZigbeeBulbConfig bulb_config(config.zigbee_bulb());
+  
 
+
+  ZigBeeMsg zigbee_msg(config.zigbee_message());
+
+  std::string command;
+
+  if (zigbee_msg.type() == ZigBeeMsg::ZCL) {
+
+  } else if (zigbee_msg.type() == ZigBeeMsg::ZLL) {
+
+  } else if (zigbee_msg.type() == ZigBeeMsg::NETWORK_MGMT) {
+
+    if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::CREATE_NWK) {
+      command = "network find unused";
+    
+    } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::LEAVE_NWK) {
+      command = "network leave";
+
+    } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::NODE_LEAVE_NWK) {
+      char buf[128];
+      std::snprintf(buf, sizeof buf, "zdo leave  0x%04x 0 0",
+                    zigbee_msg.network_mgmt_cmd().node_leave_params().node_id());
+      command = buf;
+
+    } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::PERMIT_JOIN) {
+      char buf[128];
+      std::snprintf(buf, sizeof buf, "network pjoin %3d",
+                    zigbee_msg.network_mgmt_cmd().permit_join_params().time());
+      command = buf;
+
+    } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::NODE_INFO) {
+      command = "network leave";
+
+    } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::DISCOVERY_INFO) {
+      command = "plugin device-database print-all";
+
+    } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::RESET_PROXY) {
+      
+
+    } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::IS_PROXY_ACTIVE) {
+      /* code */
+    }
+
+  }
+
+/*
   // When address is empty and port is -1 we got a command.
   if (bulb_config.address() == "" && bulb_config.port() == -1) {
     if (tcp_client_.get() == nullptr) {
@@ -174,6 +219,10 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
   }
 
   std::cerr.flush();
+
+  */
+
+  tcp_client_->Send(command + "\n");
 
   return true;
 }
