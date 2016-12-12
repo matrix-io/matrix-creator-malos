@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <chrono>
+#include <thread>
 #include <iostream>
 
 #include "./driver_zigbee_bulb.h"
@@ -35,17 +37,17 @@ std::string Trim(const std::string& s) {
 }
 
 // http://stackoverflow.com/questions/478898/how-to-execute-a-command-and-get-output-of-command-within-c-using-posix
-std::string exec(const char* cmd) {
-    char buffer[128];
-    std::string result = "";
-    std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
-    if (!pipe) return ""; //throw std::runtime_error("popen() failed!");
-    while (!feof(pipe.get())) {
-        if (fgets(buffer, 128, pipe.get()) != NULL)
-            result += buffer;
-    }
-    return result;
-}
+// std::string exec(const char* cmd) {
+//     char buffer[128];
+//     std::string result = "";
+//     std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
+//     if (!pipe) return ""; //throw std::runtime_error("popen() failed!");
+//     while (!feof(pipe.get())) {
+//         if (fgets(buffer, 128, pipe.get()) != NULL)
+//             result += buffer;
+//     }
+//     return result;
+// }
 
 }  // namespace
 
@@ -54,24 +56,74 @@ std::string exec(const char* cmd) {
 namespace matrix_malos {
 
 bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
-  
-
-
+  // TODO: Validate all the data that comes from the protos
   ZigBeeMsg zigbee_msg(config.zigbee_message());
 
   std::string command;
 
   if (zigbee_msg.type() == ZigBeeMsg::ZCL) {
-    
+    command = "zcl ";
     if (zigbee_msg.zcl_cmd().type() == ZigBeeMsg::ZCLCmd::ON_OFF) {
-      command = "zcl on-off";
-      if (zigbee_msg.zcl_cmd().type() == ZigBeeMsg::ZCLCmd::ON_OFF) {
-        
+      command += "on-off ";
+      if (zigbee_msg.zcl_cmd().onoff_cmd().type() ==  ZigBeeMsg::ZCLCmd::OnOffCmd::ON)  {
+        command += " on";
+      } else if(zigbee_msg.zcl_cmd().onoff_cmd().type() ==  ZigBeeMsg::ZCLCmd::OnOffCmd::OFF){
+        command += " off";
+      } else if(zigbee_msg.zcl_cmd().onoff_cmd().type() ==  ZigBeeMsg::ZCLCmd::OnOffCmd::TOGGLE){
+        command += " toggle";
       }
-    
-    } else if (zigbee_msg.zcl_cmd().type() == ZigBeeMsg::ZCLCmd::ON_OFF) {
-      command = "network leave";
-    
+    } else if (zigbee_msg.zcl_cmd().type() == ZigBeeMsg::ZCLCmd::LEVEL) {
+      command += "level-control ";
+      if (zigbee_msg.zcl_cmd().level_cmd().type() == ZigBeeMsg::ZCLCmd::LevelCmd::MOVE_TO_LEVEL) {
+        char buf[128];
+        std::snprintf(buf, sizeof buf, "mv-to-level 0x%02x 0x%04x",
+                    zigbee_msg.zcl_cmd().level_cmd().move_to_level_params().level(),
+                    zigbee_msg.zcl_cmd().level_cmd().move_to_level_params().transition_time());
+        command += buf;
+      } else if (zigbee_msg.zcl_cmd().level_cmd().type() == ZigBeeMsg::ZCLCmd::LevelCmd::MOVE) {
+        char buf[128];
+        std::snprintf(buf, sizeof buf, "move 0x%02x 0x%02x",
+                    zigbee_msg.zcl_cmd().level_cmd().move_params().mode(),
+                    zigbee_msg.zcl_cmd().level_cmd().move_params().rate());
+        command += buf;
+      }
+    } else if (zigbee_msg.zcl_cmd().type() == ZigBeeMsg::ZCLCmd::COLOR_CONTROL) {
+      command += "color-control ";
+      if (zigbee_msg.zcl_cmd().colorcontrol_cmd().type() == ZigBeeMsg::ZCLCmd::ColorControlCmd::MOVETOHUE) {
+        char buf[128];
+        std::snprintf(buf, sizeof buf, "movetohue 0x%02x 0x%02x 0x%04x",
+                    zigbee_msg.zcl_cmd().colorcontrol_cmd().movetohue_params().hue(),
+                    zigbee_msg.zcl_cmd().colorcontrol_cmd().movetohue_params().direction(),
+                    zigbee_msg.zcl_cmd().colorcontrol_cmd().movetohue_params().transition_time());
+        command += buf;
+      } else if (zigbee_msg.zcl_cmd().colorcontrol_cmd().type() == ZigBeeMsg::ZCLCmd::ColorControlCmd::MOVETOSAT) {
+        char buf[128];
+        std::snprintf(buf, sizeof buf, "movetosat 0x%02x 0x%04x",
+                    zigbee_msg.zcl_cmd().colorcontrol_cmd().movetosat_params().saturation(),
+                    zigbee_msg.zcl_cmd().colorcontrol_cmd().movetosat_params().transition_time());
+        command += buf;
+      } else if (zigbee_msg.zcl_cmd().colorcontrol_cmd().type() == ZigBeeMsg::ZCLCmd::ColorControlCmd::MOVETOHUEANDSAT) {
+        char buf[128];
+        std::snprintf(buf, sizeof buf, "movetohue 0x%02x 0x%02x 0x%04x",
+                    zigbee_msg.zcl_cmd().colorcontrol_cmd().movetohueandsat_params().hue(),
+                    zigbee_msg.zcl_cmd().colorcontrol_cmd().movetohueandsat_params().saturation(),
+                    zigbee_msg.zcl_cmd().colorcontrol_cmd().movetohueandsat_params().transition_time());
+        command += buf;
+      }
+    } else if (zigbee_msg.zcl_cmd().type() == ZigBeeMsg::ZCLCmd::IDENTIFY) {
+      command += "identify ";
+      if (zigbee_msg.zcl_cmd().identify_cmd().type() == ZigBeeMsg::ZCLCmd::IdentifyCmd::IDENTIFY_ON) {
+        char buf[128];
+        std::snprintf(buf, sizeof buf, "on 0x%02x 0x%04x",
+                    zigbee_msg.zcl_cmd().identify_cmd().identify_on_params().endpoint(),
+                    zigbee_msg.zcl_cmd().identify_cmd().identify_on_params().identify_time());
+        command += buf;
+      } else if (zigbee_msg.zcl_cmd().identify_cmd().type() == ZigBeeMsg::ZCLCmd::IdentifyCmd::IDENTIFY_OFF) {
+        char buf[128];
+        std::snprintf(buf, sizeof buf, "off 0x%04x",
+                    zigbee_msg.zcl_cmd().identify_cmd().identify_off_params().identify_time());
+        command += buf;
+      }
     }
 
   } else if (zigbee_msg.type() == ZigBeeMsg::ZLL) {
@@ -103,152 +155,48 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
       command = "plugin device-database print-all";
 
     } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::RESET_PROXY) {
+      
+      // Kill the ZigBeeGateway app 
       system("sudo pkill ZigBeeGateway");
-      system("sudo /usr/share/admobilize/matrix-creator/blob/ZigBeeGateway -n 1 -p ttyS0 -v");
+      zmq_push_error_->Send("killing the gateway");
+
+      // Starting the app
+      system("sudo /usr/share/admobilize/matrix-creator/blob/ZigBeeGateway -n 1 -p ttyS0 -v &");
+      zmq_push_error_->Send("Starting the gateway");
+
+      int i = 0;
+      const int count = 10;
+      for (i = 0; i < count; ++i)
+      {
+        // Sleep 0.5 sec to wait for 
+        std::this_thread::sleep_for(
+          std::chrono::milliseconds(500));
+    
+        tcp_client_.reset(new TcpClient());
+        if (tcp_client_->Connect(gateway_ip, gateway_port)) {
+          std::cerr << "Connected." << std::endl << std::flush;
+          break;
+        } else {
+          if (i == count - 1){
+            std::cerr << "NOT connected." << std::endl;
+            zmq_push_error_->Send("Couldn't connect to ZigBee Gateway at " +
+              gateway_ip + ":" + std::to_string(gateway_port));
+          } else {
+            std::cerr << "Trying to connect with ZigBee Gateway..." << std::endl;
+            zmq_push_error_->Send("Trying to connect with ZigBee Gateway at " +
+              gateway_ip + ":" + std::to_string(gateway_port));
+          }
+        }
+      }
+
+      std::cerr.flush();
 
     } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::IS_PROXY_ACTIVE) {
       /* Check if ZigBeeGateway is running*/
     }
-
   }
 
-/*
-  // When address is empty and port is -1 we got a command.
-  if (bulb_config.address() == "" && bulb_config.port() == -1) {
-    if (tcp_client_.get() == nullptr) {
-      zmq_push_error_->Send(
-          "ZigBee bulb driver hasn't been configured. Did you restart MALOS?");
-      return false;
-    }
-
-    std::cerr << "ZigbeeBulb got command" << std::endl;
-    std::cerr << "ZigbeeBulb id: " << bulb_config.command().short_id()
-              << std::endl;
-    std::cerr << "ZigbeeBulb cmd: " << bulb_config.command().command()
-              << std::endl;
-
-    // TODO(nelson.castillo): Improve readability of this function.
-
-    // Only send the command if no errors are found.
-    std::string command;
-
-    if (bulb_config.command().command() == ZigBeeBulbCmd::OFF) {
-      command = "zcl on-off off";
-    } else if (bulb_config.command().command() == ZigBeeBulbCmd::ON) {
-      command = "zcl on-off on";
-    } else if (bulb_config.command().command() == ZigBeeBulbCmd::TOGGLE) {
-      command = "zcl on-off toggle";
-    } else if (bulb_config.command().command() == ZigBeeBulbCmd::IDENTIFY) {
-      command = "zcl identify id 3";
-    } else if (bulb_config.command().command() == ZigBeeBulbCmd::LEVEL) {
-      if (bulb_config.command().params_size() != 2) {
-        zmq_push_error_->Send(
-            "Invalid number of parameters for LEVEL command.  Two"
-            "parameters are required: level and transition time.");
-        return false;
-      }
-      if (bulb_config.command().params(0) > 255) {
-        zmq_push_error_->Send(
-            "Invalid level for LEVEL command. level needs values between 0 and "
-            "255");
-        return false;
-      }
-      if (bulb_config.command().params(1) > 65535) {
-        zmq_push_error_->Send(
-            "Invalid transition time for LEVEL command. Transition time needs "
-            "values between 0 and 65535");
-        return false;
-      }
-      // TODO(nelson.castillo): Do not allocate in the stack.
-      char buf[128];
-      std::snprintf(buf, sizeof buf, "zcl level-control mv-to-level %d %d",
-                    bulb_config.command().params(0),
-                    bulb_config.command().params(1));
-      command = buf;
-    } else if (bulb_config.command().command() == ZigBeeBulbCmd::COLOR) {
-      if (bulb_config.command().params_size() != 3) {
-        zmq_push_error_->Send(
-            "Invalid number of parameters for COLOR command.  Three"
-            "parameters are required: hue, saturation and transition time.");
-        return false;
-      }
-      if (bulb_config.command().params(0) > 255) {
-        zmq_push_error_->Send(
-            "Invalid hue for COLOR command. Hue needs values between 0 and "
-            "255");
-        return false;
-      }
-      if (bulb_config.command().params(1) > 255) {
-        zmq_push_error_->Send(
-            "Invalid saturation for COLOR command. Saturation needs values "
-            "between 0 and "
-            "255");
-        return false;
-      }
-      if (bulb_config.command().params(2) > 65535) {
-        zmq_push_error_->Send(
-            "Invalid transition time for COLOR command. Transition time needs "
-            "values between 0 and 65535");
-        return false;
-      }
-      // TODO(nelson.castillo): Do not allocate in the stack.
-      char buf[128];
-      std::snprintf(
-          buf, sizeof buf, "zcl color-control movetohueandsat %d %d %d",
-          bulb_config.command().params(0), bulb_config.command().params(1),
-          bulb_config.command().params(2));
-      command = buf;
-    } else {
-      zmq_push_error_->Send(
-          "invalid  command. check the proto zigbeebulbcmd (file "
-          "driver.proto)");
-      return false;
-    }
-    // TODO(nelson.castillo): Do not allocate in the stack.
-    char buf[128];
-    if (bulb_config.command().endpoint() == 0) {
-      // Generic bulb.
-      std::snprintf(buf, sizeof buf, "send 0x%04x 0 1\n",
-                    bulb_config.command().short_id());
-    } else if (bulb_config.command().endpoint() == 0xb) {
-      // Philips bulb. We haven't figured out how to use the endpoints yet.
-      std::snprintf(buf, sizeof buf, "send 0x%04x 0 0xb\n",
-                    bulb_config.command().short_id());
-    } else {
-      zmq_push_error_->Send(
-          "Invalid  endpoint. We only use 0x0 and 0xb. Should we use more? Let "
-          "us know! The enpoint:" +
-          std::to_string(bulb_config.command().endpoint()));
-      return false;
-    }
-
-    tcp_client_->Send(command + "\n");
-    tcp_client_->Send(buf);
-
-    return true;
-  }
-
-  // Otherwise a new connection is established.
-
-  std::cerr << "ZigbeeBulb Got configuration" << std::endl;
-  std::cerr << "Connect to " << bulb_config.address() << ":"
-            << bulb_config.port() << std::endl;
-
-  tcp_client_.reset(new TcpClient());
-  if (tcp_client_->Connect(bulb_config.address(), bulb_config.port())) {
-    std::cerr << "connected" << std::endl << std::flush;
-  } else {
-    std::cerr << "NOT connected" << std::endl;
-    zmq_push_error_->Send("Could not connect to ZigBee gateway at " +
-                          bulb_config.address() + ":" +
-                          std::to_string(bulb_config.port()));
-    return false;
-  }
-
-  std::cerr.flush();
-
-  */
-
+  // Sending the messsage 
   tcp_client_->Send(command + "\n");
 
   return true;

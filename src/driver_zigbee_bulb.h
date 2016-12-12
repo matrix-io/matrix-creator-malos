@@ -47,7 +47,7 @@ class ZigbeeBulbDriver : public MalosWishboneBase {
   // Tcp client.
   std::unique_ptr<TcpClient> tcp_client_;
   const std::string gateway_ip = "127.0.0.1";
-  const int gateway_port = 31558;
+  const int gateway_port = 4901;
 };
 
 }  // namespace matrix_malos
