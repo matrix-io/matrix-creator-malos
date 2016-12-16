@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string>
 #include "./driver_imu.h"
-
 #include "./src/driver.pb.h"
 #include "matrix_hal/imu_data.h"
 
@@ -32,6 +32,18 @@ bool ImuDriver::SendUpdate() {
   imu_pb.set_yaw(data.yaw);
   imu_pb.set_pitch(data.pitch);
   imu_pb.set_roll(data.roll);
+  // acceleration
+  imu_pb.set_accel_x(data.accel_x);
+  imu_pb.set_accel_y(data.accel_y);
+  imu_pb.set_accel_z(data.accel_z);
+  // gyroscope
+  imu_pb.set_gyro_x(data.gyro_x);
+  imu_pb.set_gyro_y(data.gyro_y);
+  imu_pb.set_gyro_z(data.gyro_z);
+  // magnetometer
+  imu_pb.set_mag_x(data.mag_x);
+  imu_pb.set_mag_y(data.mag_y);
+  imu_pb.set_mag_z(data.mag_z);
 
   std::string buffer;
   imu_pb.SerializeToString(&buffer);

@@ -10,7 +10,7 @@
 // BasePort + 3 => Data port. Receive data from device.
 
 var creator_ip = '127.0.0.1'
-var creator_lirc_base_port = 20013 + 28 // port for Lirc driver.
+var creator_servo_base_port = 20013 + 32 // port for Servo driver.
 
 var protoBuf = require("protobufjs");
 var protoBuilder = protoBuf.loadProtoFile('../../protocol-buffers/malos/driver.proto')
@@ -18,19 +18,25 @@ var matrixMalosBuilder = protoBuilder.build("matrix_malos")
 
 var zmq = require('zmq')
 var configSocket = zmq.socket('push')
-configSocket.connect('tcp://' + creator_ip + ':' + creator_lirc_base_port /* config */)
+configSocket.connect('tcp://' + creator_ip + ':' + creator_servo_base_port /* config */)
 
-function sendIrCommand() {
-  var ir_cfg_cmd = new matrixMalosBuilder.LircParams
-  ir_cfg_cmd.set_device('SONY')
-  ir_cfg_cmd.set_command('KEY_POWER')
+var count=0
 
-  var config = new matrixMalosBuilder.DriverConfig
-  config.set_lirc(ir_cfg_cmd)
+function sendServoCommand() {
+  var servo_cfg_cmd = new matrixMalosBuilder.ServoParams;
+  servo_cfg_cmd.set_pin(4);
+
+  process.nextTick(function() {count=count+10});
+  var angle=count%180;
+  console.log('angle:',angle);
+  servo_cfg_cmd.set_angle(angle);
+
+  var config = new matrixMalosBuilder.DriverConfig;
+  config.set_servo(servo_cfg_cmd);
   configSocket.send(config.encode().toBuffer());
 }
 
-sendIrCommand()
+sendServoCommand()
 setInterval(function() {
-  sendIrCommand()
+  sendServoCommand()
 }, 3000);

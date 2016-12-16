@@ -7,3 +7,4 @@ ExecStart=/usr/bin/malos
 
 [Install]
 WantedBy=multi-user.target
+After=matrix-creator-firmware.service

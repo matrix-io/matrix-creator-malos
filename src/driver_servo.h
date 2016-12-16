@@ -15,55 +15,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_DRIVER_MICARRAY_ALSA_H_
-#define SRC_DRIVER_MICARRAY_ALSA_H_
-
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
-
-#include <memory>
-#include <thread>
+#ifndef SRC_DRIVER_SERVO_H_
+#define SRC_DRIVER_SERVO_H_
 
 #include "./malos_wishbone_base.h"
-
 #include "matrix_hal/wishbone_bus.h"
-#include "matrix_hal/microphone_array.h"
+#include "matrix_hal/gpio_control.h"
 
-const char kMicArrayAlsaDriverName[] = "MicArray_Alsa";
+const char kServoDriverName[] = "Servo";
 
 namespace matrix_malos {
 
-class MicArrayAlsaDriver : public MalosWishboneBase {
+class ServoDriver : public MalosWishboneBase {
  public:
-  MicArrayAlsaDriver() : MalosWishboneBase(kMicArrayAlsaDriverName) {
+  ServoDriver() : MalosWishboneBase(kServoDriverName) {
     SetProvidesUpdates(false);
     SetNeedsKeepalives(false);
-    SetNotesForHuman(
-        "Simple ALSA Driver for MATRIX Creator's Microphone Array");
+    SetNotesForHuman("Write-read. Servo handler. In development");
   }
 
   // Receive a copy of the shared wishbone bus. Not owned.
   void SetupWishboneBus(matrix_hal::WishboneBus* wishbone) override {
-    mics_.reset(new matrix_hal::MicrophoneArray);
-    mics_->Setup(wishbone);
-
-    // alsa thread.
-    std::thread alsa_thread(&MicArrayAlsaDriver::AlsaThread, this);
-    alsa_thread.detach();
+    gpio_.reset(new matrix_hal::GPIOControl);
+    gpio_->Setup(wishbone);
   }
 
-  // Read configuration of Mic Array (from the outside world).
+  // Read configuration of Servo command
   bool ProcessConfig(const DriverConfig& config) override;
 
-  // Thread that send audio stream to named pipes
-  void AlsaThread();
-
  private:
-  // Microphone array driver
-  std::unique_ptr<matrix_hal::MicrophoneArray> mics_;
+  // GPIO control
+  std::unique_ptr<matrix_hal::GPIOControl> gpio_;
 };
 
 }  // namespace matrix_malos
 
-#endif  // SRC_DRIVER_MICARRAY_ALSA_H_
+#endif  // SRC_DRIVER_SERVO_H_

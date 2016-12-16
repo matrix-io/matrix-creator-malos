@@ -15,46 +15,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
-
-#include <iostream>
 #include <string>
+#include <iostream>
 
-#include "./driver_lirc.h"
+#include "./driver_gpio.h"
 #include "./src/driver.pb.h"
 
 namespace matrix_malos {
 
-const bool kLircDriverDebugEnabled = false;
+const bool kGpioDriverDebugEnabled = false;
 
-bool LircDriver::ProcessConfig(const DriverConfig& config) {
-  LircParams lirc(config.lirc());
+bool GpioDriver::ProcessConfig(const DriverConfig& config) {
+  GpioParams gpio_config(config.gpio());
+  const int16_t pin = static_cast<int16_t>(gpio_config.pin());
+  const int16_t mode = static_cast<int16_t>(gpio_config.mode());
 
-  if (lirc.device() == "" || lirc.command() == "" ||
-      !isValidLircSymbol(lirc.device()) || !isValidLircSymbol(lirc.command())) {
+  if (mode == GpioParams::OUTPUT) {
+    gpio_->SetGPIOValue(pin, gpio_config.value());
+  } else if (!(mode == GpioParams::OUTPUT || mode == GpioParams::INPUT)) {
     zmq_push_error_->Send(
-        std::string(kLircDriverName) +
-        " error: Device or command parameter is missing or invalid.");
+        "invalid gpio mode. check the proto GpioParams (file "
+        "driver.proto)");
     return false;
   }
 
-  if (kLircDriverDebugEnabled) {
-    std::cout << "device :" << lirc.device() << "\t";
-    std::cout << "command:" << lirc.command() << std::endl;
-  }
+  gpio_->SetMode(pin, mode);
 
-  if (system(std::string("irsend SEND_ONCE " + lirc.device() + " " +
-                         lirc.command())
-                 .c_str()) == -1) {
-    zmq_push_error_->Send("ir command failed");
-    return false;
-  }
   return true;
 }
 
-bool LircDriver::isValidLircSymbol(const std::string& word) {
-  for (const char c : word)
-    if (!(isalnum(c) || c == '_')) return false;
+bool GpioDriver::SendUpdate() {
+  GpioParams gpiopb;
+  gpiopb.set_values(gpio_->GetGPIOValues());
+  std::string buffer;
+  gpiopb.SerializeToString(&buffer);
+  zqm_push_update_->Send(buffer);
+
   return true;
 }
+
 }  // namespace matrix_malos

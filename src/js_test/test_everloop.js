@@ -17,6 +17,16 @@ var protoBuilder = protoBuf.loadProtoFile('../../protocol-buffers/malos/driver.p
 var matrixMalosBuilder = protoBuilder.build("matrix_malos")
 
 var zmq = require('zmq')
+
+// To trigger an error message you can send an invalid configuration to the driver.
+// For instance, set a number of leds != 35.
+var errorSocket = zmq.socket('sub')
+errorSocket.connect('tcp://' + creator_ip + ':' + (creator_everloop_base_port + 2))
+errorSocket.subscribe('')
+errorSocket.on('message', function(error_message) {
+  process.stdout.write('Message received: Pressure error: ' + error_message.toString('utf8') + "\n")
+});
+
 var configSocket = zmq.socket('push')
 configSocket.connect('tcp://' + creator_ip + ':' + creator_everloop_base_port /* config */)
 

@@ -46,6 +46,8 @@ set(malos_src
   driver_zigbee_bulb.cpp driver_zigbee_bulb.h
   driver_micarray_alsa.cpp driver_micarray_alsa.h
   driver_lirc.cpp driver_lirc.h
+  driver_servo.cpp driver_servo.h
+  driver_gpio.cpp driver_gpio.h
   tcp_client.cpp tcp_client.h
   ${MALOS_PROTO_SRC} ${MALOS_PROTO_HEADER}
 )

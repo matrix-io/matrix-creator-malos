@@ -38,12 +38,17 @@ errorSocket.on('message', function(error_message) {
 // ********** Start configuration.
 var configSocket = zmq.socket('push')
 configSocket.connect('tcp://' + creator_ip + ':' + creator_humidity_base_port)
-// Send driver configuration.
+
 var driverConfigProto = new matrixMalosBuilder.DriverConfig
 // 2 seconds between updates.
 driverConfigProto.delay_between_updates = 2.0
 // Stop sending updates 6 seconds after pings.
 driverConfigProto.timeout_after_last_ping = 6.0
+var hum_params_msg = new matrixMalosBuilder.HumidityParams
+// Real current temperature [Celsius] for calibration 
+hum_params_msg.current_temperature = 23
+driverConfigProto.set_humidity(hum_params_msg)
+// Send driver configuration.
 configSocket.send(driverConfigProto.encode().toBuffer())
 // ********** End configuration.
 
