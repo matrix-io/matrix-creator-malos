@@ -36,22 +36,7 @@ std::string Trim(const std::string& s) {
           .base());
 }
 
-// http://stackoverflow.com/questions/478898/how-to-execute-a-command-and-get-output-of-command-within-c-using-posix
-// std::string exec(const char* cmd) {
-//     char buffer[128];
-//     std::string result = "";
-//     std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
-//     if (!pipe) return ""; //throw std::runtime_error("popen() failed!");
-//     while (!feof(pipe.get())) {
-//         if (fgets(buffer, 128, pipe.get()) != NULL)
-//             result += buffer;
-//     }
-//     return result;
-// }
-
 }  // namespace
-
-
 
 namespace matrix_malos {
 
@@ -132,37 +117,29 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
 
     if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::CREATE_NWK) {
       command = "network find unused";
-    
     } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::LEAVE_NWK) {
       command = "network leave";
-
     } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::NODE_LEAVE_NWK) {
       char buf[128];
       std::snprintf(buf, sizeof buf, "zdo leave  0x%04x 0 0",
                     zigbee_msg.network_mgmt_cmd().node_leave_params().node_id());
       command = buf;
-
     } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::PERMIT_JOIN) {
       char buf[128];
       std::snprintf(buf, sizeof buf, "network pjoin %3d",
                     zigbee_msg.network_mgmt_cmd().permit_join_params().time());
       command = buf;
-
     } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::NODE_INFO) {
-      command = "plugin device-database print-all";
-
+      command = "info";
     } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::DISCOVERY_INFO) {
       command = "plugin device-database print-all";
-
     } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::RESET_PROXY) {
       
       // Kill the ZigBeeGateway app 
       system("sudo pkill ZigBeeGateway");
-      zmq_push_error_->Send("killing the gateway");
 
       // Starting the app
       system("sudo /usr/share/admobilize/matrix-creator/blob/ZigBeeGateway -n 1 -p ttyS0 -v &");
-      zmq_push_error_->Send("Starting the gateway");
 
       int i = 0;
       const int count = 10;
@@ -174,7 +151,7 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
     
         tcp_client_.reset(new TcpClient());
         if (tcp_client_->Connect(gateway_ip, gateway_port)) {
-          std::cerr << "Connected." << std::endl << std::flush;
+          std::cerr << "Couldn't connect to ZigBee Gateway at " << gateway_ip << ":" << std::to_string(gateway_port) << std::endl << std::flush;
           break;
         } else {
           if (i == count - 1){
@@ -193,41 +170,76 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
 
     } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::IS_PROXY_ACTIVE) {
       /* Check if ZigBeeGateway is running*/
+    } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::NETWORK_STATUS) {
+      command = "info";
     }
   }
 
   // Sending the messsage 
-  tcp_client_->Send(command + "\n");
+  if (tcp_client_.get() == nullptr) {
+    zmq_push_error_->Send("Gateway app not connected.");
+  }
+  else{
+    tcp_client_->Send(command + "\n");
+  }
 
   return true;
 }
 
-const char AnnounceLine[] = "Device Announce: ";
+// const char AnnounceLine[] = "Device Announce: ";
+const char NetworkStateLine[] = "network state";
+
 
 bool ZigbeeBulbDriver::SendUpdate() {
   std::string line;
-  while (tcp_client_->GetLine(&line)) {
+  while (tcp_client_->GetLine(&line)) { 
+    
     line = Trim(line);
-    std::cerr << "ZigBee: " << line << std::endl;
-    std::cerr.flush();
-    // Check if the line countains an announcement.
-    if (line.size() > sizeof AnnounceLine - 1 &&
-        line.compare(0, sizeof AnnounceLine - 1, AnnounceLine) == 0) {
-      line.erase(0, sizeof AnnounceLine - 1);
-      std::cerr << "ZigbeeBulbDriver received announce for '" << line << "'"
-                << std::endl;
-      // Fill out protocol buffer.
-      ZigBeeAnnounce announce_pb;
-      int device_id = stoi(line, 0, 16);
-      std::cerr << line << " => " << device_id << std::endl;
-      announce_pb.set_short_id(device_id);
-      // Send the serialized proto.
-      std::string buffer;
-      announce_pb.SerializeToString(&buffer);
-      zqm_push_update_->Send(buffer);
+    
+    // Detecting NetworkStateLine in the line
+    std::size_t found = line.find(NetworkStateLine);
+    if (found != std::string::npos){
+
+      int network_type = stoi(line.substr(found + sizeof NetworkStateLine + 1 , 2),0,10);
+
+      ZigBeeMsg zigbee_msg; 
+      zigbee_msg.set_type(ZigBeeMsg::NETWORK_MGMT);
+      zigbee_msg.network_mgmt_cmd().set_type(ZigBeeMsg::NetworkMgmtCmd::CREATE_NWK);
+
+      // switch (network_type)
+      // {
+      //   // NO_NETWORK
+      //   case 0: zigbee_msg.network_mgmt_cmd().set_network_status(
+      //     ZigBeeMsg::NetworkMgmtCmd::NetworkStatus::NO_NETWORK);
+      //   break;
+      //   // JOINING_NETWORK 
+      //   case 1:zigbee_msg.network_mgmt_cmd().set_network_status(
+      //     ZigBeeMsg::NetworkMgmtCmd::NetworkStatus::JOINING_NETWORK);
+      //   break;
+      //   // JOINED_NETWORK 
+      //   case 2: zigbee_msg.network_mgmt_cmd().set_network_status(
+      //     ZigBeeMsg::NetworkMgmtCmd::NetworkStatus::JOINED_NETWORK);
+      //   break;
+      //   // JOINED_NETWORK_NO_PARENT 
+      //   case 3: zigbee_msg.network_mgmt_cmd().set_network_status(
+      //     ZigBeeMsg::NetworkMgmtCmd::NetworkStatus::JOINED_NETWORK_NO_PARENT);
+      //   break;
+      //   // LEAVING_NETWORK 
+      //   case 4: zigbee_msg.network_mgmt_cmd().set_network_status(
+      //     ZigBeeMsg::NetworkMgmtCmd::NetworkStatus::LEAVING_NETWORK);
+      //   break;
+        
+      // }
+
+      //  // Send the serialized proto.
+      // std::string buffer;
+      // zigbee_msg.SerializeToString(&buffer);
+      // zqm_push_update_->Send(buffer);
+      
+
+    } else {
     }
   }
-  // Device Announce: 0x17AA
   return true;
 }
 

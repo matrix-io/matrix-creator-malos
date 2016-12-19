@@ -28,10 +28,18 @@ errorSocket.on('message', function(error_message) {
   process.stdout.write('Message received: ' + error_message.toString('utf8') + "\n")
 });
 
-
+// ------------ Create the socket for sending data to the driver ----------
 var configSocket = zmq.socket('push')
 configSocket.connect('tcp://' + creator_ip + ':' + create_zigbee_base_port /* config */)
+
 var config = new matrixMalosBuilder.DriverConfig;
+
+// ------- Setting the delay_between_updates and set_timeout_after_last_ping ---------
+config.set_delay_between_updates(1)
+config.set_timeout_after_last_ping(1)
+
+// // ------------ Reseting the Gateway App -----------------------
+config = new matrixMalosBuilder.DriverConfig;
 var zig_msg = new matrixMalosBuilder.ZigBeeMsg;
 zig_msg.set_type(matrixMalosBuilder.ZigBeeMsg.ZigBeeCmdType.NETWORK_MGMT);
 zig_msg.network_mgmt_cmd = new matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd;
@@ -39,46 +47,73 @@ zig_msg.network_mgmt_cmd.set_type(
   matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkMgmtCmdTypes.RESET_PROXY)
 
 config.set_zigbee_message(zig_msg)
-config.set_delay_between_updates(0.2)
 configSocket.send(config.encode().toBuffer());
 
-// var pingSocket = zmq.socket('push')
-// pingSocket.connect('tcp://' + creator_ip + ':' + (create_zigbee_base_port + 1))
-// process.stdout.write("Sending pings every 3 seconds");
-// pingSocket.send(''); // Ping the first time.
-// setInterval(function(){
-//   pingSocket.send('');
-// }, 3000);
+// ------------ Starting to ping the driver -----------------------
+var pingSocket = zmq.socket('push')
+pingSocket.connect('tcp://' + creator_ip + ':' + (create_zigbee_base_port + 1))
+console.log('Sending pings every 5 seconds');
+pingSocket.send(''); // Ping the first time.
+setInterval(function(){
+  pingSocket.send('');
+// console.log(' ... ping');
+}, 5000);
+
+// ------------ Checking if a Zigbee Network exist ------ ---------------
+var zig_msg = new matrixMalosBuilder.ZigBeeMsg;
+zig_msg.set_type(matrixMalosBuilder.ZigBeeMsg.ZigBeeCmdType.NETWORK_MGMT);
+zig_msg.network_mgmt_cmd = new matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd;
+zig_msg.network_mgmt_cmd.set_type(
+matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkMgmtCmdTypes.NETWORK_STATUS)
+config.set_zigbee_message(zig_msg)
+configSocket.send(config.encode().toBuffer());
 
 
-// var updateSocket = zmq.socket('sub')
-// updateSocket.connect('tcp://' + creator_ip + ':' + (create_zigbee_base_port + 3))
-// updateSocket.subscribe('')
-// updateSocket.on('message', function(buffer) {
-//   var data = new matrixMalosBuilder.ZigBeeAnnounce.decode(buffer)
+// // ------------ Creating a ZigBee Network -------------------------------
+// var zig_msg = new matrixMalosBuilder.ZigBeeMsg;
+// zig_msg.set_type(matrixMalosBuilder.ZigBeeMsg.ZigBeeCmdType.NETWORK_MGMT);
+// zig_msg.network_mgmt_cmd = new matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd;
+// zig_msg.network_mgmt_cmd.set_type(
+// matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkMgmtCmdTypes.NODE_INFO)
+// config.set_zigbee_message(zig_msg)
+// configSocket.send(config.encode().toBuffer());
 
-//   console.log(data)
-//   // { short_id: 6058, cluster_id: 0, zdo_command: 0, zdo_status: 0 }
+// ------------ Making the Network joinable -----------------------------
+// ------------ Waiting for new devices ---------------------------------
+// ------------ Identify devices on the Network -------------------------
+// ------------ Selecting one device and change toggle ------------------
 
-//   if (!knownBulbs.has(data.short_id)) {
-//       setInterval(function() {
-//         var bulbCmd = new matrixMalosBuilder.ZigBeeBulbCmd
-//         bulbCmd.short_id = data.short_id
-//         // Check the message ZigBeeBulbCmd for the available commands.
-//         // https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto
-//         bulbCmd.command = matrixMalosBuilder.ZigBeeBulbCmd.EnumCommands.TOGGLE
-//         console.log('toggle')
-//         var bulb_cfg_cmd = new matrixMalosBuilder.ZigbeeBulbConfig
-//         bulb_cfg_cmd.set_address('')
-//         bulb_cfg_cmd.set_port(-1)
-//         bulb_cfg_cmd.set_command(bulbCmd)
 
-//         var config = new matrixMalosBuilder.DriverConfig
-//         config.set_delay_between_updates(0.2)
-//         config.set_zigbee_bulb(bulb_cfg_cmd)
-//         configSocket.send(config.encode().toBuffer());
-//       }, 2000);
-//   }
+// var subSocket = zmq.socket('sub')
+// subSocket.connect('tcp://' + creator_ip + ':' + (create_zigbee_base_port + 3))
+// subSocket.subscribe('')
+// subSocket.on('message', function(buffer) {
 
-//   knownBulbs.add(data.short_id)
+//   console.log('console : Protobuf Message received');
+
+//   var zigBeeMsg = new matrixMalosBuilder.ZigBeeMsg.decode(buffer)
+
+//   if(zigBeeMsg.type)
+
+  // if (!knownBulbs.has(zigBeeMsg.short_id)) {
+  //     setInterval(function() {
+  //       var bulbCmd = new matrixMalosBuilder.ZigBeeBulbCmd
+  //       bulbCmd.short_id = zigBeeMsg.short_id
+  //       // Check the message ZigBeeBulbCmd for the available commands.
+  //       // https://github.com/matrix-io/protocol-buffers/blob/master/malos/driver.proto
+  //       bulbCmd.command = matrixMalosBuilder.ZigBeeBulbCmd.EnumCommands.TOGGLE
+  //       console.log('toggle')
+  //       var bulb_cfg_cmd = new matrixMalosBuilder.ZigbeeBulbConfig
+  //       bulb_cfg_cmd.set_address('')
+  //       bulb_cfg_cmd.set_port(-1)
+  //       bulb_cfg_cmd.set_command(bulbCmd)
+
+  //       var config = new matrixMalosBuilder.DriverConfig
+  //       config.set_delay_between_updates(0.2)
+  //       config.set_zigbee_bulb(bulb_cfg_cmd)
+  //       configSocket.send(config.encode().toBuffer());
+  //     }, 2000);
+  // }
+
+//   knownBulbs.add(zigBeeMsg.short_id)
 // });
