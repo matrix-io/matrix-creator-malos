@@ -142,7 +142,7 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
       system("sudo /usr/share/admobilize/matrix-creator/blob/ZigBeeGateway -n 1 -p ttyS0 -v &");
 
       int i = 0;
-      const int count = 10;
+      const int count = 10; 
       for (i = 0; i < count; ++i)
       {
         // Sleep 0.5 sec to wait for 
@@ -169,18 +169,35 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
       std::cerr.flush();
 
     } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::IS_PROXY_ACTIVE) {
-      /* Check if ZigBeeGateway is running*/
+      
+      ZigBeeMsg msg; 
+      msg.set_type(ZigBeeMsg::NETWORK_MGMT);
+      msg.mutable_network_mgmt_cmd()->set_type(ZigBeeMsg::NetworkMgmtCmd::IS_PROXY_ACTIVE);
+
+      if(tcp_client_.GetErrorMessage() == "Connected"){ //TODO:Improve the detection of socket connected
+        msg.mutable_network_mgmt_cmd()->set_is_proxy_active(true);
+      }else{
+        msg.mutable_network_mgmt_cmd()->set_is_proxy_active(false);
+      }
+
+      std::string buffer;
+      msg.SerializeToString(&buffer);
+      zqm_push_update_->Send(buffer);
+      
+      command = ""; // No need to send message
     } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::NETWORK_STATUS) {
       command = "info";
     }
   }
 
   // Sending the messsage 
-  if (tcp_client_.get() == nullptr) {
-    zmq_push_error_->Send("Gateway app not connected.");
-  }
-  else{
-    tcp_client_->Send(command + "\n");
+  if (command != ""){
+    if (tcp_client_.get() == nullptr) {
+      zmq_push_error_->Send("Gateway app not connected.");
+    }
+    else{
+      tcp_client_->Send(command + "\n");
+    }
   }
 
   return true;
@@ -199,46 +216,52 @@ bool ZigbeeBulbDriver::SendUpdate() {
     // Detecting NetworkStateLine in the line
     std::size_t found = line.find(NetworkStateLine);
     if (found != std::string::npos){
+      zmq_push_error_->Send("Found networ state: ");
+      zmq_push_error_->Send(line);
 
       int network_type = stoi(line.substr(found + sizeof NetworkStateLine + 1 , 2),0,10);
 
+      zmq_push_error_->Send("number: ");
+      zmq_push_error_->Send(std::to_string(network_type));
+
       ZigBeeMsg zigbee_msg; 
       zigbee_msg.set_type(ZigBeeMsg::NETWORK_MGMT);
-      zigbee_msg.network_mgmt_cmd().set_type(ZigBeeMsg::NetworkMgmtCmd::CREATE_NWK);
+      zigbee_msg.mutable_network_mgmt_cmd()->set_type(ZigBeeMsg::NetworkMgmtCmd::NETWORK_STATUS);
 
-      // switch (network_type)
-      // {
-      //   // NO_NETWORK
-      //   case 0: zigbee_msg.network_mgmt_cmd().set_network_status(
-      //     ZigBeeMsg::NetworkMgmtCmd::NetworkStatus::NO_NETWORK);
-      //   break;
-      //   // JOINING_NETWORK 
-      //   case 1:zigbee_msg.network_mgmt_cmd().set_network_status(
-      //     ZigBeeMsg::NetworkMgmtCmd::NetworkStatus::JOINING_NETWORK);
-      //   break;
-      //   // JOINED_NETWORK 
-      //   case 2: zigbee_msg.network_mgmt_cmd().set_network_status(
-      //     ZigBeeMsg::NetworkMgmtCmd::NetworkStatus::JOINED_NETWORK);
-      //   break;
-      //   // JOINED_NETWORK_NO_PARENT 
-      //   case 3: zigbee_msg.network_mgmt_cmd().set_network_status(
-      //     ZigBeeMsg::NetworkMgmtCmd::NetworkStatus::JOINED_NETWORK_NO_PARENT);
-      //   break;
-      //   // LEAVING_NETWORK 
-      //   case 4: zigbee_msg.network_mgmt_cmd().set_network_status(
-      //     ZigBeeMsg::NetworkMgmtCmd::NetworkStatus::LEAVING_NETWORK);
-      //   break;
-        
-      // }
+      switch (network_type)
+      {
+        // NO_NETWORK
+        case 0: zigbee_msg.mutable_network_mgmt_cmd()->mutable_network_status()->set_type(
+          ZigBeeMsg::NetworkMgmtCmd::NetworkStatus::NO_NETWORK);
+        break;
+        // JOINING_NETWORK 
+        case 1:zigbee_msg.mutable_network_mgmt_cmd()->mutable_network_status()->set_type(
+          ZigBeeMsg::NetworkMgmtCmd::NetworkStatus::JOINING_NETWORK);
+        break;
+        // JOINED_NETWORK 
+        case 2: zigbee_msg.mutable_network_mgmt_cmd()->mutable_network_status()->set_type(
+          ZigBeeMsg::NetworkMgmtCmd::NetworkStatus::JOINED_NETWORK);
+        break;
+        // JOINED_NETWORK_NO_PARENT 
+        case 3: zigbee_msg.mutable_network_mgmt_cmd()->mutable_network_status()->set_type(
+          ZigBeeMsg::NetworkMgmtCmd::NetworkStatus::JOINED_NETWORK_NO_PARENT);
+        break;
+        // LEAVING_NETWORK 
+        case 4: zigbee_msg.mutable_network_mgmt_cmd()->mutable_network_status()->set_type(
+          ZigBeeMsg::NetworkMgmtCmd::NetworkStatus::LEAVING_NETWORK);
+        break;
+      }
+       // Send the serialized proto.
+      std::string buffer;
+      zigbee_msg.SerializeToString(&buffer);
+      zqm_push_update_->Send(buffer);
+      zmq_push_error_->Send(buffer);
 
-      //  // Send the serialized proto.
-      // std::string buffer;
-      // zigbee_msg.SerializeToString(&buffer);
-      // zqm_push_update_->Send(buffer);
-      
+      continue;
 
-    } else {
-    }
+    } 
+
+
   }
   return true;
 }
