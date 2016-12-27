@@ -129,62 +129,57 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
       std::snprintf(buf, sizeof buf, "network pjoin %3d",
                     zigbee_msg.network_mgmt_cmd().permit_join_params().time());
       command = buf;
-    } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::NODE_INFO) {
-      command = "info";
     } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::DISCOVERY_INFO) {
       command = "plugin device-database print-all";
     } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::RESET_PROXY) {
       
       // Kill the ZigBeeGateway app 
-      system("sudo pkill ZigBeeGateway");
+      system("sudo pkill ZigBeeGateway"); 
 
       // Starting the app
       system("sudo /usr/share/admobilize/matrix-creator/blob/ZigBeeGateway -n 1 -p ttyS0 -v &");
 
       int i = 0;
       const int count = 10; 
+      tcp_client_.reset(new TcpClient());
+
+      std::cerr << "Trying to connect with the Gateway ...." << std::endl;
+      zmq_push_error_->Send("Trying to connect with the Gateway ....");
+      
       for (i = 0; i < count; ++i)
       {
         // Sleep 0.5 sec to wait for 
         std::this_thread::sleep_for(
           std::chrono::milliseconds(500));
     
-        tcp_client_.reset(new TcpClient());
         if (tcp_client_->Connect(gateway_ip, gateway_port)) {
-          std::cerr << "Couldn't connect to ZigBee Gateway at " << gateway_ip << ":" << std::to_string(gateway_port) << std::endl << std::flush;
+          std::cerr << "Connected to the Gateway." << std::endl;
+          zmq_push_error_->Send("Connected to the Gateway.");
           break;
         } else {
           if (i == count - 1){
-            std::cerr << "NOT connected." << std::endl;
-            zmq_push_error_->Send("Couldn't connect to ZigBee Gateway at " +
-              gateway_ip + ":" + std::to_string(gateway_port));
-          } else {
-            std::cerr << "Trying to connect with ZigBee Gateway..." << std::endl;
-            zmq_push_error_->Send("Trying to connect with ZigBee Gateway at " +
-              gateway_ip + ":" + std::to_string(gateway_port));
+            std::cerr << "No connection to the Gateway" << std::endl << std::flush;
+            zmq_push_error_->Send("No connection to the Gateway");
           }
+          std::cerr << "Trying to connect with the Gateway ...." << std::endl;
+          zmq_push_error_->Send("Trying to connect with the Gateway ....");
         }
       }
 
       std::cerr.flush();
 
     } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::IS_PROXY_ACTIVE) {
-      
-      ZigBeeMsg msg; 
-      msg.set_type(ZigBeeMsg::NETWORK_MGMT);
-      msg.mutable_network_mgmt_cmd()->set_type(ZigBeeMsg::NetworkMgmtCmd::IS_PROXY_ACTIVE);
-
-      if(tcp_client_.GetErrorMessage() == "Connected"){ //TODO:Improve the detection of socket connected
-        msg.mutable_network_mgmt_cmd()->set_is_proxy_active(true);
+      command = ""; // No need to send message to Gateway
+      if( tcp_client_->GetErrorMessage().compare("Connected") == 0) { 
+        zigbee_msg.mutable_network_mgmt_cmd()->set_is_proxy_active(true);
       }else{
-        msg.mutable_network_mgmt_cmd()->set_is_proxy_active(false);
+        zigbee_msg.mutable_network_mgmt_cmd()->set_is_proxy_active(false);
       }
 
       std::string buffer;
-      msg.SerializeToString(&buffer);
+      zigbee_msg.SerializeToString(&buffer);
       zqm_push_update_->Send(buffer);
       
-      command = ""; // No need to send message
     } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::NETWORK_STATUS) {
       command = "info";
     }
@@ -192,10 +187,7 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
 
   // Sending the messsage 
   if (command != ""){
-    if (tcp_client_.get() == nullptr) {
-      zmq_push_error_->Send("Gateway app not connected.");
-    }
-    else{
+    if (tcp_client_.get() != nullptr) { 
       tcp_client_->Send(command + "\n");
     }
   }
@@ -203,8 +195,6 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
   return true;
 }
 
-// const char AnnounceLine[] = "Device Announce: ";
-const char NetworkStateLine[] = "network state";
 
 
 bool ZigbeeBulbDriver::SendUpdate() {
@@ -213,17 +203,14 @@ bool ZigbeeBulbDriver::SendUpdate() {
     
     line = Trim(line);
     
-    // Detecting NetworkStateLine in the line
+    // Detecting Network State
+    const char NetworkStateLine[] = "network state";
+
     std::size_t found = line.find(NetworkStateLine);
     if (found != std::string::npos){
-      zmq_push_error_->Send("Found networ state: ");
-      zmq_push_error_->Send(line);
 
       int network_type = stoi(line.substr(found + sizeof NetworkStateLine + 1 , 2),0,10);
-
-      zmq_push_error_->Send("number: ");
-      zmq_push_error_->Send(std::to_string(network_type));
-
+      
       ZigBeeMsg zigbee_msg; 
       zigbee_msg.set_type(ZigBeeMsg::NETWORK_MGMT);
       zigbee_msg.mutable_network_mgmt_cmd()->set_type(ZigBeeMsg::NetworkMgmtCmd::NETWORK_STATUS);
@@ -260,7 +247,6 @@ bool ZigbeeBulbDriver::SendUpdate() {
       continue;
 
     } 
-
 
   }
   return true;
