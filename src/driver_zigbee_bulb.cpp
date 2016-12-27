@@ -23,6 +23,7 @@
 
 #include "./src/driver.pb.h"
 
+
 namespace {
 
 // http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
@@ -36,7 +37,8 @@ std::string Trim(const std::string& s) {
           .base());
 }
 
-}  // namespace
+}  // namespace 
+
 
 namespace matrix_malos {
 
@@ -195,7 +197,7 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
   return true;
 }
 
-
+ZigBeeMsg zigbee_msg; 
 
 bool ZigbeeBulbDriver::SendUpdate() {
   std::string line;
@@ -203,15 +205,12 @@ bool ZigbeeBulbDriver::SendUpdate() {
     
     line = Trim(line);
     
-    // Detecting Network State
-    const char NetworkStateLine[] = "network state";
-
-    std::size_t found = line.find(NetworkStateLine);
+    const char network_state_line[] = "network state";
+    std::size_t found = line.find(network_state_line);
     if (found != std::string::npos){
 
-      int network_type = stoi(line.substr(found + sizeof NetworkStateLine + 1 , 2),0,10);
-      
-      ZigBeeMsg zigbee_msg; 
+      int network_type = stoi(line.substr(found + sizeof network_state_line + 1 , 2),0,10);
+
       zigbee_msg.set_type(ZigBeeMsg::NETWORK_MGMT);
       zigbee_msg.mutable_network_mgmt_cmd()->set_type(ZigBeeMsg::NetworkMgmtCmd::NETWORK_STATUS);
 
@@ -245,8 +244,38 @@ bool ZigbeeBulbDriver::SendUpdate() {
       zmq_push_error_->Send(buffer);
 
       continue;
-
     } 
+
+    const char discovery_info_line[] = "Discovery Database";
+    found = line.find(discovery_info_line);
+    if (found != std::string::npos){
+
+      int network_type = stoi(line.substr(found + sizeof network_state_line + 1 , 2),0,10);
+
+      zigbee_msg.set_type(ZigBeeMsg::NETWORK_MGMT);
+      zigbee_msg.mutable_network_mgmt_cmd()->set_type(ZigBeeMsg::NetworkMgmtCmd::DISCOVERY_INFO);
+
+       // Send the serialized proto.
+      std::string buffer;
+      zigbee_msg.SerializeToString(&buffer);
+      zqm_push_update_->Send(buffer);
+      zmq_push_error_->Send(buffer);
+
+      continue;
+    }
+
+    // found = line.find("devices in database");
+    // if (found != std::string::npos){
+
+    //    // Send the serialized proto.
+    //   std::string buffer;
+    //   zigbee_msg.SerializeToString(&buffer);
+    //   zqm_push_update_->Send(buffer);
+    //   zmq_push_error_->Send(buffer);
+
+    //   continue;
+
+    // }
 
   }
   return true;
