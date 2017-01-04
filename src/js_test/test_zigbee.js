@@ -88,26 +88,41 @@ subSocket.on('message', function(buffer) {
         console.log('RESET_PROXY');
       break;
       case matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkMgmtCmdTypes.IS_PROXY_ACTIVE:
-        gateway_up = true; //zig_msg.network_mgmt_cmd.is_proxy_activee;
-        console.log('Gateway connected');
-        if(zigbee_network_up == false) {
-          console.log('Requesting ZigBee Network Status');
-          config.zigbee_message.network_mgmt_cmd.set_type(
-            matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkMgmtCmdTypes.NETWORK_STATUS)
-          configSocket.send(config.encode().toBuffer());
+        
+        if (zig_msg.network_mgmt_cmd.is_proxy_active){
+          console.log('Gateway connected');
+          gateway_up = true; //zig_msg.network_mgmt_cmd.is_proxy_activee;
+        } else {
+          console.log('Gateway Not connected');
+          process.exit(1);  
         }
 
-        // setTimeout(function(){
-        //   if (!zigbee_network_up) {
-        //     console.log('Zigbee Network not working.');
-        //     process.exit(1);  
-        //   }
-        // },1000);
-
+        console.log('Requesting ZigBee Network Status');
+        config.zigbee_message.network_mgmt_cmd.set_type(
+          matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkMgmtCmdTypes.NETWORK_STATUS)
+        configSocket.send(config.encode().toBuffer());
       break;
       case matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkMgmtCmdTypes.NETWORK_STATUS:
         console.log('NETWORK_STATUS');
 
+        switch(zig_msg.network_mgmt_cmd.network_status.type) {
+
+          case matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkStatus.Status.NO_NETWORK:
+            console.log('NO_NETWORK');
+          break;
+          case matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkStatus.Status.JOINING_NETWORK:
+            console.log('JOINING_NETWORK');
+          break;
+          case matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkStatus.Status.JOINED_NETWORK:
+            console.log('JOINED_NETWORK');
+          break;
+          case matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkStatus.Status.JOINED_NETWORK_NO_PARENT:
+            console.log('JOINED_NETWORK_NO_PARENT');
+          break;
+          case matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkStatus.Status.LEAVING_NETWORK:
+            console.log('LEAVING_NETWORK');
+          break;
+        }
         
       break;
     }  
@@ -149,14 +164,15 @@ function ResetGateway(){
   configSocket.send(config.encode().toBuffer());
 
   // ------------- Exit if not connected ----------------------------
-  setTimeout(function(){
-    if (!gateway_up) {
-      console.log('Gateway not connected');
-      process.exit(1);  
-    }
-  },1000);
+  // setTimeout(function(){
+  //   if (!gateway_up) {
+  //     console.log('Gateway not connected');
+  //     process.exit(1);  
+  //   }
+  // },1000);
 
 }
+
 
 // if(!zigbee_network_up){
 

@@ -207,7 +207,6 @@ bool ZigbeeBulbDriver::SendUpdate() {
   while (tcp_client_->GetLine(&line)) { 
     
     line = Trim(line);
-    std::cerr << ">>>" <<line << std::endl;
 
     const char network_state_line[] = "network state";
     std::size_t found = line.find(network_state_line);
@@ -246,7 +245,6 @@ bool ZigbeeBulbDriver::SendUpdate() {
       std::string buffer;
       zigbee_msg.SerializeToString(&buffer);
       zqm_push_update_->Send(buffer);
-      zmq_push_error_->Send(buffer);
 
       continue;
     } 
@@ -268,36 +266,102 @@ bool ZigbeeBulbDriver::SendUpdate() {
     found = line.find(discovery_end_line);
     if (found != std::string::npos) {
       bulding_discovery_result =  false;
+
+      // Send the serialized proto.
+      std::string buffer;
+      zigbee_msg.SerializeToString(&buffer);
+      zqm_push_update_->Send(buffer);
+
       continue;
     }
 
-    const char node_id_line[] = "NodeId";
-    found = line.find(node_id_line);
-    if (found != std::string::npos && bulding_discovery_result) {
-      int node_id = stoi(line.substr(found + sizeof node_id_line + 1, 6), 0, 16);
-      ZigBeeMsg::NetworkMgmtCmd::NodeDescription* new_node =  
+    if(bulding_discovery_result){
+
+      const char node_index_line[] = "Node Index";
+      found = line.find(node_index_line);
+      if (found != std::string::npos) {
         zigbee_msg.mutable_network_mgmt_cmd()->add_connected_nodes();
-      new_node->set_nodeid(node_id);
-      continue;
-    }
-
-    const char euid64_line[] = "Eui64";
-    found = line.find(euid64_line);
-    if (found != std::string::npos && bulding_discovery_result){
-      std::string euid64_str = line.substr(found + sizeof euid64_line + 1, 18);
-      unsigned long long euid64 = strtoull(euid64_str.c_str(), 0, 16);
-      if (zigbee_msg.mutable_network_mgmt_cmd()->connected_nodes_size() > 0) {
-          zigbee_msg.mutable_network_mgmt_cmd()->mutable_connected_nodes(
-            zigbee_msg.mutable_network_mgmt_cmd()->connected_nodes_size()-1)->set_eui64(euid64);
+        continue;
       }
-      continue;
+
+      ZigBeeMsg::NetworkMgmtCmd::NodeDescription* last_node;
+      int size = zigbee_msg.mutable_network_mgmt_cmd()->connected_nodes_size();
+      if (size > 0) {
+          last_node = zigbee_msg.mutable_network_mgmt_cmd()->mutable_connected_nodes(size-1);
+      } else {
+        continue;
+      }
+
+      const char node_id_line[] = "NodeId";
+      found = line.find(node_id_line);
+      if (found != std::string::npos) {
+        int node_id = stoi(line.substr(found + sizeof node_id_line + 1, 6), 0, 16);
+        last_node->set_nodeid(node_id);
+        continue;
+      }
+
+      const char euid64_line[] = "Eui64";
+      found = line.find(euid64_line);
+      if (found != std::string::npos){
+        unsigned long long euid64 = strtoull(
+          line.substr(found + sizeof euid64_line + 1, 18).c_str(), 0, 16);
+        last_node->set_eui64(euid64);
+        continue;
+      }
+
+      const char endpoint_line[] = "EP";
+      found = line.find(endpoint_line);
+      if (found != std::string::npos) {
+        last_node->add_endpoints();
+        continue;
+      }
+
+      ZigBeeMsg::NetworkMgmtCmd::EndPointDescription* last_endpoint;
+      size = last_node->endpoints_size();
+      if (size > 0) {
+          last_endpoint = last_node->mutable_endpoints(size - 1);
+      } else {
+        continue;
+      }
+
+      const char profile_id_line[] = "Profile ID";
+      found = line.find(profile_id_line);
+      if (found != std::string::npos) {
+        int profile_id = stoi(line.substr(found + sizeof profile_id_line + 1, 6), 0, 16);
+        last_endpoint->set_profile_id(profile_id);
+        continue;
+      }
+
+      const char device_id_line[] = "Device ID";
+      found = line.find(device_id_line);
+      if (found != std::string::npos) {
+        int device_id = stoi(line.substr(found + sizeof device_id_line + 1, 6), 0, 16);
+        last_endpoint->set_device_id(device_id);
+        continue;
+      }
+
+      const char cluster_line[] = "Cluster:";
+      found = line.find(cluster_line);
+      if (found != std::string::npos) {
+        ZigBeeMsg::NetworkMgmtCmd::ClusterDescription* last_cluster = last_endpoint->add_clusters();
+
+        int cluster_id = stoi(line.substr(found + sizeof cluster_line, 6), 0, 16);
+        last_cluster->set_cluster_id(cluster_id);
+
+        found = line.find("Server");
+        if(found == std::string::npos) {
+          last_cluster->set_type(ZigBeeMsg::NetworkMgmtCmd::ClusterDescription::CLIENT_OUT);
+        } else {
+          last_cluster->set_type(ZigBeeMsg::NetworkMgmtCmd::ClusterDescription::SERVER_IN);
+        }
+
+        continue;
+      }
     }
-
-
-
   }
   return true;
 }
 
-}  // namespace matrix_malos
+}  
+
 
