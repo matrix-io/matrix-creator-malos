@@ -23,6 +23,7 @@
 
 #include "./src/driver.pb.h"
 
+// using matrix_malos::ZigBeeMsg;
 
 namespace {
 
@@ -198,13 +199,16 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
 }
 
 ZigBeeMsg zigbee_msg; 
+bool bulding_discovery_result = false;
+
 
 bool ZigbeeBulbDriver::SendUpdate() {
   std::string line;
   while (tcp_client_->GetLine(&line)) { 
     
     line = Trim(line);
-    
+    std::cerr << ">>>" <<line << std::endl;
+
     const char network_state_line[] = "network state";
     std::size_t found = line.find(network_state_line);
     if (found != std::string::npos){
@@ -212,7 +216,8 @@ bool ZigbeeBulbDriver::SendUpdate() {
       int network_type = stoi(line.substr(found + sizeof network_state_line + 1 , 2),0,10);
 
       zigbee_msg.set_type(ZigBeeMsg::NETWORK_MGMT);
-      zigbee_msg.mutable_network_mgmt_cmd()->set_type(ZigBeeMsg::NetworkMgmtCmd::NETWORK_STATUS);
+      zigbee_msg.mutable_network_mgmt_cmd()->set_type(
+        ZigBeeMsg::NetworkMgmtCmd::NETWORK_STATUS);
 
       switch (network_type)
       {
@@ -246,39 +251,53 @@ bool ZigbeeBulbDriver::SendUpdate() {
       continue;
     } 
 
-    const char discovery_info_line[] = "Discovery Database";
-    found = line.find(discovery_info_line);
+    const char discovery_start_line[] = "Discovery Database";
+    found = line.find(discovery_start_line);
     if (found != std::string::npos){
-
-      int network_type = stoi(line.substr(found + sizeof network_state_line + 1 , 2),0,10);
+      bulding_discovery_result =  true;
 
       zigbee_msg.set_type(ZigBeeMsg::NETWORK_MGMT);
-      zigbee_msg.mutable_network_mgmt_cmd()->set_type(ZigBeeMsg::NetworkMgmtCmd::DISCOVERY_INFO);
-
-       // Send the serialized proto.
-      std::string buffer;
-      zigbee_msg.SerializeToString(&buffer);
-      zqm_push_update_->Send(buffer);
-      zmq_push_error_->Send(buffer);
+      zigbee_msg.mutable_network_mgmt_cmd()->set_type(
+        ZigBeeMsg::NetworkMgmtCmd::DISCOVERY_INFO);
+      zigbee_msg.mutable_network_mgmt_cmd()->clear_connected_nodes();
 
       continue;
     }
 
-    // found = line.find("devices in database");
-    // if (found != std::string::npos){
+    const char discovery_end_line[] = "devices in database";
+    found = line.find(discovery_end_line);
+    if (found != std::string::npos) {
+      bulding_discovery_result =  false;
+      continue;
+    }
 
-    //    // Send the serialized proto.
-    //   std::string buffer;
-    //   zigbee_msg.SerializeToString(&buffer);
-    //   zqm_push_update_->Send(buffer);
-    //   zmq_push_error_->Send(buffer);
+    const char node_id_line[] = "NodeId";
+    found = line.find(node_id_line);
+    if (found != std::string::npos && bulding_discovery_result) {
+      int node_id = stoi(line.substr(found + sizeof node_id_line + 1, 6), 0, 16);
+      ZigBeeMsg::NetworkMgmtCmd::NodeDescription* new_node =  
+        zigbee_msg.mutable_network_mgmt_cmd()->add_connected_nodes();
+      new_node->set_nodeid(node_id);
+      continue;
+    }
 
-    //   continue;
+    const char euid64_line[] = "Eui64";
+    found = line.find(euid64_line);
+    if (found != std::string::npos && bulding_discovery_result){
+      std::string euid64_str = line.substr(found + sizeof euid64_line + 1, 18);
+      unsigned long long euid64 = strtoull(euid64_str.c_str(), 0, 16);
+      if (zigbee_msg.mutable_network_mgmt_cmd()->connected_nodes_size() > 0) {
+          zigbee_msg.mutable_network_mgmt_cmd()->mutable_connected_nodes(
+            zigbee_msg.mutable_network_mgmt_cmd()->connected_nodes_size()-1)->set_eui64(euid64);
+      }
+      continue;
+    }
 
-    // }
+
 
   }
   return true;
 }
 
 }  // namespace matrix_malos
+

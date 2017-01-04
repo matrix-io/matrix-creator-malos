@@ -29,6 +29,8 @@ var device_detected = false
 var protoBuilder = protoBuf.loadProtoFile('../../protocol-buffers/malos/driver.proto')
 var matrixMalosBuilder = protoBuilder.build("matrix_malos")
 
+var config = new matrixMalosBuilder.DriverConfig
+
 // Print the errors that the driver sends.
 var errorSocket = zmq.socket('sub')
 errorSocket.connect('tcp://' + creator_ip + ':' + (create_zigbee_base_port + 2))
@@ -95,12 +97,12 @@ subSocket.on('message', function(buffer) {
           configSocket.send(config.encode().toBuffer());
         }
 
-        setTimeout(function(){
-          if (!zigbee_network_up) {
-            console.log('Zigbee Network not working.');
-            process.exit(1);  
-          }
-        },1000);
+        // setTimeout(function(){
+        //   if (!zigbee_network_up) {
+        //     console.log('Zigbee Network not working.');
+        //     process.exit(1);  
+        //   }
+        // },1000);
 
       break;
       case matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkMgmtCmdTypes.NETWORK_STATUS:
@@ -119,12 +121,8 @@ ResetGateway();
 
 
 
-
-
-
 function ResetGateway(){
   // ------- Setting the delay_between_updates and set_timeout_after_last_ping ---------
-  var config = new matrixMalosBuilder.DriverConfig
   console.log('Setting the Zigbee Driver');
   config.set_delay_between_updates(1)
   config.set_timeout_after_last_ping(1)
