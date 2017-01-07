@@ -114,6 +114,21 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
       }
     }
 
+    // Sending the messsage 
+    if (command != ""){
+      if (tcp_client_.get() != nullptr) { 
+
+        tcp_client_->Send(command + "\n");
+
+        char buf[128];
+        std::snprintf(buf, sizeof buf, "send 0x%04x %d 0",
+                    zigbee_msg.zcl_cmd().node_id(),zigbee_msg.zcl_cmd().endpoint_id());
+        command = buf;
+
+        tcp_client_->Send(command + "\n");
+      }
+    }
+
   } else if (zigbee_msg.type() == ZigBeeMsg::ZLL) {
 
   } else if (zigbee_msg.type() == ZigBeeMsg::NETWORK_MGMT) {
@@ -129,7 +144,7 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
       command = buf;
     } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::PERMIT_JOIN) {
       char buf[128];
-      std::snprintf(buf, sizeof buf, "network pjoin %3d",
+      std::snprintf(buf, sizeof buf, "network pjoin %d",
                     zigbee_msg.network_mgmt_cmd().permit_join_params().time());
       command = buf;
     } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::DISCOVERY_INFO) {
@@ -186,14 +201,17 @@ bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
     } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::NETWORK_STATUS) {
       command = "info";
     }
+
+    // Sending the messsage 
+    if (command != ""){
+      if (tcp_client_.get() != nullptr) { 
+        tcp_client_->Send(command + "\n");
+      }
+    }
+
   }
 
-  // Sending the messsage 
-  if (command != ""){
-    if (tcp_client_.get() != nullptr) { 
-      tcp_client_->Send(command + "\n");
-    }
-  }
+  
 
   return true;
 }
@@ -207,6 +225,8 @@ bool ZigbeeBulbDriver::SendUpdate() {
   while (tcp_client_->GetLine(&line)) { 
     
     line = Trim(line);
+    std::cerr << ">>" << line << std::endl;
+
 
     const char network_state_line[] = "network state";
     std::size_t found = line.find(network_state_line);
@@ -249,6 +269,18 @@ bool ZigbeeBulbDriver::SendUpdate() {
       continue;
     } 
 
+    // Detect EMBER_NETWORK_UP & EMBER_NETWORK_DOWN
+    const char network_up_line[] = "EMBER_NETWORK_";
+    found = line.find(network_up_line);
+    if (found != std::string::npos) {
+
+      if (tcp_client_.get() != nullptr) { 
+        tcp_client_->Send("info\n");
+      }
+
+      continue;
+    }
+
     const char discovery_start_line[] = "Discovery Database";
     found = line.find(discovery_start_line);
     if (found != std::string::npos){
@@ -281,6 +313,9 @@ bool ZigbeeBulbDriver::SendUpdate() {
       found = line.find(node_index_line);
       if (found != std::string::npos) {
         zigbee_msg.mutable_network_mgmt_cmd()->add_connected_nodes();
+        
+        std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>  Number of nodes: "<< zigbee_msg.mutable_network_mgmt_cmd()->connected_nodes_size() << std::endl;
+        
         continue;
       }
 
@@ -296,7 +331,7 @@ bool ZigbeeBulbDriver::SendUpdate() {
       found = line.find(node_id_line);
       if (found != std::string::npos) {
         int node_id = stoi(line.substr(found + sizeof node_id_line + 1, 6), 0, 16);
-        last_node->set_nodeid(node_id);
+        last_node->set_node_id(node_id);
         continue;
       }
 
@@ -343,6 +378,9 @@ bool ZigbeeBulbDriver::SendUpdate() {
       const char cluster_line[] = "Cluster:";
       found = line.find(cluster_line);
       if (found != std::string::npos) {
+
+        std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>  Number of clusters: "<< zigbee_msg.mutable_network_mgmt_cmd()->mutable_connected_nodes(0)->mutable_endpoints(0)->clusters_size() << std::endl;
+
         ZigBeeMsg::NetworkMgmtCmd::ClusterDescription* last_cluster = last_endpoint->add_clusters();
 
         int cluster_id = stoi(line.substr(found + sizeof cluster_line, 6), 0, 16);

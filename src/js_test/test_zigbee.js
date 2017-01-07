@@ -25,6 +25,16 @@ var gateway_up = false
 var attemps = 10
 var device_detected = false 
 
+// status
+var none = 0 
+var status = none
+var waiting_for_devices = 1 
+var waiting_for_network_status = 2
+var nodes_discovered = 3
+
+var nodes_id = []
+var endpoints_id = []
+
 
 var protoBuilder = protoBuf.loadProtoFile('../../protocol-buffers/malos/driver.proto')
 var matrixMalosBuilder = protoBuilder.build("matrix_malos")
@@ -82,7 +92,63 @@ subSocket.on('message', function(buffer) {
         console.log('NODE_INFO');
       break;
       case matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkMgmtCmdTypes.DISCOVERY_INFO:
-        console.log('DISCOVERY_INFO');
+        if (status == waiting_for_devices) {
+
+          var zig_msg = new matrixMalosBuilder.ZigBeeMsg.decode(buffer).toRaw()
+          
+          console.log(zig_msg.network_mgmt_cmd.connected_nodes.length);
+          for (var i = 0; i < zig_msg.network_mgmt_cmd.connected_nodes.length; i++) {
+            console.log( zig_msg.network_mgmt_cmd.connected_nodes[i].endpoints.length);
+            for (var j = 0; j < zig_msg.network_mgmt_cmd.connected_nodes[i].endpoints.length; j++) {
+              console.log(zig_msg.network_mgmt_cmd.connected_nodes[i].endpoints[j].clusters.length);
+              for (var k = 0; k < zig_msg.network_mgmt_cmd.connected_nodes[i].endpoints[j].clusters.length; k++) {
+                // process.stdout.write('Node_id: ' + 
+                //   zig_msg.network_mgmt_cmd.connected_nodes[i].node_id  +
+                //   ' device_id: ' + zig_msg.network_mgmt_cmd.connected_nodes[i].endpoints[j].device_id +
+                //   ' cluster_id: ' + zig_msg.network_mgmt_cmd.connected_nodes[i].endpoints[j].clusters[k].cluster_id +
+                //   '\n' );
+
+                // Adding just nodes with  On/Off cluster
+                if (zig_msg.network_mgmt_cmd.connected_nodes[i].endpoints[j].clusters[k].cluster_id == 6) {
+                  nodes_id.push(zig_msg.network_mgmt_cmd.connected_nodes[i].node_id)
+                  endpoints_id.push(j)
+                  
+                  process.stdout.write('Added node_id: ' + 
+                    zig_msg.network_mgmt_cmd.connected_nodes[i].node_id + 
+                    ' endpoints_id: ' + j + "\n")
+
+                  continue;
+                } 
+              }
+            }
+          }
+
+         if(nodes_id.length > 0){
+          status = nodes_discovered
+          process.stdout.write( nodes_id.length  + ' Nodes found\n');
+         } else {
+          status = none
+          console.log('No devices found !');
+          process.exit(1);  
+         }
+
+        setInterval(function() {
+          console.log('sending toggle command to nodes.');
+
+          for (var i = 0; i < nodes_id.length; i++) {
+            config.zigbee_message.set_type(matrixMalosBuilder.ZigBeeMsg.ZigBeeCmdType.ZCL);
+            config.zigbee_message.zcl_cmd.set_type(matrixMalosBuilder.ZigBeeMsg.ZCLCmd.ZCLCmdType.TOGGLE);
+            configSocket.send(config.encode().toBuffer());  
+          }
+
+          // Here
+          
+        }, 2000);
+
+          
+
+        }
+
       break;
       case matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkMgmtCmdTypes.RESET_PROXY:
         console.log('RESET_PROXY');
@@ -93,28 +159,52 @@ subSocket.on('message', function(buffer) {
           console.log('Gateway connected');
           gateway_up = true; //zig_msg.network_mgmt_cmd.is_proxy_activee;
         } else {
-          console.log('Gateway Not connected');
+          console.log('Gateway Reset Failed.');
           process.exit(1);  
         }
-
         console.log('Requesting ZigBee Network Status');
         config.zigbee_message.network_mgmt_cmd.set_type(
           matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkMgmtCmdTypes.NETWORK_STATUS)
         configSocket.send(config.encode().toBuffer());
+        status = waiting_for_network_status;
       break;
       case matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkMgmtCmdTypes.NETWORK_STATUS:
-        console.log('NETWORK_STATUS');
+
+        console.log('NETWORK_STATUS: ');
+        
+        if (status != waiting_for_network_status) {
+          break;
+        }
+        
+        status = none;
 
         switch(zig_msg.network_mgmt_cmd.network_status.type) {
-
           case matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkStatus.Status.NO_NETWORK:
             console.log('NO_NETWORK');
+            console.log('Creating a ZigBee Network');
+            config.zigbee_message.network_mgmt_cmd.set_type(
+              matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkMgmtCmdTypes.CREATE_NWK)
+            configSocket.send(config.encode().toBuffer());
+            status = waiting_for_network_status;
           break;
           case matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkStatus.Status.JOINING_NETWORK:
             console.log('JOINING_NETWORK');
           break;
           case matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkStatus.Status.JOINED_NETWORK:
             console.log('JOINED_NETWORK');
+            config.zigbee_message.network_mgmt_cmd.set_type(
+            matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkMgmtCmdTypes.PERMIT_JOIN);
+
+            // Send a permit join commnad
+            var permit_join_params = new matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.PermitJoinParams;
+            permit_join_params.setTime(60);
+            config.zigbee_message.network_mgmt_cmd.set_permit_join_params(permit_join_params);
+            
+            configSocket.send(config.encode().toBuffer());  
+
+            console.log('Please reset your zigbee devices');
+            console.log('... Waiting 60 sec for new devices');
+            status = waiting_for_devices
           break;
           case matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkStatus.Status.JOINED_NETWORK_NO_PARENT:
             console.log('JOINED_NETWORK_NO_PARENT');
@@ -134,8 +224,6 @@ subSocket.on('message', function(buffer) {
 
 ResetGateway();
 
-
-
 function ResetGateway(){
   // ------- Setting the delay_between_updates and set_timeout_after_last_ping ---------
   console.log('Setting the Zigbee Driver');
@@ -147,6 +235,8 @@ function ResetGateway(){
   config = new matrixMalosBuilder.DriverConfig
   var zig_msg = new matrixMalosBuilder.ZigBeeMsg
   var network_mgmt_cmd = new matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd
+  var zcl_cmd = new matrixMalosBuilder.ZigBeeMsg.ZCLCmd
+  zig_msg.set_zcl_cmd(zcl_cmd)
   zig_msg.set_network_mgmt_cmd(network_mgmt_cmd)
   config.set_zigbee_message(zig_msg)
 
@@ -163,64 +253,5 @@ function ResetGateway(){
     matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkMgmtCmdTypes.IS_PROXY_ACTIVE)
   configSocket.send(config.encode().toBuffer());
 
-  // ------------- Exit if not connected ----------------------------
-  // setTimeout(function(){
-  //   if (!gateway_up) {
-  //     console.log('Gateway not connected');
-  //     process.exit(1);  
-  //   }
-  // },1000);
-
 }
-
-
-// if(!zigbee_network_up){
-
-//   // ------------ Creating a ZigBee Network -------------------------------
-//   console.log('Create a ZigBee Network');
-//   config.zigbee_message.network_mgmt_cmd.set_type(
-//   matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkMgmtCmdTypes.CREATE_NWK)
-//   configSocket.send(config.encode().toBuffer());
-// }
-
-// sleep.sleep(2);
-// // ------------ Checking if a Zigbee Network exist ------ ---------------
-// console.log('Requesting ZigBee NETWORK_STATUS');
-// config.zigbee_message.network_mgmt_cmd.set_type(
-//   matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkMgmtCmdTypes.NETWORK_STATUS)
-// configSocket.send(config.encode().toBuffer());
-
-// console.log('Waiting 2 sec for Network Status ..');
-// sleep.sleep(2);
-
-// if(!zigbee_network_up){
-//   console.log('Error creating ZigBee Network ');
-//   process.exit(1);  
-// }
-
-// console.log('ZigBee Network Up');
-
-// // ------------ Making the Network joinable -----------------------------
-// console.log('Open the Network for new devices to Join for 30 sec');
-// config.zigbee_message.network_mgmt_cmd.set_type(
-//   matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkMgmtCmdTypes.PERMIT_JOIN)
-// configSocket.send(config.encode().toBuffer());
-
-// var i = 10 
-// while(!device_detected && (i-- > 0)){
-//   console.log('Waiting for devices ... please turn one the device');
-//   sleep.sleep(3);
-// }
-// if(i == 0){
-//   console.log('No devices found .');
-//   process.exit(1);  
-// }
-//   console.log('No devices found .');
-
-
-
-
-// ------------ Waiting for new devices ---------------------------------
-// ------------ Identify devices on the Network -------------------------
-// ------------ Selecting one device and change toggle ------------------
 
