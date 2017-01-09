@@ -28,165 +28,174 @@
 namespace {
 
 // http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
-std::string Trim(const std::string& s) {
-  auto wsfront = std::find_if_not(s.begin(), s.end(),
-                                  [](int c) { return std::isspace(c); });
-  return std::string(
+  std::string Trim(const std::string& s) {
+    auto wsfront = std::find_if_not(s.begin(), s.end(),
+      [](int c) { return std::isspace(c); });
+    return std::string(
       wsfront,
       std::find_if_not(s.rbegin(), std::string::const_reverse_iterator(wsfront),
-                       [](int c) { return std::isspace(c); })
-          .base());
-}
+       [](int c) { return std::isspace(c); })
+      .base());
+  }
 
 }  // namespace 
 
 
 namespace matrix_malos {
 
-bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
+  bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
   // TODO: Validate all the data that comes from the protos
-  ZigBeeMsg zigbee_msg(config.zigbee_message());
+    ZigBeeMsg zigbee_msg(config.zigbee_message());
 
-  std::string command;
+    std::string command;
 
-  if (zigbee_msg.type() == ZigBeeMsg::ZCL) {
-    command = "zcl ";
-    if (zigbee_msg.zcl_cmd().type() == ZigBeeMsg::ZCLCmd::ON_OFF) {
-      command += "on-off ";
-      if (zigbee_msg.zcl_cmd().onoff_cmd().type() ==  ZigBeeMsg::ZCLCmd::OnOffCmd::ON)  {
-        command += " on";
-      } else if(zigbee_msg.zcl_cmd().onoff_cmd().type() ==  ZigBeeMsg::ZCLCmd::OnOffCmd::OFF){
-        command += " off";
-      } else if(zigbee_msg.zcl_cmd().onoff_cmd().type() ==  ZigBeeMsg::ZCLCmd::OnOffCmd::TOGGLE){
-        command += " toggle";
+    if (zigbee_msg.type() == ZigBeeMsg::ZCL) {
+      command = "zcl ";
+      std::cerr << " >>>>>> type: " << zigbee_msg.zcl_cmd().type() << std::endl;
+      if (zigbee_msg.zcl_cmd().type() == ZigBeeMsg::ZCLCmd::ON_OFF) {
+        command += "on-off ";
+        if (zigbee_msg.zcl_cmd().onoff_cmd().type() ==  ZigBeeMsg::ZCLCmd::OnOffCmd::ON)  {
+          command += " on";
+        } else if(zigbee_msg.zcl_cmd().onoff_cmd().type() ==  ZigBeeMsg::ZCLCmd::OnOffCmd::OFF){
+          command += " off";
+        } else if(zigbee_msg.zcl_cmd().onoff_cmd().type() ==  ZigBeeMsg::ZCLCmd::OnOffCmd::TOGGLE){
+          command += " toggle";
+        } else { 
+          command = ""; 
+        }
+      } else if (zigbee_msg.zcl_cmd().type() == ZigBeeMsg::ZCLCmd::LEVEL) {
+        command += "level-control ";
+        if (zigbee_msg.zcl_cmd().level_cmd().type() == ZigBeeMsg::ZCLCmd::LevelCmd::MOVE_TO_LEVEL) {
+          char buf[128];
+          std::snprintf(buf, sizeof buf, "mv-to-level 0x%02X 0x%04X",
+            zigbee_msg.zcl_cmd().level_cmd().move_to_level_params().level(),
+            zigbee_msg.zcl_cmd().level_cmd().move_to_level_params().transition_time());
+          command += buf;
+        } else if (zigbee_msg.zcl_cmd().level_cmd().type() == ZigBeeMsg::ZCLCmd::LevelCmd::MOVE) {
+          char buf[128];
+          std::snprintf(buf, sizeof buf, "move 0x%02X 0x%02X",
+            zigbee_msg.zcl_cmd().level_cmd().move_params().mode(),
+            zigbee_msg.zcl_cmd().level_cmd().move_params().rate());
+          command += buf;
+        } else {
+          command = ""; 
+        }
+      } else if (zigbee_msg.zcl_cmd().type() == ZigBeeMsg::ZCLCmd::COLOR_CONTROL) {
+        command += "color-control ";
+        if (zigbee_msg.zcl_cmd().colorcontrol_cmd().type() == ZigBeeMsg::ZCLCmd::ColorControlCmd::MOVETOHUE) {
+          char buf[128];
+          std::snprintf(buf, sizeof buf, "movetohue 0x%02X 0x%02X 0x%04X",
+            zigbee_msg.zcl_cmd().colorcontrol_cmd().movetohue_params().hue(),
+            zigbee_msg.zcl_cmd().colorcontrol_cmd().movetohue_params().direction(),
+            zigbee_msg.zcl_cmd().colorcontrol_cmd().movetohue_params().transition_time());
+          command += buf;
+        } else if (zigbee_msg.zcl_cmd().colorcontrol_cmd().type() == ZigBeeMsg::ZCLCmd::ColorControlCmd::MOVETOSAT) {
+          char buf[128];
+          std::snprintf(buf, sizeof buf, "movetosat 0x%02X 0x%04X",
+            zigbee_msg.zcl_cmd().colorcontrol_cmd().movetosat_params().saturation(),
+            zigbee_msg.zcl_cmd().colorcontrol_cmd().movetosat_params().transition_time());
+          command += buf;
+        } else if (zigbee_msg.zcl_cmd().colorcontrol_cmd().type() == ZigBeeMsg::ZCLCmd::ColorControlCmd::MOVETOHUEANDSAT) {
+          char buf[128];
+          std::snprintf(buf, sizeof buf, "movetohueandsat 0x%02X 0x%02X 0x%04X",
+            zigbee_msg.zcl_cmd().colorcontrol_cmd().movetohueandsat_params().hue(),
+            zigbee_msg.zcl_cmd().colorcontrol_cmd().movetohueandsat_params().saturation(),
+            zigbee_msg.zcl_cmd().colorcontrol_cmd().movetohueandsat_params().transition_time());
+          command += buf;
+        } else {
+          command = ""; 
+        }
+      } else if (zigbee_msg.zcl_cmd().type() == ZigBeeMsg::ZCLCmd::IDENTIFY) {
+        command += "identify ";
+        if (zigbee_msg.zcl_cmd().identify_cmd().type() == ZigBeeMsg::ZCLCmd::IdentifyCmd::IDENTIFY_ON) {
+          char buf[128];
+          std::snprintf(buf, sizeof buf, "on 0x%02X 0x%04X",
+            zigbee_msg.zcl_cmd().identify_cmd().identify_on_params().endpoint(),
+            zigbee_msg.zcl_cmd().identify_cmd().identify_on_params().identify_time());
+          command += buf;
+        } else if (zigbee_msg.zcl_cmd().identify_cmd().type() == ZigBeeMsg::ZCLCmd::IdentifyCmd::IDENTIFY_OFF) {
+          char buf[128];
+          std::snprintf(buf, sizeof buf, "off 0x%04X",
+            zigbee_msg.zcl_cmd().identify_cmd().identify_off_params().identify_time());
+          command += buf;
+        } else {
+          command = ""; 
+        }
+      } else {
+        command = ""; 
       }
-    } else if (zigbee_msg.zcl_cmd().type() == ZigBeeMsg::ZCLCmd::LEVEL) {
-      command += "level-control ";
-      if (zigbee_msg.zcl_cmd().level_cmd().type() == ZigBeeMsg::ZCLCmd::LevelCmd::MOVE_TO_LEVEL) {
-        char buf[128];
-        std::snprintf(buf, sizeof buf, "mv-to-level 0x%02x 0x%04x",
-                    zigbee_msg.zcl_cmd().level_cmd().move_to_level_params().level(),
-                    zigbee_msg.zcl_cmd().level_cmd().move_to_level_params().transition_time());
-        command += buf;
-      } else if (zigbee_msg.zcl_cmd().level_cmd().type() == ZigBeeMsg::ZCLCmd::LevelCmd::MOVE) {
-        char buf[128];
-        std::snprintf(buf, sizeof buf, "move 0x%02x 0x%02x",
-                    zigbee_msg.zcl_cmd().level_cmd().move_params().mode(),
-                    zigbee_msg.zcl_cmd().level_cmd().move_params().rate());
-        command += buf;
-      }
-    } else if (zigbee_msg.zcl_cmd().type() == ZigBeeMsg::ZCLCmd::COLOR_CONTROL) {
-      command += "color-control ";
-      if (zigbee_msg.zcl_cmd().colorcontrol_cmd().type() == ZigBeeMsg::ZCLCmd::ColorControlCmd::MOVETOHUE) {
-        char buf[128];
-        std::snprintf(buf, sizeof buf, "movetohue 0x%02x 0x%02x 0x%04x",
-                    zigbee_msg.zcl_cmd().colorcontrol_cmd().movetohue_params().hue(),
-                    zigbee_msg.zcl_cmd().colorcontrol_cmd().movetohue_params().direction(),
-                    zigbee_msg.zcl_cmd().colorcontrol_cmd().movetohue_params().transition_time());
-        command += buf;
-      } else if (zigbee_msg.zcl_cmd().colorcontrol_cmd().type() == ZigBeeMsg::ZCLCmd::ColorControlCmd::MOVETOSAT) {
-        char buf[128];
-        std::snprintf(buf, sizeof buf, "movetosat 0x%02x 0x%04x",
-                    zigbee_msg.zcl_cmd().colorcontrol_cmd().movetosat_params().saturation(),
-                    zigbee_msg.zcl_cmd().colorcontrol_cmd().movetosat_params().transition_time());
-        command += buf;
-      } else if (zigbee_msg.zcl_cmd().colorcontrol_cmd().type() == ZigBeeMsg::ZCLCmd::ColorControlCmd::MOVETOHUEANDSAT) {
-        char buf[128];
-        std::snprintf(buf, sizeof buf, "movetohue 0x%02x 0x%02x 0x%04x",
-                    zigbee_msg.zcl_cmd().colorcontrol_cmd().movetohueandsat_params().hue(),
-                    zigbee_msg.zcl_cmd().colorcontrol_cmd().movetohueandsat_params().saturation(),
-                    zigbee_msg.zcl_cmd().colorcontrol_cmd().movetohueandsat_params().transition_time());
-        command += buf;
-      }
-    } else if (zigbee_msg.zcl_cmd().type() == ZigBeeMsg::ZCLCmd::IDENTIFY) {
-      command += "identify ";
-      if (zigbee_msg.zcl_cmd().identify_cmd().type() == ZigBeeMsg::ZCLCmd::IdentifyCmd::IDENTIFY_ON) {
-        char buf[128];
-        std::snprintf(buf, sizeof buf, "on 0x%02x 0x%04x",
-                    zigbee_msg.zcl_cmd().identify_cmd().identify_on_params().endpoint(),
-                    zigbee_msg.zcl_cmd().identify_cmd().identify_on_params().identify_time());
-        command += buf;
-      } else if (zigbee_msg.zcl_cmd().identify_cmd().type() == ZigBeeMsg::ZCLCmd::IdentifyCmd::IDENTIFY_OFF) {
-        char buf[128];
-        std::snprintf(buf, sizeof buf, "off 0x%04x",
-                    zigbee_msg.zcl_cmd().identify_cmd().identify_off_params().identify_time());
-        command += buf;
-      }
-    }
 
     // Sending the messsage 
-    if (command != ""){
-      if (tcp_client_.get() != nullptr) { 
+      if (tcp_client_.get() != nullptr && command != ""){
 
         tcp_client_->Send(command + "\n");
 
         char buf[128];
-        std::snprintf(buf, sizeof buf, "send 0x%04x %d 0",
-                    zigbee_msg.zcl_cmd().node_id(),zigbee_msg.zcl_cmd().endpoint_id());
+        std::snprintf(buf, sizeof buf, "send 0x%04X 0 0x%02X",
+          zigbee_msg.zcl_cmd().node_id(),zigbee_msg.zcl_cmd().endpoint_index());
         command = buf;
 
         tcp_client_->Send(command + "\n");
       }
-    }
 
-  } else if (zigbee_msg.type() == ZigBeeMsg::ZLL) {
+    } else if (zigbee_msg.type() == ZigBeeMsg::ZLL) {
 
-  } else if (zigbee_msg.type() == ZigBeeMsg::NETWORK_MGMT) {
+    } else if (zigbee_msg.type() == ZigBeeMsg::NETWORK_MGMT) {
 
-    if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::CREATE_NWK) {
-      command = "network find unused";
-    } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::LEAVE_NWK) {
-      command = "network leave";
-    } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::NODE_LEAVE_NWK) {
-      char buf[128];
-      std::snprintf(buf, sizeof buf, "zdo leave  0x%04x 0 0",
-                    zigbee_msg.network_mgmt_cmd().node_leave_params().node_id());
-      command = buf;
-    } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::PERMIT_JOIN) {
-      char buf[128];
-      std::snprintf(buf, sizeof buf, "network pjoin %d",
-                    zigbee_msg.network_mgmt_cmd().permit_join_params().time());
-      command = buf;
-    } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::DISCOVERY_INFO) {
-      command = "plugin device-database print-all";
-    } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::RESET_PROXY) {
-      
+      if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::CREATE_NWK) {
+        command = "network find unused";
+      } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::LEAVE_NWK) {
+        command = "network leave";
+      } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::NODE_LEAVE_NWK) {
+        char buf[128];
+        std::snprintf(buf, sizeof buf, "zdo leave  0x%04X 0 0",
+          zigbee_msg.network_mgmt_cmd().node_leave_params().node_id());
+        command = buf;
+      } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::PERMIT_JOIN) {
+        char buf[128];
+        std::snprintf(buf, sizeof buf, "network pjoin %d",
+          zigbee_msg.network_mgmt_cmd().permit_join_params().time());
+        command = buf;
+      } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::DISCOVERY_INFO) {
+        command = "plugin device-database print-all";
+      } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::RESET_PROXY) {
+        
       // Kill the ZigBeeGateway app 
-      system("sudo pkill ZigBeeGateway"); 
+        system("sudo pkill ZigBeeGateway"); 
 
       // Starting the app
-      system("sudo /usr/share/admobilize/matrix-creator/blob/ZigBeeGateway -n 1 -p ttyS0 -v &");
+        system("sudo /usr/share/admobilize/matrix-creator/blob/ZigBeeGateway -n 1 -p ttyS0 -v &");
 
-      int i = 0;
-      const int count = 10; 
-      tcp_client_.reset(new TcpClient());
+        int i = 0;
+        const int count = 10; 
+        tcp_client_.reset(new TcpClient());
 
-      std::cerr << "Trying to connect with the Gateway ...." << std::endl;
-      zmq_push_error_->Send("Trying to connect with the Gateway ....");
-      
-      for (i = 0; i < count; ++i)
-      {
+        std::cerr << "Trying to connect with the Gateway ...." << std::endl;
+        zmq_push_error_->Send("Trying to connect with the Gateway ....");
+        
+        for (i = 0; i < count; ++i)
+        {
         // Sleep 0.5 sec to wait for 
-        std::this_thread::sleep_for(
-          std::chrono::milliseconds(500));
-    
-        if (tcp_client_->Connect(gateway_ip, gateway_port)) {
-          std::cerr << "Connected to the Gateway." << std::endl;
-          zmq_push_error_->Send("Connected to the Gateway.");
-          break;
-        } else {
-          if (i == count - 1){
-            std::cerr << "No connection to the Gateway" << std::endl << std::flush;
-            zmq_push_error_->Send("No connection to the Gateway");
+          std::this_thread::sleep_for(
+            std::chrono::milliseconds(500));
+          
+          if (tcp_client_->Connect(gateway_ip, gateway_port)) {
+            std::cerr << "Connected to the Gateway." << std::endl;
+            zmq_push_error_->Send("Connected to the Gateway.");
+            break;
+          } else {
+            if (i == count - 1){
+              std::cerr << "No connection to the Gateway" << std::endl << std::flush;
+              zmq_push_error_->Send("No connection to the Gateway");
+            }
+            std::cerr << "Trying to connect with the Gateway ...." << std::endl;
+            zmq_push_error_->Send("Trying to connect with the Gateway ....");
           }
-          std::cerr << "Trying to connect with the Gateway ...." << std::endl;
-          zmq_push_error_->Send("Trying to connect with the Gateway ....");
         }
-      }
 
-      std::cerr.flush();
+        std::cerr.flush();
 
-    } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::IS_PROXY_ACTIVE) {
+      } else if (zigbee_msg.network_mgmt_cmd().type() == ZigBeeMsg::NetworkMgmtCmd::IS_PROXY_ACTIVE) {
       command = ""; // No need to send message to Gateway
       if( tcp_client_->GetErrorMessage().compare("Connected") == 0) { 
         zigbee_msg.mutable_network_mgmt_cmd()->set_is_proxy_active(true);
@@ -313,16 +322,13 @@ bool ZigbeeBulbDriver::SendUpdate() {
       found = line.find(node_index_line);
       if (found != std::string::npos) {
         zigbee_msg.mutable_network_mgmt_cmd()->add_connected_nodes();
-        
-        std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>  Number of nodes: "<< zigbee_msg.mutable_network_mgmt_cmd()->connected_nodes_size() << std::endl;
-        
         continue;
       }
 
       ZigBeeMsg::NetworkMgmtCmd::NodeDescription* last_node;
       int size = zigbee_msg.mutable_network_mgmt_cmd()->connected_nodes_size();
       if (size > 0) {
-          last_node = zigbee_msg.mutable_network_mgmt_cmd()->mutable_connected_nodes(size-1);
+        last_node = zigbee_msg.mutable_network_mgmt_cmd()->mutable_connected_nodes(size-1);
       } else {
         continue;
       }
@@ -347,14 +353,17 @@ bool ZigbeeBulbDriver::SendUpdate() {
       const char endpoint_line[] = "EP";
       found = line.find(endpoint_line);
       if (found != std::string::npos) {
-        last_node->add_endpoints();
+        ZigBeeMsg::NetworkMgmtCmd::EndPointDescription* new_endpoint = last_node->add_endpoints();
+        int endpoint_index = stoi(line.substr(found + sizeof endpoint_line + 1,
+          line.length() - 1),0,10);
+        new_endpoint->set_endpoint_index(endpoint_index);
         continue;
       }
 
       ZigBeeMsg::NetworkMgmtCmd::EndPointDescription* last_endpoint;
       size = last_node->endpoints_size();
       if (size > 0) {
-          last_endpoint = last_node->mutable_endpoints(size - 1);
+        last_endpoint = last_node->mutable_endpoints(size-1);
       } else {
         continue;
       }
@@ -378,15 +387,11 @@ bool ZigbeeBulbDriver::SendUpdate() {
       const char cluster_line[] = "Cluster:";
       found = line.find(cluster_line);
       if (found != std::string::npos) {
-
-        std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>  Number of clusters: "<< zigbee_msg.mutable_network_mgmt_cmd()->mutable_connected_nodes(0)->mutable_endpoints(0)->clusters_size() << std::endl;
-
         ZigBeeMsg::NetworkMgmtCmd::ClusterDescription* last_cluster = last_endpoint->add_clusters();
-
         int cluster_id = stoi(line.substr(found + sizeof cluster_line, 6), 0, 16);
         last_cluster->set_cluster_id(cluster_id);
-
         found = line.find("Server");
+
         if(found == std::string::npos) {
           last_cluster->set_type(ZigBeeMsg::NetworkMgmtCmd::ClusterDescription::CLIENT_OUT);
         } else {
