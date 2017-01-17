@@ -16,7 +16,6 @@
  */
 
 #include <stdlib.h>
-
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -35,6 +34,13 @@ bool LircDriver::ProcessConfig(const DriverConfig& config) {
     std::ofstream remotes_config("/etc/lirc/lircd.matrix.conf");
     remotes_config << lirc.config();
     remotes_config.close();
+    if (kLircDriverDebugEnabled) {
+      std::cout << "new remote database saved" << std::endl;
+    }
+    if (system(std::string("service lirc restart").c_str()) == -1) {
+      zmq_push_error_->Send("LIRC service restart failed!");
+      return false;
+    }
     return true;
   }
 
