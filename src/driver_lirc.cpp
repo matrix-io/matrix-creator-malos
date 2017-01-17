@@ -17,6 +17,7 @@
 
 #include <stdlib.h>
 
+#include <fstream>
 #include <iostream>
 #include <string>
 
@@ -29,6 +30,13 @@ const bool kLircDriverDebugEnabled = false;
 
 bool LircDriver::ProcessConfig(const DriverConfig& config) {
   LircParams lirc(config.lirc());
+
+  if (lirc.set_config() != "") {
+    std::ofstream remotes_config("/etc/lirc/lircd.matrix.conf");
+    remotes_config << lirc.set_config();
+    remotes_config.close();
+    return true;
+  }
 
   if (lirc.device() == "" || lirc.command() == "" ||
       !isValidLircSymbol(lirc.device()) || !isValidLircSymbol(lirc.command())) {
