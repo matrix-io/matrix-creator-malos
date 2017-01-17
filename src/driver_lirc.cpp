@@ -31,9 +31,9 @@ const bool kLircDriverDebugEnabled = false;
 bool LircDriver::ProcessConfig(const DriverConfig& config) {
   LircParams lirc(config.lirc());
 
-  if (lirc.set_config() != "") {
+  if (lirc.config() != "") {
     std::ofstream remotes_config("/etc/lirc/lircd.matrix.conf");
-    remotes_config << lirc.set_config();
+    remotes_config << lirc.config();
     remotes_config.close();
     return true;
   }
