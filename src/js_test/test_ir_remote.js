@@ -9,7 +9,7 @@
 // BasePort + 2 => Error port. Receive errros from device.
 // BasePort + 3 => Data port. Receive data from device.
 
-var creator_ip = '192.168.1.114'
+var creator_ip = '127.0.0.1'
 var creator_lirc_base_port = 20013 + 28 // port for Lirc driver.
 
 var protoBuf = require("protobufjs");
