@@ -26,11 +26,18 @@ var fs = require('fs');
 /**
  * LIRC remote database on admobilize assets.
  * Orginal source on: https://sourceforge.net/p/lirc-remotes/code/ci/master/tree/
+ * Example remote device (SONY control RM-AAU014) for this test:
  */
-
-// Example remote device (SONY control RM-AAU014)
 var remote_url="http://assets.admobilize.com/lirc-remotes/sony/RM-AAU014.lircd.conf"
 var remote_output="RM-AAU014.lircd.conf"
+
+/**
+ * configRemote: Main function, set configuration from 
+ * remote.conf file downloaded
+ *
+ * Params:
+ * config: file downloaded path
+ */
 
 function configRemote(config){
   process.stdout.write('set remote to config..')
@@ -45,6 +52,15 @@ function configRemote(config){
   });
 }
 
+/**
+ * sendIrCommand: send once command.
+ * Please see *.conf content for details
+ *
+ * Params:
+ * device: LIRC remote device name
+ * command: LIRC remote command
+ */
+
 function sendIrCommand(device, command) {
   var ir_cfg_cmd = new matrixMalosBuilder.LircParams
   ir_cfg_cmd.set_device(device)
@@ -52,11 +68,41 @@ function sendIrCommand(device, command) {
   sendIRConfigProto(ir_cfg_cmd) 
 }
 
+/**
+ * sendIRConfigProto: build Proto message 
+ * and send it.
+ *
+ * Params:
+ * ir_cfg: LircParams proto message
+ */
+
 function sendIRConfigProto(ir_cfg){
   var config = new matrixMalosBuilder.DriverConfig
   config.set_lirc(ir_cfg)
   configSocket.send(config.encode().toBuffer());
 }
+
+/**
+ * continousSendRemoteCommand: loop for test
+ * of sending IR commands
+ */
+
+function continousSendRemoteCommand(){
+  setInterval(function() {
+    process.stdout.write('sending IR command: BTN_MUTING to SONY_RM device..')
+    sendIrCommand('SONY_RM-AAU014','BTN_MUTING') // check LED on MATRIX
+    console.log('done.')
+  }, 3000);
+}
+
+/**
+ * download: Basic http get downloader
+ *
+ * Params:
+ * url: url target
+ * dest: file path destination
+ * cb: callback on finish
+ */
 
 function download (url, dest, cb) {
   process.stdout.write('downloading remote config..')
@@ -68,14 +114,6 @@ function download (url, dest, cb) {
       file.close(cb(dest));
     });
   });
-}
-
-function continousSendRemoteCommand(){
-  setInterval(function() {
-    process.stdout.write('sending IR command: BTN_MUTING to SONY_RM device..')
-    sendIrCommand('SONY_RM-AAU014','BTN_MUTING') // check LED on MATRIX
-    console.log('done.')
-  }, 3000);
 }
 
 /**************
