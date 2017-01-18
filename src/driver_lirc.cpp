@@ -47,7 +47,7 @@ bool LircDriver::ProcessConfig(const DriverConfig& config) {
       return false;
     }
     if (system(std::string("service lirc start").c_str()) == -1) {
-      zmq_push_error_->Send("LIRC service stop failed!");
+      zmq_push_error_->Send("LIRC service start failed!");
       return false;
     }
 
