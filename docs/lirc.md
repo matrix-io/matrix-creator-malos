@@ -3,14 +3,14 @@
 The LIRC driver on current version supports:
 
 * IR send commands type `SEND_ONCE` for example: `SONY_XX BTN_MUTING`
-* Add multiple LIRC remote configurations concatenated via proto message. 
+* Multiple LIRC remote configurations concatenated via proto message. 
 
 The driver follows the [MALOS protocol](../README.md#protocol).
 
 ### LIRC driver software:
 
 Actual MALOS software layer use oficial LIRC `raspbian` package (0.9.0~pre1-1.2). The oficial documentation is for next version
-but LIRC config files structure is the same. Please see it for details
+but LIRC config files structure is the same. Please see it for details:
 
 * [http://www.lirc.org/html/configuration-guide.html](http://www.lirc.org/html/configuration-guide.html))
 
@@ -47,13 +47,15 @@ This driver reports errors when an invalid configuration is sent.
 ### Write
 
 
-This driver need at last one LIRC remote configuration for send IR commands to any device. MALOS LIRC driver support multiple remote controls in the same file and you can use a previous remote control recorded. You will can download this remotes config from MATRIX assets repository and then send it via `config` field of `LircParams protobuf`. For more details plese see JavaScript example described below.
+This driver need at last one LIRC remote configuration for send IR commands to any device. MALOS LIRC driver support multiple remote controls in the same file and you can use a previous remote control recorded. You will can download this remotes config from MATRIX assets repository and then send it via `config` field of `LircParams` protobuf. For more details plese see JavaScript example described below.
 
+
+**Example for SONY RM-AAU014**:
 [http://assets.admobilize.com/lirc-remotes/sony/RM-AAU014.lircd.conf]("http://assets.admobilize.com/lirc-remotes/sony/RM-AAU014.lircd.conf")
 
 ### Read
 
-This driver for now not return any data via read MALOS protocol. 
+This driver for now not return any data via read MALOS protocol only execute commands and set configurations.
 
 This is a sample output given by the example described below.
 
@@ -64,7 +66,7 @@ downloading remote config..done.
 set remote to config..done.
 sending IR command: BTN_MUTING to SONY_RM device..done.
 sending IR command: BTN_MUTING to SONY_RM device..done.
-sending IR command: BTN_MUTING to SONY_RM device..done
+sending IR command: BTN_MUTING to SONY_RM device..done.
 ```
 `test_ir_remote` code first downloading remote config example then set it in MALOS layer and then send IR commands
 
@@ -156,7 +158,7 @@ function sendIRConfigProto(ir_cfg){
   configSocket.send(config.encode().toBuffer());
 }
 ```
-#### Send remote commands to device
+#### Send remote commands to target device
 
 You can use similar flow for sending commands via DriverConfig proto.
 ``` javascript
