@@ -2,6 +2,7 @@
  * Copyright 2016 <Admobilize>
  * MATRIX Labs  [http://creator.matrix.one]
  * This file is part of MATRIX Creator MALOS
+ * Author: @hpsaturn
  *
  * MATRIX Creator MALOS is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -31,12 +32,15 @@ bool LircDriver::ProcessConfig(const DriverConfig& config) {
   LircParams lirc(config.lirc());
 
   if (lirc.config() != "") {
+    // LIRC remotes config from MOS via proto
     std::ofstream remotes_config("/etc/lirc/lircd.matrix.conf");
     remotes_config << lirc.config();
     remotes_config.close();
     if (kLircDriverDebugEnabled) {
       std::cout << "new remote database saved" << std::endl;
     }
+    // LIRC service restart
+    // TODO: Maybe migrate to dbus API but not supported in <215 version
     if (system(std::string("service lirc restart").c_str()) == -1) {
       zmq_push_error_->Send("LIRC service restart failed!");
       return false;
@@ -47,6 +51,7 @@ bool LircDriver::ProcessConfig(const DriverConfig& config) {
     return true;
   }
 
+  // execute commands over remote device
   if (lirc.device() == "" || lirc.command() == "" ||
       !isValidLircSymbol(lirc.device()) || !isValidLircSymbol(lirc.command())) {
     zmq_push_error_->Send(
