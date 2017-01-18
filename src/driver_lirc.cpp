@@ -41,7 +41,7 @@ bool LircDriver::ProcessConfig(const DriverConfig& config) {
       std::cout << "new remote database saved" << std::endl;
     }
     // LIRC service restart
-    // TODO(@hpsaturn): migrate to dbus API, but not supported in <215 version
+    // TODO(@hpsaturn): migrate to dbus API (not supported in raspbian version)
     if (system(std::string("service lirc stop").c_str()) == -1) {
       zmq_push_error_->Send("LIRC service stop failed!");
       return false;
@@ -60,9 +60,12 @@ bool LircDriver::ProcessConfig(const DriverConfig& config) {
   // execute commands over remote device
   if (lirc.device() == "" || lirc.command() == "" ||
       !isValidLircSymbol(lirc.device()) || !isValidLircSymbol(lirc.command())) {
-    zmq_push_error_->Send(
+    std::string msg_error =
         std::string(kLircDriverName) +
-        " error: Device or command parameter is missing or invalid.");
+        " error: Device or command parameter is missing or invalid.";
+    std::cout << msg_error << std::endl;
+    zmq_push_error_->Send(msg_error);
+
     return false;
   }
 
