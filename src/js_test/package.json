@@ -6,7 +6,7 @@
   "homepage": "https://github.com/matrix-io/matrix-creator-malos",
   "repository" : "https://github.com/matrix-io/matrix-creator-malos",
   "devDependencies": {
-    "protobufjs": "*",
+    "protobufjs": "^5.0.1",
     "zmq": "*",
     "mic": "*"
   }
