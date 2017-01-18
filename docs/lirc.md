@@ -38,24 +38,20 @@ The message is defined in [driver.proto](https://github.com/matrix-io/protocol-b
 
 This driver NOT needs keep-alive messages [as specified in the MALOS protocol](https:////github.com/matrix-io/matrix-creator-malos/blob/master/README.md#keep-alive-port).
 
-
 ### Errors
 
 This driver reports errors when an invalid configuration is sent.
 
-
 ### Write
 
-
 This driver need at last one LIRC remote configuration for send IR commands to any device. MALOS LIRC driver support multiple remote controls in the same file and you can use a previous remote control recorded. You will can download this remotes config from MATRIX assets repository and then send it via `config` field of `LircParams` protobuf. For more details plese see JavaScript example described below.
-
 
 **Example for SONY RM-AAU014**:
 [http://assets.admobilize.com/lirc-remotes/sony/RM-AAU014.lircd.conf]("http://assets.admobilize.com/lirc-remotes/sony/RM-AAU014.lircd.conf")
 
 ### Read
 
-This driver for now not return any data via read MALOS protocol only execute commands and set configurations.
+This driver doesn't any data using MALOS protocol. It only executes commands and sets configurations.
 
 This is a sample output given by the example described below.
 
