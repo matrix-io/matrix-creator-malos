@@ -31,14 +31,14 @@ const bool kLircDriverDebugEnabled = false;
 bool LircDriver::ProcessConfig(const DriverConfig& config) {
   LircParams lirc(config.lirc());
 
-  if (lirc.config() != "") {
+  if (!lirc.config().empty()) {
     // LIRC remotes config from MOS via proto
     std::ofstream remotes_config("/etc/lirc/lircd.matrix.conf");
     remotes_config << lirc.config();
     remotes_config.close();
 
     if (kLircDriverDebugEnabled) {
-      std::cout << "new remote database saved" << std::endl;
+      std::cerr << "new remote database saved" << std::endl;
     }
     // LIRC service restart
     // TODO(@hpsaturn): migrate to dbus API (not supported in raspbian version)
@@ -60,10 +60,10 @@ bool LircDriver::ProcessConfig(const DriverConfig& config) {
   // execute commands over remote device
   if (lirc.device() == "" || lirc.command() == "" ||
       !isValidLircSymbol(lirc.device()) || !isValidLircSymbol(lirc.command())) {
-    std::string msg_error =
+    const std::string msg_error =
         std::string(kLircDriverName) +
         " error: Device or command parameter is missing or invalid.";
-    std::cout << msg_error << std::endl;
+    std::cerr << msg_error << std::endl;
     zmq_push_error_->Send(msg_error);
 
     return false;
