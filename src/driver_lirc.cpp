@@ -41,6 +41,9 @@ bool LircDriver::ProcessConfig(const DriverConfig& config) {
       zmq_push_error_->Send("LIRC service restart failed!");
       return false;
     }
+    if (kLircDriverDebugEnabled) {
+      std::cout << "LIRC service restart done." << std::endl;
+    }
     return true;
   }
 
