@@ -36,15 +36,21 @@ bool LircDriver::ProcessConfig(const DriverConfig& config) {
     std::ofstream remotes_config("/etc/lirc/lircd.matrix.conf");
     remotes_config << lirc.config();
     remotes_config.close();
+
     if (kLircDriverDebugEnabled) {
       std::cout << "new remote database saved" << std::endl;
     }
     // LIRC service restart
-    // TODO: Maybe migrate to dbus API but not supported in <215 version
-    if (system(std::string("service lirc restart").c_str()) == -1) {
-      zmq_push_error_->Send("LIRC service restart failed!");
+    // TODO(@hpsaturn): migrate to dbus API, but not supported in <215 version
+    if (system(std::string("service lirc stop").c_str()) == -1) {
+      zmq_push_error_->Send("LIRC service stop failed!");
       return false;
     }
+    if (system(std::string("service lirc start").c_str()) == -1) {
+      zmq_push_error_->Send("LIRC service stop failed!");
+      return false;
+    }
+
     if (kLircDriverDebugEnabled) {
       std::cout << "LIRC service restart done." << std::endl;
     }
@@ -76,7 +82,7 @@ bool LircDriver::ProcessConfig(const DriverConfig& config) {
 
 bool LircDriver::isValidLircSymbol(const std::string& word) {
   for (const char c : word)
-    if (!(isalnum(c) || c == '_')) return false;
+    if (!(isalnum(c) || c == '_' || c == '-')) return false;
   return true;
 }
 }  // namespace matrix_malos
