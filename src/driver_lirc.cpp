@@ -52,7 +52,7 @@ bool LircDriver::ProcessConfig(const DriverConfig& config) {
     }
 
     if (kLircDriverDebugEnabled) {
-      std::cout << "LIRC service restart done." << std::endl;
+      std::cerr << "LIRC service restart done." << std::endl;
     }
     return true;
   }
@@ -70,8 +70,8 @@ bool LircDriver::ProcessConfig(const DriverConfig& config) {
   }
 
   if (kLircDriverDebugEnabled) {
-    std::cout << "device :" << lirc.device() << "\t";
-    std::cout << "command:" << lirc.command() << std::endl;
+    std::cerr << "device :" << lirc.device() << "\t";
+    std::cerr << "command:" << lirc.command() << std::endl;
   }
 
   if (system(std::string("irsend SEND_ONCE " + lirc.device() + " " +
