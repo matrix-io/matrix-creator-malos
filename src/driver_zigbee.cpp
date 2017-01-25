@@ -19,7 +19,7 @@
 #include <thread>
 #include <iostream>
 
-#include "./driver_zigbee_bulb.h"
+#include "./driver_zigbee.h"
 
 #include "./src/driver.pb.h"
 
@@ -43,7 +43,7 @@ namespace {
 
 namespace matrix_malos {
 
-  bool ZigbeeBulbDriver::ProcessConfig(const DriverConfig& config) {
+  bool ZigbeeDriver::ProcessConfig(const DriverConfig& config) {
   // TODO: Validate all the data that comes from the protos
     ZigBeeMsg zigbee_msg(config.zigbee_message());
 
@@ -229,7 +229,7 @@ ZigBeeMsg zigbee_msg;
 bool bulding_discovery_result = false;
 
 
-bool ZigbeeBulbDriver::SendUpdate() {
+bool ZigbeeDriver::SendUpdate() {
   std::string line;
   while (tcp_client_->GetLine(&line)) { 
     

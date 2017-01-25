@@ -15,23 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_DRIVER_ZIGBEE_BULB_H_
-#define SRC_DRIVER_ZIGBEE_BULB_H_
+#ifndef SRC_DRIVER_ZIGBEE_H_
+#define SRC_DRIVER_ZIGBEE_H_
 
 #include <memory>
 
 #include "./malos_wishbone_base.h"
 #include "./tcp_client.h"
 
-const char kZigbeeBulbDriverName[] = "ZigbeeBulb";
+const char kZigbeeDriverName[] = "ZigbeeBulb";
 
 namespace matrix_malos {
 
 // FIXME: inherit from malos_base.h
 
-class ZigbeeBulbDriver : public MalosWishboneBase {
+class ZigbeeDriver : public MalosWishboneBase {
  public:
-  ZigbeeBulbDriver() : MalosWishboneBase(kZigbeeBulbDriverName) {
+  ZigbeeDriver() : MalosWishboneBase(kZigbeeDriverName) {
     SetNeedsKeepalives(true);
     SetMandatoryConfiguration(true);
     SetNotesForHuman("Zigbee bulb driver. In development");
@@ -52,4 +52,4 @@ class ZigbeeBulbDriver : public MalosWishboneBase {
 
 }  // namespace matrix_malos
 
-#endif  // SRC_DRIVER_ZIGBEE_BULB_H_
+#endif  // SRC_DRIVER_ZIGBEE_H_
