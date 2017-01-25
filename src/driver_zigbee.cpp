@@ -48,7 +48,6 @@ bool ZigbeeDriver::ProcessConfig(const DriverConfig& config) {
 
   if (zigbee_msg.type() == ZigBeeMsg::ZCL) {
     command = "zcl ";
-    std::cerr << " >>>>>> type: " << zigbee_msg.zcl_cmd().type() << std::endl;
     if (zigbee_msg.zcl_cmd().type() == ZigBeeMsg::ZCLCmd::ON_OFF) {
       command += "on-off ";
       if (zigbee_msg.zcl_cmd().onoff_cmd().type() ==
@@ -276,7 +275,7 @@ bool ZigbeeDriver::SendUpdate() {
   std::string line;
   while (tcp_client_->GetLine(&line)) {
     line = Trim(line);
-    std::cerr << ">>" << line << std::endl;
+    // std::cerr << ">>" << line << std::endl;
 
     const char network_state_line[] = "network state";
     std::size_t found = line.find(network_state_line);
