@@ -23,7 +23,7 @@
 #include "./malos_wishbone_base.h"
 #include "./tcp_client.h"
 
-const char kZigbeeDriverName[] = "ZigbeeBulb";
+const char kZigbeeDriverName[] = "Zigbee";
 
 namespace matrix_malos {
 
@@ -34,7 +34,7 @@ class ZigbeeDriver : public MalosWishboneBase {
   ZigbeeDriver() : MalosWishboneBase(kZigbeeDriverName) {
     SetNeedsKeepalives(true);
     SetMandatoryConfiguration(true);
-    SetNotesForHuman("Zigbee bulb driver. In development");
+    SetNotesForHuman("Zigbee Driver v1.0");
   }
 
   // Read configuration of LEDs (from the outside world).
@@ -46,7 +46,9 @@ class ZigbeeDriver : public MalosWishboneBase {
  private:
   // Tcp client.
   std::unique_ptr<TcpClient> tcp_client_;
+  // zigbee gateway ip address
   const std::string gateway_ip = "127.0.0.1";
+  // zigbee gateway port
   const int gateway_port = 4901;
 };
 

@@ -23,8 +23,6 @@
 
 #include "./src/driver.pb.h"
 
-// using matrix_malos::ZigBeeMsg;
-
 namespace {
 
 // http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
