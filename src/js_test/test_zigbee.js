@@ -11,16 +11,15 @@
 // BasePort + 2 => Error port. Receive errros from device.
 // BasePort + 3 => Data port. Receive data from device.
 
-var creator_ip = '127.0.0.1' var create_zigbee_base_port = 20013 + 20;
+var creator_ip = '127.0.0.1';
+var create_zigbee_base_port = 20013 + 20;
 var protoBuf = require("protobufjs");
-var math = require("mathjs");
 var zmq = require('zmq');
-var sleep = require('sleep');
-var time = require('time');
 
-
-var zigbee_network_up = false var gateway_up = false;
-var attemps = 10 var device_detected = false;
+var zigbee_network_up = false;
+var gateway_up = false;
+var attemps = 10;
+var device_detected = false;
 
 // status
 var none = 0;
@@ -36,13 +35,12 @@ var protoBuilder =
 var matrixMalosBuilder = protoBuilder.build("matrix_malos");
 
 // ------------------------- ZigBee --------------------------
-console.log('Setting Up the IMU driver');
-
 var config = new matrixMalosBuilder.DriverConfig;
 
-// Print the errors that the ZigBee driver sends.
-var errorSocket = zmq.socket('sub') errorSocket.connect(
-    'tcp://' + creator_ip + ':' + (create_zigbee_base_port + 2));
+//-----  Print the errors that the ZigBee driver sends ------------
+var errorSocket = zmq.socket('sub');
+errorSocket.connect('tcp://' + creator_ip + ':' +
+                    (create_zigbee_base_port + 2));
 errorSocket.subscribe('');
 errorSocket.on('message', function(error_message) {
   process.stdout.write('Message received: ' + error_message.toString('utf8') +
@@ -50,19 +48,25 @@ errorSocket.on('message', function(error_message) {
 });
 
 // ----- Create the socket for sending data to the ZigBee driver ----
-var configSocket = zmq.socket('push') configSocket.connect(
-    'tcp://' + creator_ip + ':' + create_zigbee_base_port /* config */);
+
+var configSocket = zmq.socket('push');
+configSocket.connect('tcp://' + creator_ip + ':' + create_zigbee_base_port);
 
 // ------------ Starting to ping the driver -----------------------
-var pingSocket = zmq.socket('push') pingSocket.connect(
-    'tcp://' + creator_ip + ':' + (create_zigbee_base_port + 1));
+
+var pingSocket = zmq.socket('push');
+pingSocket.connect('tcp://' + creator_ip + ':' + (create_zigbee_base_port + 1));
 pingSocket.send('');  // Ping the first time.
 
 setInterval(function() { pingSocket.send(''); }, 1000);
 
-var subSocket = zmq.socket('sub') subSocket.connect(
-    'tcp://' + creator_ip + ':' + (create_zigbee_base_port + 3));
-subSocket.subscribe('') subSocket.on('message', function(buffer) {
+// -------------- Receive Data from Driver  ----------------------
+
+var subSocket = zmq.socket('sub');
+subSocket.connect('tcp://' + creator_ip + ':' + (create_zigbee_base_port + 3));
+
+subSocket.subscribe('');
+subSocket.on('message', function(buffer) {
 
   var zig_msg = new matrixMalosBuilder.ZigBeeMsg.decode(buffer);
 
@@ -119,17 +123,20 @@ subSocket.subscribe('') subSocket.on('message', function(buffer) {
                       endpoints_index.push(
                           zig_msg.network_mgmt_cmd.connected_nodes[i]
                               .endpoints[j]
-                              .endpoint_index) continue;
+                              .endpoint_index);
+                  continue;
                 }
               }
             }
           }
 
           if (nodes_id.length > 0) {
-            status = nodes_discovered process.stdout.write(
-                nodes_id.length + ' nodes found with on-off cluster\n');
+            status = nodes_discovered;
+            process.stdout.write(nodes_id.length +
+                                 ' nodes found with on-off cluster\n');
           } else {
-            status = none console.log('No devices found !');
+            status = none;
+            console.log('No devices found !');
             process.exit(1);
           }
           // Start toggling the nodes
@@ -202,7 +209,8 @@ subSocket.subscribe('') subSocket.on('message', function(buffer) {
 
             console.log('Please reset your zigbee devices');
             console.log('... Waiting 60 sec for new devices');
-            status = waiting_for_devices break;
+            status = waiting_for_devices;
+            break;
           case matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkStatus.Status
               .JOINED_NETWORK_NO_PARENT:
             console.log('JOINED_NETWORK_NO_PARENT');
@@ -226,8 +234,9 @@ ResetGateway();
 function ResetGateway() {
   // --- Setting the delay_between_updates and set_timeout_after_last_ping --
   console.log('Setting the Zigbee Driver');
-  config.set_delay_between_updates(1) config.set_timeout_after_last_ping(1)
-      configSocket.send(config.encode().toBuffer());
+  config.set_delay_between_updates(1);
+  config.set_timeout_after_last_ping(1);
+  configSocket.send(config.encode().toBuffer());
 
   // ---- Creating the base proto zigbee message --------------------
   config = new matrixMalosBuilder.DriverConfig;
@@ -254,9 +263,10 @@ function ResetGateway() {
   console.log('Reseting the Gateway App');
   config.zigbee_message.set_type(
       matrixMalosBuilder.ZigBeeMsg.ZigBeeCmdType.NETWORK_MGMT);
-  config.zigbee_message.network_mgmt_cmd
-      .set_type(matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkMgmtCmdTypes
-                    .RESET_PROXY) configSocket.send(config.encode().toBuffer());
+  config.zigbee_message.network_mgmt_cmd.set_type(
+      matrixMalosBuilder.ZigBeeMsg.NetworkMgmtCmd.NetworkMgmtCmdTypes
+          .RESET_PROXY);
+  configSocket.send(config.encode().toBuffer());
 
   // ------------ Checking connection with the Gateway ----------------------
   console.log('Checking connection with the Gateway');
