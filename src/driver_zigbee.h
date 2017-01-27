@@ -22,6 +22,7 @@
 
 #include "./malos_wishbone_base.h"
 #include "./tcp_client.h"
+#include "./src/driver.pb.h"
 
 const char kZigbeeDriverName[] = "Zigbee";
 
@@ -50,6 +51,10 @@ class ZigbeeDriver : public MalosWishboneBase {
   const std::string gateway_ip = "127.0.0.1";
   // zigbee gateway port
   const int gateway_port = 4901;
+  // signal that we are receiving the discovery data
+  bool bulding_discovery_result = false;
+  // zigbee message used to store data comming from ZigbeeGateway
+  ZigBeeMsg zigbee_msg;
 };
 
 }  // namespace matrix_malos
