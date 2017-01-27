@@ -15,26 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_DRIVER_ZIGBEE_BULB_H_
-#define SRC_DRIVER_ZIGBEE_BULB_H_
+#ifndef SRC_DRIVER_ZIGBEE_H_
+#define SRC_DRIVER_ZIGBEE_H_
 
 #include <memory>
 
 #include "./malos_wishbone_base.h"
 #include "./tcp_client.h"
+#include "./src/driver.pb.h"
 
-const char kZigbeeBulbDriverName[] = "ZigbeeBulb";
+const char kZigbeeDriverName[] = "Zigbee";
 
 namespace matrix_malos {
 
 // FIXME: inherit from malos_base.h
 
-class ZigbeeBulbDriver : public MalosWishboneBase {
+class ZigbeeDriver : public MalosWishboneBase {
  public:
-  ZigbeeBulbDriver() : MalosWishboneBase(kZigbeeBulbDriverName) {
+  ZigbeeDriver() : MalosWishboneBase(kZigbeeDriverName) {
     SetNeedsKeepalives(true);
     SetMandatoryConfiguration(true);
-    SetNotesForHuman("Zigbee bulb driver. In development");
+    SetNotesForHuman("Zigbee Driver v1.0");
   }
 
   // Read configuration of LEDs (from the outside world).
@@ -46,8 +47,16 @@ class ZigbeeBulbDriver : public MalosWishboneBase {
  private:
   // Tcp client.
   std::unique_ptr<TcpClient> tcp_client_;
+  // zigbee gateway ip address
+  const std::string gateway_ip = "127.0.0.1";
+  // zigbee gateway port
+  const int gateway_port = 4901;
+  // signal that we are receiving the discovery data
+  bool bulding_discovery_result = false;
+  // zigbee message used to store data comming from ZigbeeGateway
+  ZigBeeMsg zigbee_msg;
 };
 
 }  // namespace matrix_malos
 
-#endif  // SRC_DRIVER_ZIGBEE_BULB_H_
+#endif  // SRC_DRIVER_ZIGBEE_H_
