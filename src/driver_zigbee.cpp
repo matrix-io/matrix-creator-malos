@@ -179,10 +179,6 @@ bool ZigbeeDriver::ProcessConfig(const DriverConfig& config) {
       command = buf;
       tcp_client_->Send(command);
     }
-  } else if (zigbee_msg.type() == ZigBeeMsg::ZLL) {
-    std::cerr << "zzl command not implemented" << std::endl;
-    zmq_push_error_->Send("zzl command not implemented");
-    return false;
   } else if (zigbee_msg.type() == ZigBeeMsg::NETWORK_MGMT) {
     if (zigbee_msg.network_mgmt_cmd().type() ==
         ZigBeeMsg::NetworkMgmtCmd::CREATE_NWK) {
