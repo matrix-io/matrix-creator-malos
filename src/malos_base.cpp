@@ -154,4 +154,3 @@ void MalosBase::FillOutDriverInfo(DriverInfo *driver_info) const {
 }
 
 }  // namespace matrix_malos
-
