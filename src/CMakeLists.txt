@@ -7,6 +7,11 @@ ADM_EXTRA_WARNINGS()
 
 find_package(Protobuf 3 REQUIRED)
 find_package(Threads REQUIRED)
+find_package(Threads)
+find_package(PkgConfig)
+
+pkg_search_module(SPHINXBASE REQUIRED sphinxbase)
+pkg_search_module(POCKETSPHINX REQUIRED pocketsphinx)
 
 # This won't find ZQM in custom locations.
 # FIXME(nelson.castillo): Improve.
@@ -54,8 +59,12 @@ set(malos_src
 
 add_executable(malos ${malos_src})
 set_property(TARGET malos PROPERTY CXX_STANDARD 11)
+target_include_directories(pocketsphinx_demo PUBLIC ${SPHINXBASE_INCLUDE_DIRS})
+target_include_directories(pocketsphinx_demo PUBLIC ${POCKETSPHINX_INCLUDE_DIRS})
 target_link_libraries(malos zmq_wrapper_lib)
 target_link_libraries(malos ${HAL_LIB} ${PROTOBUF_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(pocketsphinx_demo ${SPHINXBASE_LIBRARIES})
+target_link_libraries(pocketsphinx_demo ${POCKETSPHINX_LIBRARIES})
 target_link_libraries(malos wiringPi)
 
 # Binary to be installed.
