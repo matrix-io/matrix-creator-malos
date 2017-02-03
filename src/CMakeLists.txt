@@ -37,7 +37,6 @@ set(malos_src
   driver_pressure.cpp driver_pressure.h
   driver_uv.cpp driver_uv.h
   driver_everloop.cpp driver_everloop.h
-  driver_zigbee.cpp driver_zigbee.h
   driver_micarray_alsa.cpp driver_micarray_alsa.h
   driver_lirc.cpp driver_lirc.h
   driver_servo.cpp driver_servo.h
