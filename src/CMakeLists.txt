@@ -12,9 +12,15 @@ find_package(Threads REQUIRED)
 # FIXME(nelson.castillo): Improve.
 FIND_LIBRARY(ZMQ_LIB NAMES zmq)
 FIND_LIBRARY(HAL_LIB NAMES matrix_creator_hal)
+FIND_LIBRARY(MATRIX_LIB NAMES matrix_malos)
+FIND_LIBRARY(MATRIX_ZMQ_LIB NAMES matrix_malos_zmq)
+FIND_LIBRARY(WIRINGPI_LIB NAMES wiringPi)
+
 
 message(STATUS "ZMQ found => " "${ZMQ_LIB}")
 message(STATUS "HAL found => " "${HAL_LIB}")
+message(STATUS "MATRIX LIB found => " "${MATRIX_LIB}")
+message(STATUS "MATRIX ZMQ LIB found => " "${MATRIX_ZMQ_LIB}")
 
 PROTOBUF_GENERATE_CPP(MALOS_PROTO_SRC MALOS_PROTO_HEADER ../protocol-buffers/malos/driver.proto)
 
@@ -22,21 +28,9 @@ include_directories(
   ${PROJECT_BINARY_DIR} # Protos.
   ${PROTOBUF_INCLUDE_DIRS})
 
-set(zmq_wrapper_lib_sources
-  zmq_push.h
-  zmq_push.cpp
-  zmq_pull.h
-  zmq_pull.cpp
-)
-
-add_library(zmq_wrapper_lib ${zmq_wrapper_lib_sources})
-set_property(TARGET zmq_wrapper_lib PROPERTY CXX_STANDARD 11)
-target_link_libraries(zmq_wrapper_lib ${ZMQ_LIB} ${CMAKE_THREAD_LIBS_INIT})
-
 set(malos_src
   malos.cpp
   driver_manager.cpp driver_manager.h
-  malos_base.cpp malos_base.h
   malos_wishbone_base.cpp malos_wishbone_base.h
   driver_imu.cpp driver_imu.h
   driver_humidity.cpp driver_humidity.h
@@ -48,15 +42,17 @@ set(malos_src
   driver_lirc.cpp driver_lirc.h
   driver_servo.cpp driver_servo.h
   driver_gpio.cpp driver_gpio.h
-  tcp_client.cpp tcp_client.h
   ${MALOS_PROTO_SRC} ${MALOS_PROTO_HEADER}
 )
 
 add_executable(malos ${malos_src})
 set_property(TARGET malos PROPERTY CXX_STANDARD 11)
-target_link_libraries(malos zmq_wrapper_lib)
-target_link_libraries(malos ${HAL_LIB} ${PROTOBUF_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(malos wiringPi)
+target_link_libraries(malos ${PROTOBUF_LIBRARY})
+target_link_libraries(malos ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(malos ${HAL_LIB}) 
+target_link_libraries(malos ${MATRIX_LIB})
+target_link_libraries(malos ${MATRIX_ZMQ_LIB} ${ZMQ_LIB})
+target_link_libraries(malos ${WIRINGPI_LIB})
 
 # Binary to be installed.
 install(TARGETS malos DESTINATION bin)
