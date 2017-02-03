@@ -59,12 +59,12 @@ set(malos_src
 
 add_executable(malos ${malos_src})
 set_property(TARGET malos PROPERTY CXX_STANDARD 11)
-target_include_directories(pocketsphinx_demo PUBLIC ${SPHINXBASE_INCLUDE_DIRS})
-target_include_directories(pocketsphinx_demo PUBLIC ${POCKETSPHINX_INCLUDE_DIRS})
+target_include_directories(malos PUBLIC ${SPHINXBASE_INCLUDE_DIRS})
+target_include_directories(malos PUBLIC ${POCKETSPHINX_INCLUDE_DIRS})
 target_link_libraries(malos zmq_wrapper_lib)
 target_link_libraries(malos ${HAL_LIB} ${PROTOBUF_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(pocketsphinx_demo ${SPHINXBASE_LIBRARIES})
-target_link_libraries(pocketsphinx_demo ${POCKETSPHINX_LIBRARIES})
+target_link_libraries(malos ${SPHINXBASE_LIBRARIES})
+target_link_libraries(malos ${POCKETSPHINX_LIBRARIES})
 target_link_libraries(malos wiringPi)
 
 # Binary to be installed.
