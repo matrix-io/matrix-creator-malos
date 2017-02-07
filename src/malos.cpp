@@ -19,7 +19,8 @@
 #include <iostream>
 #include <thread>
 
-#include "./driver_manager.h"
+#include <matrix_malos/driver_manager.h>
+
 #include "./driver_imu.h"
 #include "./driver_humidity.h"
 #include "./driver_pressure.h"

@@ -30,7 +30,6 @@ include_directories(
 
 set(malos_src
   malos.cpp
-  driver_manager.cpp driver_manager.h
   malos_wishbone_base.cpp malos_wishbone_base.h
   driver_imu.cpp driver_imu.h
   driver_humidity.cpp driver_humidity.h
