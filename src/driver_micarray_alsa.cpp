@@ -40,6 +40,21 @@ bool MicArrayAlsaDriver::ProcessConfig(const DriverConfig& config) {
   return true;
 }
 
+
+bool MicArrayAlsaDriver::SendUpdate() {
+   MicArrayParams mics_params;
+   
+  doa_.Calculate();
+  mics_params.set_azimutal_angle( doa_.GetAzimutalAngle() );
+  mics_params.set_polar_angle( doa_.GetPolarAngle() );
+
+std::string buffer;
+  mics_params.SerializeToString(&buffer);
+  zqm_push_update_->Send(buffer);
+
+return true;
+}
+
 void MicArrayAlsaDriver::AlsaThread() {
   // building fifo for each channel + fifo for the beamformed channel
   for (uint16_t c = 0; c < mics_->Channels() + 1; ++c) {

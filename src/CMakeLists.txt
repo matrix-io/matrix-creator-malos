@@ -8,6 +8,8 @@ ADM_EXTRA_WARNINGS()
 find_package(Protobuf 3 REQUIRED)
 find_package(Threads REQUIRED)
 
+find_library (FFTW_LIBRARIES NAMES fftw3f )
+
 # This won't find ZQM in custom locations.
 # FIXME(nelson.castillo): Improve.
 FIND_LIBRARY(ZMQ_LIB NAMES zmq)
@@ -53,6 +55,7 @@ target_link_libraries(malos ${HAL_LIB})
 target_link_libraries(malos ${MATRIX_LIB})
 target_link_libraries(malos ${MATRIX_ZMQ_LIB} ${ZMQ_LIB})
 target_link_libraries(malos ${WIRINGPI_LIB})
+target_link_libraries(malos ${FFTW_LIBRARIES})
 
 # Binary to be installed.
 install(TARGETS malos DESTINATION bin)
