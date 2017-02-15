@@ -30,14 +30,12 @@ include_directories(
 
 set(malos_src
   malos.cpp
-  driver_manager.cpp driver_manager.h
   malos_wishbone_base.cpp malos_wishbone_base.h
   driver_imu.cpp driver_imu.h
   driver_humidity.cpp driver_humidity.h
   driver_pressure.cpp driver_pressure.h
   driver_uv.cpp driver_uv.h
   driver_everloop.cpp driver_everloop.h
-  driver_zigbee.cpp driver_zigbee.h
   driver_micarray_alsa.cpp driver_micarray_alsa.h
   driver_lirc.cpp driver_lirc.h
   driver_servo.cpp driver_servo.h

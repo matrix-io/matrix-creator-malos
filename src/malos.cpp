@@ -19,13 +19,13 @@
 #include <iostream>
 #include <thread>
 
-#include "./driver_manager.h"
+#include <matrix_malos/driver_manager.h>
+
 #include "./driver_imu.h"
 #include "./driver_humidity.h"
 #include "./driver_pressure.h"
 #include "./driver_uv.h"
 #include "./driver_everloop.h"
-#include "./driver_zigbee.h"
 #include "./driver_micarray_alsa.h"
 #include "./driver_lirc.h"
 #include "./driver_servo.h"
@@ -88,11 +88,7 @@ int RunServer() {
   }
   driver_manager.RegisterDriver(&driver_uv);
 
-  ZigbeeDriver driver_zigbee;
-  if (!driver_zigbee.Init(kBasePort + 4 * 5 + 1, kUnsecureBindScope)) {
-    return 1;
-  }
-  driver_manager.RegisterDriver(&driver_zigbee);
+  // kBasePort + 4 * 5 + 1 is reserved to the ZigBee driver, and it graduate to its own repo.
 
   MicArrayAlsaDriver driver_micarray_drive;
   driver_micarray_drive.SetupWishboneBus(wishbone_bus);
