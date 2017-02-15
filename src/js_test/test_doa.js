@@ -53,7 +53,6 @@ updateSocket.connect('tcp://' + creator_ip + ':' + (creator_micarray_base_port +
 updateSocket.subscribe('')
 updateSocket.on('message', function(buffer) {
   var data = new matrixMalosBuilder.MicArrayParams.decode(buffer)
-   console.log(data)
   console.log("\nazimutal_angle (degrees) = " + data.azimutal_angle*180.0/Math.PI);
   console.log("   polar_angle (degrees) = " + data.polar_angle*180.0/Math.PI); 
 });

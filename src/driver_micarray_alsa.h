@@ -24,6 +24,7 @@
 
 #include <memory>
 #include <thread>
+#include <mutex>
 
 #include "./malos_wishbone_base.h"
 
@@ -67,6 +68,7 @@ class MicArrayAlsaDriver : public MalosWishboneBase {
   // Microphone array driver
   matrix_hal::MicrophoneArray mics_;
   matrix_hal::DirectionOfArrival doa_;
+  mutable std::mutex mutex_;
 };
 
 }  // namespace matrix_malos
