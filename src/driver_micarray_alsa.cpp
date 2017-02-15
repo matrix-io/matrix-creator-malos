@@ -43,14 +43,13 @@ bool MicArrayAlsaDriver::ProcessConfig(const DriverConfig& config) {
 bool MicArrayAlsaDriver::SendUpdate() {
   MicArrayParams mics_params;
 
-  mics_.Read();
-  doa_.Calculate();
   mics_params.set_azimutal_angle(doa_.GetAzimutalAngle());
   mics_params.set_polar_angle(doa_.GetPolarAngle());
 
   std::string buffer;
   mics_params.SerializeToString(&buffer);
   zqm_push_update_->Send(buffer);
+
 
   return true;
 }
@@ -78,6 +77,9 @@ void MicArrayAlsaDriver::AlsaThread() {
   while (true) {
 
     mics_.Read(); /* Reading 8-mics buffer from de FPGA */
+
+    doa_.Calculate();
+
     for (uint16_t c = 0; c < mics_.Channels(); ++c) {
       const std::string name =
           "/tmp/matrix_micarray_channel_" + std::to_string(c);
