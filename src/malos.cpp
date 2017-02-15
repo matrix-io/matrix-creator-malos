@@ -88,6 +88,8 @@ int RunServer() {
   }
   driver_manager.RegisterDriver(&driver_uv);
 
+  // kBasePort + 4 * 5 + 1 is reserved to the ZigBee driver, and it graduate to its own repo.
+
   MicArrayAlsaDriver driver_micarray_drive;
   driver_micarray_drive.SetupWishboneBus(wishbone_bus);
 
