@@ -1,2 +1,1 @@
-debian/tmp/usr/bin/malos usr/bin
 matrix-creator-malos.service lib/systemd/system
