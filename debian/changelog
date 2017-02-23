@@ -1,3 +1,11 @@
+matrix-creator-malos (0.1-5) unstable; urgency=medium
+
+  * ZigBee has been graduated as a service
+  * MATRIX MALOS has been refactored
+  * Common functions has been located in libmatrix-malos
+
+ -- Kevin Patino <kevin.patino@admobilize.com>  Thu, 23 Feb 2017 22:56:53 +0000
+
 matrix-creator-malos (0.1-4.7) unstable; urgency=medium
 
   * Add gpio driver.
