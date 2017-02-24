@@ -1,4 +1,4 @@
-matrix-creator-malos (0.1.5) unstable; urgency=medium
+matrix-creator-malos (0.2.0) unstable; urgency=medium
 
   * ZigBee has been graduated as a service
   * MATRIX MALOS has been refactored
