@@ -10,16 +10,28 @@ The MALOS driver follows the [MALOS protocol](../../README.md#protocol).
 
 ### Python prerequisites
 
- install python packages dependences:
- ``` bash
- pip install pyzmq protobuf
- ```
+install python packages dependences:
+``` bash
+pip install pyzmq protobuf
+```
 
- build protocol buffer source for create driver messages:
- ``` bash
- export SRC_DIR=../../protocol-buffers/malos
- protoc -I=$SRC_DIR --python_out=./ $SRC_DIR/driver.proto
- ```
+build protocol buffer source for create driver messages:
+``` bash
+export SRC_DIR=../../protocol-buffers/malos
+protoc -I=$SRC_DIR --python_out=./ $SRC_DIR/driver.proto
+```
+
+### MATRIX Creator prerequisites
+
+install MALOS and perform device reboot. For more details: [Getting Started Guide](https://github.com/matrix-io/matrix-creator-quickstart/wiki/2.-Getting-Started)
+
+``` bash
+echo "deb http://packages.matrix.one/matrix-creator/ ./" | sudo tee --append /etc/apt/sources.list
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install matrix-creator-init matrix-creator-malos cmake g++ git libzmq3-dev --no-install-recommends
+reboot
+```
 
 ### Running sample
 
