@@ -10,20 +10,18 @@ The MALOS driver follows the [MALOS protocol](../README.md#protocol).
 
 ### Python prerequisites
 
- before run this example please execute on same directory:
+ install python packages dependences:
  ``` bash
  pip install pyzmq protobuf
  ```
 
- protocol buffer compilation:
- 
+ build protocol buffer source for create driver messages:
  ``` bash
  export SRC_DIR=../../protocol-buffers/malos
  protoc -I=$SRC_DIR --python_out=./ $SRC_DIR/driver.proto
  ```
 
 ### Running sample
-This is a sample output given by the example described below.
 
 ``` bash
 $ python test_gpio.py 
@@ -32,7 +30,7 @@ GPIO15=1
 GPIO15=0
 
 ```
-(on example, pin 15 toggle value 0 and 1)
+(on this example: pin 15 toggle value 0 and 1)
 
 ### Example details
 
@@ -112,7 +110,7 @@ This driver reports errors when an invalid configuration is sent.
 
 ### Write
 
-All pins on matrix creator start as inputs. For change to outputs the driver need message for each pin on OUTPUT mode. (see Javascript example below)
+All pins on matrix creator start as inputs. For change to outputs the driver need message for each pin on OUTPUT mode.
 
 
 ### Read
