@@ -6,7 +6,7 @@ On this example, we will connect to MALOS GPIO driver for controlling a single p
 * GPIO pin output
 * GPIO updates (state from all pins)
 
-The MALOS driver follows the [MALOS protocol](../README.md#protocol).
+The MALOS driver follows the [MALOS protocol](../../README.md#protocol).
 
 ### Python prerequisites
 
@@ -34,7 +34,7 @@ GPIO15=0
 
 ### Example details
 
-Enhanced description of the [sample source code](../src/python_test/test_gpio.py).
+Enhanced description of the [sample source code](./test_gpio.py).
 
 First, define the address of the MATRIX Creator. In this case we make it be `127.0.0.1`
 because we are connecting from the local host but it needs to be different if we
