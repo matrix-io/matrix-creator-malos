@@ -34,6 +34,7 @@ config.gpio.mode = driver_proto.GpioParams.OUTPUT
 
 while True:
     config.gpio.value ^= 1
-    socket.send(config.SerializeToString())
+    print ('GPIO'+str(config.gpio.pin)+'='+str(config.gpio.value))
+    #socket.send(config.SerializeToString())
     time.sleep(1)
 
