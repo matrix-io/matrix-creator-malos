@@ -16,7 +16,8 @@ The MALOS driver follows the [MALOS protocol](../../README.md#protocol).
 
 install python packages dependences:
 ``` bash
-pip install pyzmq protobuf tornado
+sudo apt-get install build-essential python-dev
+pip install pyzmq protobuf tornado 
 ```
 ### MATRIX Creator software 
 
