@@ -12,7 +12,7 @@
 
 # NOTE: 
 # before run this example please execute:
-# pip install pyzmq protobuf 
+# pip install pyzmq protobuf tornado
 
 # and then compile protos like this:
 # export SRC_DIR=../../protocol-buffers/malos
