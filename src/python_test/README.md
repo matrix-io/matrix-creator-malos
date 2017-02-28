@@ -12,7 +12,7 @@ The MALOS driver follows the [MALOS protocol](../../README.md#protocol).
 
 install python packages dependences:
 ``` bash
-pip install pyzmq protobuf
+pip install pyzmq protobuf tornado
 ```
 
 build protocol buffer source for create driver messages:
