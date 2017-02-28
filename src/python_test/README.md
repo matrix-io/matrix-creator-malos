@@ -8,20 +8,17 @@ On this example, we will connect to MALOS GPIO driver for controlling a single p
 
 The MALOS driver follows the [MALOS protocol](../../README.md#protocol).
 
-### Python prerequisites
+----
+
+## Prerequisites
+
+### Python packages
 
 install python packages dependences:
 ``` bash
 pip install pyzmq protobuf tornado
 ```
-
-build protocol buffer source for create driver messages:
-``` bash
-export SRC_DIR=../../protocol-buffers/malos
-protoc -I=$SRC_DIR --python_out=./ $SRC_DIR/driver.proto
-```
-
-### MATRIX Creator prerequisites
+### MATRIX Creator software 
 
 install MALOS and perform device reboot. For more details: [Getting Started Guide](https://github.com/matrix-io/matrix-creator-quickstart/wiki/2.-Getting-Started)
 
@@ -31,9 +28,29 @@ sudo apt-get update
 sudo apt-get upgrade
 sudo apt-get install matrix-creator-init matrix-creator-malos cmake g++ git libzmq3-dev --no-install-recommends
 reboot
+
+```
+### (opcional) Protobuf installation on Raspbian
+
+``` bash
+echo "deb http://unstable-packages.matrix.one/ stable main" | sudo tee --append /etc/apt/sources.list
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install matrix-creator-protobuf
 ```
 
-### Running basic sample
+### Protobuf installation on PC and build driver
+
+For install protobuf on PC please see oficial [documentation](https://github.com/google/protobuf). Then compile proto driver messages like this:
+
+``` bash
+export SRC_DIR=../../protocol-buffers/malos
+protoc -I=$SRC_DIR --python_out=./ $SRC_DIR/driver.proto
+```
+
+----
+
+## Running basic sample
 
 ``` bash
 $ python test_gpio.py 
@@ -79,6 +96,8 @@ while True:
 ```
 ### Advanced sample
 MATRIX MALOS layer use ZMQ push/subscriptions for driver configuration and for get driver updates for it. For more info: [MALOS protocol](../../README.md#protocol) and see MALOS driver details below.
+
+Enhanced description of the [sample source code](./test_gpio_read_write.py).
 
 ``` python
 import zmq
@@ -159,6 +178,8 @@ if __name__ == "__main__":
 
     register_gpio_callback()
 ```
+
+----
 
 ## MALOS Driver details
 
