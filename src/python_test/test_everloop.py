@@ -14,7 +14,7 @@ import zmq
 import time
 import driver_pb2 as driver_proto
 
-creator_ip = '192.168.1.114' # or local ip of MATRIX creator
+creator_ip = '127.0.0.1' # or local ip of MATRIX creator
 creator_everloop_base_port = 20013 + 8
 
 context = zmq.Context()
