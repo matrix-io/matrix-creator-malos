@@ -8,6 +8,7 @@
 # BasePort + 1 => Keepalive port. Send pings to this port.
 # BasePort + 2 => Error port. Receive errros from device.
 # BasePort + 3 => Data port. Receive data from device.
+# (see README file for more details)
 
 # NOTE: 
 # before run this example please execute:
