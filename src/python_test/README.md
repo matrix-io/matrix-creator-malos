@@ -34,7 +34,7 @@ reboot
 ```
 ### Protobuf installation
 
-#### (opcion 1) installation on Raspbian
+#### (option 1) installation on Raspbian
 
 ``` bash
 echo "deb http://unstable-packages.matrix.one/ stable main" | sudo tee --append /etc/apt/sources.list
@@ -43,7 +43,7 @@ sudo apt-get upgrade
 sudo apt-get install matrix-creator-protobuf
 ```
 
-#### (opcion 2) installation on PC 
+#### (option 2) installation on PC 
 
 For install protobuf on PC please see oficial [documentation](https://github.com/google/protobuf). Then compile proto driver messages like this:
 
