@@ -25,10 +25,8 @@ from  multiprocessing import Process
 from zmq.eventloop import ioloop, zmqstream
 ioloop.install()
 
-creator_ip = '192.168.1.114' # or local ip of MATRIX creator
+creator_ip = '127.0.0.1' # or local ip of MATRIX creator
 creator_gpio_base_port = 20013 + 36
-PIN_OUTPUT = 0
-PIN_INPUT = 1
 
 def config_gpio_write(pin,value):
     config = driver_proto.DriverConfig()
@@ -82,8 +80,8 @@ if __name__ == "__main__":
     sconfig = context.socket(zmq.PUSH)
     sconfig.connect('tcp://' + creator_ip + ':' + str(creator_gpio_base_port))
 
-    config_gpio_write(0,0)
-    config_gpio_read(1)
+    config_gpio_write(0,0) # pin 0 in output mode, value 0
+    config_gpio_read(1)    # pin 1 in input mode
 
     Process(target = task_gpio_write, args = (0, )).start()
     Process(target = task_driver_ping).start()
