@@ -51,6 +51,8 @@ For install protobuf on PC please see oficial [documentation](https://github.com
 ### Building protobuf driver messages
 
 ``` bash
+git clone --recursive https://github.com/matrix-io/matrix-creator-malos.git
+cd matrix-creator-malos/src/python_test/
 export SRC_DIR=../../protocol-buffers/malos
 protoc -I=$SRC_DIR --python_out=./ $SRC_DIR/driver.proto
 ```
