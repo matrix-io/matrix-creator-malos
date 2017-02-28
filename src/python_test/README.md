@@ -19,6 +19,7 @@ install python packages dependences:
 sudo apt-get install build-essential python-dev
 pip install pyzmq protobuf tornado 
 ```
+
 ### MATRIX Creator software 
 
 install MALOS and perform device reboot. For more details: [Getting Started Guide](https://github.com/matrix-io/matrix-creator-quickstart/wiki/2.-Getting-Started)
@@ -31,7 +32,9 @@ sudo apt-get install matrix-creator-init matrix-creator-malos cmake g++ git libz
 reboot
 
 ```
-### (opcional) Protobuf installation on Raspbian
+### Protobuf installation
+
+#### (opcion 1) installation on Raspbian
 
 ``` bash
 echo "deb http://unstable-packages.matrix.one/ stable main" | sudo tee --append /etc/apt/sources.list
@@ -40,9 +43,12 @@ sudo apt-get upgrade
 sudo apt-get install matrix-creator-protobuf
 ```
 
-### Protobuf installation on PC and build driver
+#### (opcion 2) installation on PC 
 
 For install protobuf on PC please see oficial [documentation](https://github.com/google/protobuf). Then compile proto driver messages like this:
+
+
+### Building protobuf driver messages
 
 ``` bash
 export SRC_DIR=../../protocol-buffers/malos
