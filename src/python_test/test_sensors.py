@@ -18,12 +18,12 @@ from  multiprocessing import Process
 from zmq.eventloop import ioloop, zmqstream
 ioloop.install()
 
-creator_ip = '127.0.0.1' # or local ip of MATRIX creator
+creator_ip = '10.0.0.171' # or local ip of MATRIX creator
 
 creator_base_port = 20013
 pressure_port = creator_base_port + 12
 uv_port = creator_base_port + 16
-humidity_port = creator_base_port + 36
+humidity_port = creator_base_port + 4
 
 def humidity_callback(msg):
     data = driver_proto.Humidity().ParseFromString(msg[0])
