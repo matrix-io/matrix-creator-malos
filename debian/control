@@ -8,7 +8,7 @@ Homepage: https://github.com/matrix-io/matrix-creator-malos
 
 Package: matrix-creator-malos
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends},libmatrix-malos-dev, libmatrix-creator-hal-dev
 Description: Allows queries to MATRIX Creator hardware via ZMQ.
  Matrix Creator (https://creator.matrix.one) is a board that can be added
  to a Raspberry Pi v2 or v3. This board has many sensors. This program
