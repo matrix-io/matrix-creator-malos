@@ -58,9 +58,21 @@ def task_driver_ping(sensor_port):
         time.sleep(3)
 
 if __name__ == "__main__":
-    Process(target = register_callback, args = (humidity_callback,humidity_port,)).start()
-    Process(target = register_callback, args = (pressure_callback,pressure_port,)).start()
-    Process(target = register_callback, args = (uv_callback,uv_port,)).start()
-    Process(target = task_driver_ping, args = (humidity_port,)).start()
-    Process(target = task_driver_ping, args = (pressure_port,)).start()
-    Process(target = task_driver_ping, args = (uv_port,)).start()
+    phum = Process(target = register_callback, args = (humidity_callback,humidity_port,))
+    #ppres = Process(target = register_callback, args = (pressure_callback,pressure_port,))
+    #puv = Process(target = register_callback, args = (uv_callback,uv_port,))
+    ppingh = Process(target = task_driver_ping, args = (humidity_port,))
+    #ppingp = Process(target = task_driver_ping, args = (pressure_port,))
+    #ppinguv = Process(target = task_driver_ping, args = (uv_port,))
+
+    try:
+        phum.start()
+        phum.join()
+        ppingh.start()
+        ppingh.join()
+
+
+    except KeyboardInterrupt:
+        phum.terminate()
+        ppingh.terminate()
+
