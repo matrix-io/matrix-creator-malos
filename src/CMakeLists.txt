@@ -17,7 +17,8 @@ FIND_LIBRARY(HAL_LIB NAMES matrix_creator_hal)
 FIND_LIBRARY(MATRIX_LIB NAMES matrix_malos)
 FIND_LIBRARY(MATRIX_ZMQ_LIB NAMES matrix_malos_zmq)
 FIND_LIBRARY(WIRINGPI_LIB NAMES wiringPi)
-
+FIND_LIBRARY(WIRINGPI_DEV_LIB NAMES wiringPiDev)
+FIND_LIBRARY(CRYPT_LIB NAMES crypt)
 
 message(STATUS "ZMQ found => " "${ZMQ_LIB}")
 message(STATUS "HAL found => " "${HAL_LIB}")
@@ -52,7 +53,7 @@ add_executable(malos ${malos_src})
   target_link_libraries(malos ${HAL_LIB}) 
   target_link_libraries(malos ${MATRIX_LIB})
   target_link_libraries(malos ${MATRIX_ZMQ_LIB} ${ZMQ_LIB})
-  target_link_libraries(malos ${WIRINGPI_LIB})
+  target_link_libraries(malos ${WIRINGPI_LIB} ${WIRINGPI_DEV_LIB} ${CRYPT_LIB})
   target_link_libraries(malos ${FFTW_LIBRARIES})
 
 # Binary to be installed.
