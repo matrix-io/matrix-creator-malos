@@ -47,7 +47,8 @@ def config_gpio_read(pin):
     sconfig.send(config.SerializeToString())
 
 def gpio_callback(msg):
-    print "Received gpio register: %s" % msg
+    data = driver_proto.GpioParams().ParseFromString(msg[0])
+    print "Received gpio register: %s" % data
 
 def register_gpio_callback():
     ssub = context.socket(zmq.SUB)
