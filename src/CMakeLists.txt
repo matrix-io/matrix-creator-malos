@@ -10,8 +10,6 @@ find_package(Threads REQUIRED)
 
 find_library (FFTW_LIBRARIES NAMES fftw3f )
 
-# This won't find ZQM in custom locations.
-# FIXME(nelson.castillo): Improve.
 FIND_LIBRARY(ZMQ_LIB NAMES zmq)
 FIND_LIBRARY(HAL_LIB NAMES matrix_creator_hal)
 FIND_LIBRARY(MATRIX_LIB NAMES matrix_malos)
