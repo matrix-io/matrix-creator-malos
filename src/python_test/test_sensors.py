@@ -18,7 +18,7 @@ from  multiprocessing import Process
 from zmq.eventloop import ioloop, zmqstream
 ioloop.install()
 
-creator_ip = '127.0.0.1' # or local ip of MATRIX creator
+creator_ip = '192.168.1.114' # or local ip of MATRIX creator
 
 creator_base_port = 20013
 pressure_port = creator_base_port + 12
@@ -58,18 +58,21 @@ def task_driver_ping(sensor_port):
         time.sleep(3)
 
 if __name__ == "__main__":
-    phum = Process(target = register_callback, args = (humidity_callback,humidity_port,))
-    #ppres = Process(target = register_callback, args = (pressure_callback,pressure_port,))
-    #puv = Process(target = register_callback, args = (uv_callback,uv_port,))
-    ppingh = Process(target = task_driver_ping, args = (humidity_port,))
-    #ppingp = Process(target = task_driver_ping, args = (pressure_port,))
-    #ppinguv = Process(target = task_driver_ping, args = (uv_port,))
 
     try:
+        phum = Process(target = register_callback, args = (humidity_callback,humidity_port,))
+        ppres = Process(target = register_callback, args = (pressure_callback,pressure_port,))
+        puv = Process(target = register_callback, args = (uv_callback,uv_port,))
+        ppingh = Process(target = task_driver_ping, args = (humidity_port,))
+        ppingp = Process(target = task_driver_ping, args = (pressure_port,))
+        ppinguv = Process(target = task_driver_ping, args = (uv_port,))
+
         phum.start()
-        phum.join()
+        ppres.start()
+        puv.start()
         ppingh.start()
-        ppingh.join()
+        ppingp.start()
+        ppinguv.start()
 
 
     except KeyboardInterrupt:
