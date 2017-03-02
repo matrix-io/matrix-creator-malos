@@ -8,14 +8,15 @@ ADM_EXTRA_WARNINGS()
 find_package(Protobuf 3 REQUIRED)
 find_package(Threads REQUIRED)
 
-# This won't find ZQM in custom locations.
-# FIXME(nelson.castillo): Improve.
+find_library (FFTW_LIBRARIES NAMES fftw3f )
+
 FIND_LIBRARY(ZMQ_LIB NAMES zmq)
 FIND_LIBRARY(HAL_LIB NAMES matrix_creator_hal)
 FIND_LIBRARY(MATRIX_LIB NAMES matrix_malos)
 FIND_LIBRARY(MATRIX_ZMQ_LIB NAMES matrix_malos_zmq)
 FIND_LIBRARY(WIRINGPI_LIB NAMES wiringPi)
-
+FIND_LIBRARY(WIRINGPI_DEV_LIB NAMES wiringPiDev)
+FIND_LIBRARY(CRYPT_LIB NAMES crypt)
 
 message(STATUS "ZMQ found => " "${ZMQ_LIB}")
 message(STATUS "HAL found => " "${HAL_LIB}")
@@ -44,13 +45,14 @@ set(malos_src
 )
 
 add_executable(malos ${malos_src})
-set_property(TARGET malos PROPERTY CXX_STANDARD 11)
-target_link_libraries(malos ${PROTOBUF_LIBRARY})
-target_link_libraries(malos ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(malos ${HAL_LIB}) 
-target_link_libraries(malos ${MATRIX_LIB})
-target_link_libraries(malos ${MATRIX_ZMQ_LIB} ${ZMQ_LIB})
-target_link_libraries(malos ${WIRINGPI_LIB})
+  set_property(TARGET malos PROPERTY CXX_STANDARD 11)
+  target_link_libraries(malos ${PROTOBUF_LIBRARY})
+  target_link_libraries(malos ${CMAKE_THREAD_LIBS_INIT})
+  target_link_libraries(malos ${HAL_LIB}) 
+  target_link_libraries(malos ${MATRIX_LIB})
+  target_link_libraries(malos ${MATRIX_ZMQ_LIB} ${ZMQ_LIB})
+  target_link_libraries(malos ${WIRINGPI_LIB} ${WIRINGPI_DEV_LIB} ${CRYPT_LIB})
+  target_link_libraries(malos ${FFTW_LIBRARIES})
 
 # Binary to be installed.
 install(TARGETS malos DESTINATION bin)

@@ -42,7 +42,7 @@ function setupMicarray() {
   var micarray_cfg = new matrixMalosBuilder.MicArrayParams
  
   // setup gain for all microphones 
-  micarray_cfg.set_gain(8)
+  micarray_cfg.set_gain(16)
 
   // setup a sound source perpendicular to the MATRIX Creator
   micarray_cfg.set_azimutal_angle(0)

@@ -30,19 +30,33 @@ namespace matrix_malos {
 bool MicArrayAlsaDriver::ProcessConfig(const DriverConfig& config) {
   MicArrayParams micarray_config(config.micarray());
 
-  mics_->SetGain(static_cast<int16_t>(micarray_config.gain()));
+  mics_.SetGain(static_cast<int16_t>(micarray_config.gain()));
 
-  mics_->CalculateDelays(micarray_config.azimutal_angle(),
-                         micarray_config.polar_angle(),
-                         micarray_config.radial_distance_mm(),
-                         micarray_config.sound_speed_mmseg());
+  mics_.CalculateDelays(micarray_config.azimutal_angle(),
+                        micarray_config.polar_angle(),
+                        micarray_config.radial_distance_mm(),
+                        micarray_config.sound_speed_mmseg());
+
+  return true;
+}
+
+bool MicArrayAlsaDriver::SendUpdate() {
+  MicArrayParams mics_params;
+
+  mics_params.set_azimutal_angle(doa_.GetAzimutalAngle());
+  mics_params.set_polar_angle(doa_.GetPolarAngle());
+
+  std::string buffer;
+  mics_params.SerializeToString(&buffer);
+  zqm_push_update_->Send(buffer);
+
 
   return true;
 }
 
 void MicArrayAlsaDriver::AlsaThread() {
   // building fifo for each channel + fifo for the beamformed channel
-  for (uint16_t c = 0; c < mics_->Channels() + 1; ++c) {
+  for (uint16_t c = 0; c < mics_.Channels() + 1; ++c) {
     const std::string name =
         "/tmp/matrix_micarray_channel_" + std::to_string(c);
 
@@ -59,37 +73,41 @@ void MicArrayAlsaDriver::AlsaThread() {
   }
 
   int named_pipe_handle;
-  std::valarray<int16_t> buffer(mics_->NumberOfSamples());
+  std::valarray<int16_t> buffer(mics_.NumberOfSamples());
   while (true) {
-    mics_->Read(); /* Reading 8-mics buffer from de FPGA */
-    for (uint16_t c = 0; c < mics_->Channels(); ++c) {
+
+    mics_.Read(); /* Reading 8-mics buffer from de FPGA */
+
+    doa_.Calculate();
+
+    for (uint16_t c = 0; c < mics_.Channels(); ++c) {
       const std::string name =
           "/tmp/matrix_micarray_channel_" + std::to_string(c);
       // TODO(andres.calderon@admobilize.com):  handle error
       named_pipe_handle = open(name.c_str(), O_WRONLY | O_NONBLOCK);
 
-      for (uint32_t s = 0; s < mics_->NumberOfSamples(); ++s)
-        buffer[s] = mics_->At(s, c);
+      for (uint32_t s = 0; s < mics_.NumberOfSamples(); ++s)
+        buffer[s] = mics_.At(s, c);
 
       // TODO(andres.calderon@admobilize.com):  handle error
       write(named_pipe_handle, &buffer[0],
-            sizeof(int16_t) * mics_->NumberOfSamples());
+            sizeof(int16_t) * mics_.NumberOfSamples());
 
       close(named_pipe_handle);
     }
 
     // Write to pipe beamformed channel
     const std::string name =
-        "/tmp/matrix_micarray_channel_" + std::to_string(mics_->Channels());
+        "/tmp/matrix_micarray_channel_" + std::to_string(mics_.Channels());
     // TODO(andres.calderon@admobilize.com):  handle error
     named_pipe_handle = open(name.c_str(), O_WRONLY | O_NONBLOCK);
 
-    for (uint32_t s = 0; s < mics_->NumberOfSamples(); ++s)
-      buffer[s] = mics_->Beam(s);
+    for (uint32_t s = 0; s < mics_.NumberOfSamples(); ++s)
+      buffer[s] = mics_.Beam(s);
 
     // TODO(andres.calderon@admobilize.com):  handle error
     write(named_pipe_handle, &buffer[0],
-          sizeof(int16_t) * mics_->NumberOfSamples());
+          sizeof(int16_t) * mics_.NumberOfSamples());
 
     close(named_pipe_handle);
   }
