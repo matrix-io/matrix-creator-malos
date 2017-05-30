@@ -63,4 +63,4 @@ def setEverloopColor(red=0, green=0, blue=0, white=0):
     # to the config socket
     config_socket.send(config.SerializeToString())
 
-setEverloopColor(0, 0, 40, 0)
+setEverloopColor(5, 5, 0, 0)
