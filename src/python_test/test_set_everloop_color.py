@@ -14,17 +14,33 @@ import zmq
 import time
 import driver_pb2 as driver_proto
 
-creator_ip = '127.0.0.1' # or local ip of MATRIX creator
+# or local ip of MATRIX creator
+creator_ip = '192.168.1.154'
+
+# port for everloop driver
 creator_everloop_base_port = 20013 + 8
 
+# grab zmq context
 context = zmq.Context()
-socket = context.socket(zmq.PUSH)
-socket.connect('tcp://' + creator_ip + ':' + str(creator_everloop_base_port)) 
 
+# get socket for config
+config_socket = context.socket(zmq.PUSH)
+config_socket.connect(
+    'tcp://{0}:{1}'.format(creator_ip, creator_everloop_base_port))
+
+
+# sets all of the LEDS to a given rgbw value
 def setEverloopColor(red=0, green=0, blue=0, white=0):
+
+    # create a new driver config strut
     config = driver_proto.DriverConfig()
+
+    # initialize an empty list for the "image" or LEDS
     image = []
-    for led in range (35):
+
+    # iterate over all 35 LEDS and set the rgbw value of each
+    # then append it to the end of the list/image thing
+    for led in range(35):
         ledValue = driver_proto.LedValue()
         ledValue.blue = blue
         ledValue.red = red
@@ -32,8 +48,11 @@ def setEverloopColor(red=0, green=0, blue=0, white=0):
         ledValue.white = white
         image.append(ledValue)
 
-    config.image.led.extend(image) 
-    socket.send(config.SerializeToString())
+    # add the "image" to the config driver
+    config.image.led.extend(image)
 
-setEverloopColor(5,10,2,0)
+    # send a serialized string of the driver config
+    # to the config socket
+    config_socket.send(config.SerializeToString())
 
+setEverloopColor(0, 0, 40, 0)
