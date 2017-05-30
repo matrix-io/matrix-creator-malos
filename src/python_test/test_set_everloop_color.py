@@ -22,23 +22,23 @@ import zmq
 import time
 import driver_pb2 as driver_proto
 
-# or local ip of MATRIX creator
-creator_ip = '192.168.1.154'
-
-# port for everloop driver
-creator_everloop_base_port = 20013 + 8
-
-# grab zmq context
-context = zmq.Context()
-
-# get socket for config
-config_socket = context.socket(zmq.PUSH)
-config_socket.connect(
-    'tcp://{0}:{1}'.format(creator_ip, creator_everloop_base_port))
-
 
 # sets all of the LEDS to a given rgbw value
 def setEverloopColor(red=0, green=0, blue=0, white=0):
+
+    # or local ip of MATRIX creator
+    creator_ip = '192.168.1.154'
+
+    # port for everloop driver
+    creator_everloop_base_port = 20013 + 8
+
+    # grab zmq context
+    context = zmq.Context()
+
+    # get socket for config
+    config_socket = context.socket(zmq.PUSH)
+    config_socket.connect(
+        'tcp://{0}:{1}'.format(creator_ip, creator_everloop_base_port))
 
     # create a new driver config strut
     config = driver_proto.DriverConfig()
@@ -63,4 +63,5 @@ def setEverloopColor(red=0, green=0, blue=0, white=0):
     # to the config socket
     config_socket.send(config.SerializeToString())
 
-setEverloopColor(5, 5, 0, 0)
+if __name__ == '__main__':
+    setEverloopColor(5, 5, 0, 0)
