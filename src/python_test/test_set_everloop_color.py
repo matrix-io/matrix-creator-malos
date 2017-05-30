@@ -10,6 +10,14 @@
 # BasePort + 3 => Data port. Receive data from device.
 # (see README file for more details)
 
+# NOTE:
+# before run this example please execute:
+# pip install pyzmq protobuf
+
+# and then compile protos like this:
+# export SRC_DIR=../../protocol-buffers/malos
+# protoc -I=$SRC_DIR --python_out=./ $SRC_DIR/driver.proto
+
 import zmq
 import time
 import driver_pb2 as driver_proto
