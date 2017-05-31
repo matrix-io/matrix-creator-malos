@@ -10,9 +10,9 @@
 # BasePort + 3 => Data port. Receive data from device.
 # (see README file for more details)
 
-# NOTE: 
+# NOTE:
 # before run this example please execute:
-# pip install pyzmq protobuf 
+# pip install pyzmq protobuf
 
 # and then compile protos like this:
 # export SRC_DIR=../../protocol-buffers/malos
@@ -22,20 +22,22 @@ import zmq
 import time
 import driver_pb2 as driver_proto
 
-creator_ip = '127.0.0.1' # or local ip of MATRIX creator
+# or local ip of MATRIX creator
+creator_ip = '192.168.1.154'
 creator_gpio_base_port = 20013 + 36
 
 context = zmq.Context()
 socket = context.socket(zmq.PUSH)
-socket.connect('tcp://' + creator_ip + ':' + str(creator_gpio_base_port)) 
+socket.connect('tcp://{0}:{1}'.format(creator_ip, creator_gpio_base_port))
 
 config = driver_proto.DriverConfig()
 config.gpio.pin = 15
-config.gpio.mode = driver_proto.GpioParams.OUTPUT 
+config.gpio.mode = driver_proto.GpioParams.OUTPUT
 
-while True:
-    config.gpio.value ^= 1
-    print ('GPIO'+str(config.gpio.pin)+'='+str(config.gpio.value))
-    socket.send(config.SerializeToString())
-    time.sleep(1)
 
+if __name__ == '__main__':
+    while True:
+        config.gpio.value ^= 1
+        print ('GPIO{0}={1}'.format(config.gpio.pin, config.gpio.value))
+        socket.send(config.SerializeToString())
+        time.sleep(1)
