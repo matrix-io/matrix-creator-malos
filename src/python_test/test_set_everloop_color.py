@@ -24,10 +24,10 @@ import driver_pb2 as driver_proto
 
 
 # sets all of the LEDS to a given rgbw value
-def setEverloopColor(red=0, green=0, blue=0, white=0):
+def set_everloop_color(red=0, green=0, blue=0, white=0):
 
     # or local ip of MATRIX creator
-    creator_ip = '192.168.1.154'
+    creator_ip = '127.0.0.1'
 
     # port for everloop driver
     creator_everloop_base_port = 20013 + 8
@@ -64,4 +64,4 @@ def setEverloopColor(red=0, green=0, blue=0, white=0):
     config_socket.send(config.SerializeToString())
 
 if __name__ == '__main__':
-    setEverloopColor(5, 5, 0, 0)
+    set_everloop_color(0, 0, 0, 0)

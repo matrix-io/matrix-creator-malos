@@ -15,7 +15,7 @@ from utils import driver_keep_alive, register_data_callback, register_error_call
 
 ioloop.install()
 
-creator_ip = '192.168.1.154'  # or local ip of MATRIX creator
+creator_ip = '127.0.0.1'  # or local ip of MATRIX creator
 pressure_port = 20013 + 12
 
 

@@ -15,7 +15,7 @@ from utils import driver_keep_alive, register_data_callback, register_error_call
 
 ioloop.install()
 
-creator_ip = '192.168.1.154'  # or local ip of MATRIX creator
+creator_ip = '127.0.0.1'  # or local ip of MATRIX creator
 uv_port = 20013 + 16
 
 
@@ -28,7 +28,7 @@ def uv_error_callback(error):
     print('{0}'.format(error))
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     Process(target=register_data_callback, args=(
         uv_data_callback, creator_ip, uv_port)).start()
     Process(target=register_error_callback, args=(

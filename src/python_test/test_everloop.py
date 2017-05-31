@@ -18,6 +18,10 @@
 # export SRC_DIR=../../protocol-buffers/malos
 # protoc -I=$SRC_DIR --python_out=./ $SRC_DIR/driver.proto
 
+# NOTE:
+# there seems to be a delay when running this at high framerates
+# look into using queues to pass messages between threads
+
 import zmq
 import time
 import driver_pb2 as driver_proto
@@ -30,7 +34,7 @@ from utils import register_error_callback
 ioloop.install()
 
 # or local ip of MATRIX creator
-creator_ip = '192.168.1.154'
+creator_ip = '127.0.0.1'
 
 # port for everloop driver
 creator_everloop_base_port = 20013 + 8
