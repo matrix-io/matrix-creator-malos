@@ -30,11 +30,11 @@ def register_error_callback(callback, creator_ip, sensor_port):
     print('Worker has stopped processing messages.')
 
 
-def driver_keep_alive(creator_ip, sensor_port):
+def driver_keep_alive(creator_ip, sensor_port, ping=5):
     context = zmq.Context()
     sping = context.socket(zmq.PUSH)
     keep_alive_port = sensor_port + 1
     sping.connect('tcp://{0}:{1}'.format(creator_ip, keep_alive_port))
     while True:
         sping.send_string('')
-        time.sleep(3)
+        time.sleep(ping)
