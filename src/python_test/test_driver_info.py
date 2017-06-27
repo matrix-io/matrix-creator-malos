@@ -23,7 +23,7 @@ import time
 import driver_pb2 as driver_proto
 
 # or local ip of MATRIX creator
-creator_ip = '127.0.0.1'
+creator_ip = '192.168.1.154'
 creator_base_port = 20012
 
 # grab zmq context

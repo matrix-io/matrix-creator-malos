@@ -23,21 +23,40 @@ import time
 import driver_pb2 as driver_proto
 
 # or local ip of MATRIX creator
-creator_ip = '192.168.1.154'
+creator_ip = '127.0.0.1'
 creator_gpio_base_port = 20013 + 36
 
+# Grab a zmq context
 context = zmq.Context()
+
+# Create a zmq push socket
 socket = context.socket(zmq.PUSH)
+
+# Connect to push socket
 socket.connect('tcp://{0}:{1}'.format(creator_ip, creator_gpio_base_port))
 
+# Create a new driver config
 config = driver_proto.DriverConfig()
+
+# Set pin number to control
 config.gpio.pin = 15
+
+# Set pin 15 to output mode
 config.gpio.mode = driver_proto.GpioParams.OUTPUT
 
+# Start the unescapable loop!
+while True:
 
-if __name__ == '__main__':
-    while True:
-        config.gpio.value ^= 1
-        print ('GPIO{0}={1}'.format(config.gpio.pin, config.gpio.value))
-        socket.send(config.SerializeToString())
-        time.sleep(1)
+    # Bit shift the value on the pin
+    # from high to low to high to low...
+    config.gpio.value ^= 1
+
+    # Print some debug statements
+    print ('GPIO{0}={1}'.format(config.gpio.pin, config.gpio.value))
+
+    # Serialize the configuration we created
+    # and send it to the socket
+    socket.send(config.SerializeToString())
+
+    # Nap time
+    time.sleep(1)

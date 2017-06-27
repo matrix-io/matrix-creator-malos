@@ -19,12 +19,12 @@
 # protoc -I=$SRC_DIR --python_out=./ $SRC_DIR/driver.proto
 
 import zmq
-import time
 import driver_pb2 as driver_proto
 
 
 # sets all of the LEDS to a given rgbw value
 def set_everloop_color(red=0, green=0, blue=0, white=0):
+    """Submit a R,G,B,W value between 0-255"""
 
     # or local ip of MATRIX creator
     creator_ip = '127.0.0.1'
@@ -37,8 +37,7 @@ def set_everloop_color(red=0, green=0, blue=0, white=0):
 
     # get socket for config
     config_socket = context.socket(zmq.PUSH)
-    config_socket.connect(
-        'tcp://{0}:{1}'.format(creator_ip, creator_everloop_base_port))
+    config_socket.connect('tcp://{0}:{1}'.format(creator_ip, creator_everloop_base_port))
 
     # create a new driver config strut
     config = driver_proto.DriverConfig()
