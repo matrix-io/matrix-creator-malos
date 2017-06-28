@@ -41,7 +41,7 @@ class ServoDriver : public MalosWishboneBase {
   }
 
   // Read configuration of Servo command
-  bool ProcessConfig(const DriverConfig& config) override;
+  bool ProcessConfig(const pb::driver::DriverConfig& config) override;
 
  private:
   // GPIO control

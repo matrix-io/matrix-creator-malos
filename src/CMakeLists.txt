@@ -23,11 +23,9 @@ message(STATUS "HAL found => " "${HAL_LIB}")
 message(STATUS "MATRIX LIB found => " "${MATRIX_LIB}")
 message(STATUS "MATRIX ZMQ LIB found => " "${MATRIX_ZMQ_LIB}")
 
-PROTOBUF_GENERATE_CPP(MALOS_PROTO_SRC MALOS_PROTO_HEADER ../protocol-buffers/malos/driver.proto)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-include_directories(
-  ${PROJECT_BINARY_DIR} # Protos.
-  ${PROTOBUF_INCLUDE_DIRS})
+include_directories(${PROJECT_BINARY_DIR})
 
 set(malos_src
   malos.cpp
@@ -41,11 +39,13 @@ set(malos_src
   driver_lirc.cpp driver_lirc.h
   driver_servo.cpp driver_servo.h
   driver_gpio.cpp driver_gpio.h
-  ${MALOS_PROTO_SRC} ${MALOS_PROTO_HEADER}
 )
+
+link_directories(${CMAKE_BINARY_DIR}/protocol-buffers/matrixlabs)
 
 add_executable(malos ${malos_src})
   set_property(TARGET malos PROPERTY CXX_STANDARD 11)
+  target_link_libraries(malos build_protos)
   target_link_libraries(malos ${PROTOBUF_LIBRARY})
   target_link_libraries(malos ${CMAKE_THREAD_LIBS_INIT})
   target_link_libraries(malos ${HAL_LIB}) 

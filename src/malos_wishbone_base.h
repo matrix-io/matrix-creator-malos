@@ -26,7 +26,9 @@
 #include <matrix_malos/malos_base.h>
 
 #include "matrix_hal/wishbone_bus.h"
-#include "./src/driver.pb.h"
+#include "../protocol-buffers/matrixlabs/driver.pb.h"
+
+namespace pb = matrixlabs::malos::v1;
 
 namespace matrix_malos {
 

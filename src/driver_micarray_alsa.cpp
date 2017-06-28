@@ -21,14 +21,16 @@
 
 #include "./driver_micarray_alsa.h"
 
-#include "./src/driver.pb.h"
+#include "../protocol-buffers/matrixlabs/driver.pb.h"
 
 #include "matrix_hal/microphone_array.h"
 
+namespace pb = matrixlabs::malos::v1;
+
 namespace matrix_malos {
 
-bool MicArrayAlsaDriver::ProcessConfig(const DriverConfig& config) {
-  MicArrayParams micarray_config(config.micarray());
+bool MicArrayAlsaDriver::ProcessConfig(const pb::driver::DriverConfig& config) {
+  pb::driver::MicArrayParams micarray_config(config.micarray());
 
   mics_.SetGain(static_cast<int16_t>(micarray_config.gain()));
 
@@ -41,7 +43,7 @@ bool MicArrayAlsaDriver::ProcessConfig(const DriverConfig& config) {
 }
 
 bool MicArrayAlsaDriver::SendUpdate() {
-  MicArrayParams mics_params;
+  pb::driver::MicArrayParams mics_params;
 
   mics_params.set_azimutal_angle(doa_.GetAzimutalAngle());
   mics_params.set_polar_angle(doa_.GetPolarAngle());
@@ -49,7 +51,6 @@ bool MicArrayAlsaDriver::SendUpdate() {
   std::string buffer;
   mics_params.SerializeToString(&buffer);
   zqm_push_update_->Send(buffer);
-
 
   return true;
 }
@@ -75,7 +76,6 @@ void MicArrayAlsaDriver::AlsaThread() {
   int named_pipe_handle;
   std::valarray<int16_t> buffer(mics_.NumberOfSamples());
   while (true) {
-
     mics_.Read(); /* Reading 8-mics buffer from de FPGA */
 
     doa_.Calculate();
