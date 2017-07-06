@@ -20,17 +20,15 @@
 #include <string>
 
 #include "./driver_micarray_alsa.h"
-
-#include "../protocol-buffers/matrixlabs/driver.pb.h"
-
+#include <matrix_io/malos/v1/driver.pb.h>
 #include "matrix_hal/microphone_array.h"
 
-namespace pb = matrixlabs::malos::v1;
+namespace pb = matrix_io::malos::v1;
 
 namespace matrix_malos {
 
 bool MicArrayAlsaDriver::ProcessConfig(const pb::driver::DriverConfig& config) {
-  pb::driver::MicArrayParams micarray_config(config.micarray());
+  pb::io::MicArrayParams micarray_config(config.micarray());
 
   mics_.SetGain(static_cast<int16_t>(micarray_config.gain()));
 
@@ -43,7 +41,7 @@ bool MicArrayAlsaDriver::ProcessConfig(const pb::driver::DriverConfig& config) {
 }
 
 bool MicArrayAlsaDriver::SendUpdate() {
-  pb::driver::MicArrayParams mics_params;
+  pb::io::MicArrayParams mics_params;
 
   mics_params.set_azimutal_angle(doa_.GetAzimutalAngle());
   mics_params.set_polar_angle(doa_.GetPolarAngle());

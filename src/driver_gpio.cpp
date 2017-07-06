@@ -19,23 +19,23 @@
 #include <iostream>
 
 #include "./driver_gpio.h"
-#include "../protocol-buffers/matrixlabs/driver.pb.h"
+#include <matrix_io/malos/v1/driver.pb.h>
 
-namespace pb = matrixlabs::malos::v1;
+namespace pb = matrix_io::malos::v1;
 
 namespace matrix_malos {
 
 const bool kGpioDriverDebugEnabled = false;
 
 bool GpioDriver::ProcessConfig(const pb::driver::DriverConfig& config) {
-  pb::driver::GpioParams gpio_config(config.gpio());
+  pb::io::GpioParams gpio_config(config.gpio());
   const int16_t pin = static_cast<int16_t>(gpio_config.pin());
   const int16_t mode = static_cast<int16_t>(gpio_config.mode());
 
-  if (mode == pb::driver::GpioParams::OUTPUT) {
+  if (mode == pb::io::GpioParams::OUTPUT) {
     gpio_->SetGPIOValue(pin, gpio_config.value());
-  } else if (!(mode == pb::driver::GpioParams::OUTPUT ||
-               mode == pb::driver::GpioParams::INPUT)) {
+  } else if (!(mode == pb::io::GpioParams::OUTPUT ||
+               mode == pb::io::GpioParams::INPUT)) {
     zmq_push_error_->Send(
         "invalid gpio mode. check the proto GpioParams (file "
         "driver.proto)");
@@ -48,7 +48,7 @@ bool GpioDriver::ProcessConfig(const pb::driver::DriverConfig& config) {
 }
 
 bool GpioDriver::SendUpdate() {
-  pb::driver::GpioParams gpiopb;
+  pb::io::GpioParams gpiopb;
   gpiopb.set_values(gpio_->GetGPIOValues());
   std::string buffer;
   gpiopb.SerializeToString(&buffer);

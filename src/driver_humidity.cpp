@@ -17,11 +17,11 @@
 #include <fstream>
 #include <iostream>
 #include "./driver_humidity.h"
-#include "../protocol-buffers/matrixlabs/driver.pb.h"
+#include <matrix_io/malos/v1/driver.pb.h>
 
 #include "matrix_hal/humidity_data.h"
 
-namespace pb = matrixlabs::malos::v1;
+namespace pb = matrix_io::malos::v1;
 
 namespace matrix_malos {
 
@@ -50,7 +50,7 @@ bool HumidityDriver::SendUpdate() {
   if (!reader_->Read(&data)) {
     return false;
   }
-  pb::driver::Humidity humidity_pb;
+  pb::sense::Humidity humidity_pb;
 
   humidity_pb.set_temperature_is_calibrated(calibrated_);
   humidity_pb.set_humidity(data.humidity);
@@ -78,7 +78,7 @@ bool HumidityDriver::SendUpdate() {
 }
 
 bool HumidityDriver::ProcessConfig(const pb::driver::DriverConfig &config) {
-  pb::driver::HumidityParams humidity_params(config.humidity());
+  pb::sense::HumidityParams humidity_params(config.humidity());
 
   // Resetting the calibrated flag
   calibrated_ = false;

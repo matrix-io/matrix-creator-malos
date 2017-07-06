@@ -22,16 +22,15 @@
 #include <string>
 
 #include "./driver_lirc.h"
-#include "../protocol-buffers/matrixlabs/driver.pb.h"
-
-namespace pb = matrixlabs::malos::v1;
+#include <matrix_io/malos/v1/driver.pb.h>
+namespace pb = matrix_io::malos::v1;
 
 namespace matrix_malos {
 
 const bool kLircDriverDebugEnabled = false;
 
 bool LircDriver::ProcessConfig(const pb::driver::DriverConfig& config) {
-  pb::driver::LircParams lirc(config.lirc());
+  pb::comm::LircParams lirc(config.lirc());
 
   if (!lirc.config().empty()) {
     // LIRC remotes config from MOS via proto

@@ -37,7 +37,7 @@ const int kBasePort = 20012;
 
 const char kUnsecureBindScope[] = "*";
 
-namespace pb = matrixlabs::malos::v1;
+namespace pb = matrix_io::malos::v1;
 
 namespace matrix_malos {
 

@@ -18,15 +18,15 @@
 #include <iostream>
 
 #include "./driver_everloop.h"
-#include "../protocol-buffers/matrixlabs/driver.pb.h"
+#include <matrix_io/malos/v1/driver.pb.h>
 #include "matrix_hal/everloop_image.h"
 
-namespace pb = matrixlabs::malos::v1;
+namespace pb = matrix_io::malos::v1;
 
 namespace matrix_malos {
 
 bool EverloopDriver::ProcessConfig(const pb::driver::DriverConfig& config) {
-  pb::driver::EverloopImage image(config.image());
+  pb::io::EverloopImage image(config.image());
 
   if (image.led_size() != matrix_hal::kMatrixCreatorNLeds) {
     std::string error_msg("35, Invalid number of leds for ");
@@ -39,7 +39,7 @@ bool EverloopDriver::ProcessConfig(const pb::driver::DriverConfig& config) {
 
   matrix_hal::EverloopImage image_for_hal;
   int idx = 0;
-  for (const pb::driver::LedValue& value : image.led()) {
+  for (const pb::io::LedValue& value : image.led()) {
     image_for_hal.leds[idx].red = value.red();
     image_for_hal.leds[idx].green = value.green();
     image_for_hal.leds[idx].blue = value.blue();
