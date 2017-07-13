@@ -6,7 +6,7 @@
 
 import zmq
 import time
-import driver_pb2 as driver_proto
+from matrix_io.proto.malos.v1 import sense_pb2
 
 from multiprocessing import Process
 from zmq.eventloop import ioloop
@@ -20,7 +20,7 @@ uv_port = 20013 + 16
 
 def uv_data_callback(data):
     """Capture data and print it to stdout"""
-    uv_info = driver_proto.UV().FromString(data[0])
+    uv_info = sense_pb2.UV().FromString(data[0])
     print('{0}'.format(uv_info))
 
 

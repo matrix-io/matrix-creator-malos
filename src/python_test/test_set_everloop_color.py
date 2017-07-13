@@ -12,15 +12,11 @@
 
 # NOTE:
 # before run this example please execute:
-# pip install pyzmq protobuf
-
-# and then compile protos like this:
-# export SRC_DIR=../../protocol-buffers/malos
-# protoc -I=$SRC_DIR --python_out=./ $SRC_DIR/driver.proto
+# pip install pyzmq protobuf matrix_io-proto
 
 import zmq
-import driver_pb2 as driver_proto
-
+from matrix_io.proto.malos.v1 import driver_pb2
+from matrix_io.proto.malos.v1 import io_pb2
 
 # sets all of the LEDS to a given rgbw value
 def set_everloop_color(red=0, green=0, blue=0, white=0):
@@ -40,7 +36,7 @@ def set_everloop_color(red=0, green=0, blue=0, white=0):
     config_socket.connect('tcp://{0}:{1}'.format(creator_ip, creator_everloop_base_port))
 
     # create a new driver config strut
-    config = driver_proto.DriverConfig()
+    config = driver_pb2.DriverConfig()
 
     # initialize an empty list for the "image" or LEDS
     image = []
@@ -48,7 +44,7 @@ def set_everloop_color(red=0, green=0, blue=0, white=0):
     # iterate over all 35 LEDS and set the rgbw value of each
     # then append it to the end of the list/image thing
     for led in range(35):
-        ledValue = driver_proto.LedValue()
+        ledValue = io_pb2.LedValue()
         ledValue.blue = blue
         ledValue.red = red
         ledValue.green = green
@@ -63,4 +59,4 @@ def set_everloop_color(red=0, green=0, blue=0, white=0):
     config_socket.send(config.SerializeToString())
 
 if __name__ == '__main__':
-    set_everloop_color(0, 0, 0, 0)
+    set_everloop_color(0, 0, 255, 0)

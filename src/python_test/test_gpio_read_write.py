@@ -12,15 +12,12 @@
 
 # NOTE:
 # before run this example please execute:
-# pip install pyzmq protobuf tornado
-
-# and then compile protos like this:
-# export SRC_DIR=../../protocol-buffers/malos
-# protoc -I=$SRC_DIR --python_out=./ $SRC_DIR/driver.proto
+# pip install pyzmq protobuf tornado matrix_io-proto
 
 import zmq
 import time
-import driver_pb2 as driver_proto
+from matrix_io.proto.malos.v1 import driver_pb2
+from matrix_io.proto.malos.v1 import io_pb2
 
 from multiprocessing import Process
 from zmq.eventloop import ioloop, zmqstream
@@ -35,13 +32,13 @@ def config_gpio_write(pin, value):
     """This function sets up a pin for use as an output pin"""
 
     # Create a new driver config
-    config = driver_proto.DriverConfig()
+    config = driver_pb2.DriverConfig()
 
     # set the pin in the config provided from the function params
     config.gpio.pin = pin
 
     # Set pin mode to output
-    config.gpio.mode = driver_proto.GpioParams.OUTPUT
+    config.gpio.mode = io_pb2.GpioParams.OUTPUT
 
     # Set the output of the pin initially
     config.gpio.value = value
@@ -54,7 +51,7 @@ def config_gpio_read(pin):
     """This function sets up a pin for use as an input pin"""
 
     # Create a new driver config
-    config = driver_proto.DriverConfig()
+    config = driver_pb2.DriverConfig()
 
     # Set 250 miliseconds between updates.
     config.delay_between_updates = 0.5
@@ -66,7 +63,7 @@ def config_gpio_read(pin):
     config.gpio.pin = pin
 
     # Set the pin mode to input
-    config.gpio.mode = driver_proto.GpioParams.INPUT
+    config.gpio.mode = io_pb2.GpioParams.INPUT
 
     # Send configuration to malOS using global sconfig
     sconfig.send(config.SerializeToString())
@@ -74,7 +71,7 @@ def config_gpio_read(pin):
 
 def gpio_callback(msg):
     """Captures an error message and prints it to stdout"""
-    data = driver_proto.GpioParams().FromString(msg[0])
+    data = io_pb2.GpioParams().FromString(msg[0])
     print('Received gpio register: {0}'.format(data))
 
 

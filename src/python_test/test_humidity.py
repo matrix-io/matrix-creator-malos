@@ -6,7 +6,8 @@
 
 import zmq
 import time
-import driver_pb2 as driver_proto
+from matrix_io.proto.malos.v1 import driver_pb2
+from matrix_io.proto.malos.v1 import sense_pb2
 
 from multiprocessing import Process
 from zmq.eventloop import ioloop
@@ -27,7 +28,7 @@ def config_socket():
     socket.connect('tcp://{0}:{1}'.format(creator_ip, humidity_port))
 
     # Create a new driver config
-    driver_config_proto = driver_proto.DriverConfig()
+    driver_config_proto = driver_pb2.DriverConfig()
 
     # Set the delay between updates that the driver returns
     driver_config_proto.delay_between_updates = 2.0
@@ -46,7 +47,7 @@ def config_socket():
 
 def humidity_data_callback(data):
     """Capture any data and print them to stdout"""
-    humidity_info = driver_proto.Humidity().FromString(data[0])
+    humidity_info = sense_pb2.Humidity().FromString(data[0])
     print('{0}'.format(humidity_info))
 
 
