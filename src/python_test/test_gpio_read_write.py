@@ -121,4 +121,4 @@ if __name__ == "__main__":
     Process(target=driver_keep_alive, args=(creator_ip, creator_gpio_base_port, 1)).start()
 
     # Register the callback to send data from the read pin
-    Process(target=register_data_callback, args=(gpio_callback, creator_ip, creator_gpio_base_port))
+    Process(target=register_data_callback, args=(gpio_callback, creator_ip, creator_gpio_base_port)).start()
