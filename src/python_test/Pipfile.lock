@@ -1,0 +1,81 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "5d123505bb106e715d9ed680064156c35b6e7b0674d97a244c3e04ba5ce13eda"
+        },
+        "requires": {},
+        "sources": [
+            {
+                "url": "https://pypi.python.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "matrix-io-proto": {
+            "version": "==0.0.10"
+        },
+        "protobuf": {
+            "version": "==3.3.0"
+        },
+        "pyzmq": {
+            "version": "==16.0.2"
+        },
+        "setuptools": {
+            "version": "==36.1.1"
+        },
+        "six": {
+            "version": "==1.10.0"
+        },
+        "tornado": {
+            "version": "==4.5.1"
+        }
+    },
+    "develop": {
+        "appnope": {
+            "version": "==0.1.0"
+        },
+        "decorator": {
+            "version": "==4.0.11"
+        },
+        "ipython": {
+            "version": "==6.1.0"
+        },
+        "ipython-genutils": {
+            "version": "==0.2.0"
+        },
+        "jedi": {
+            "version": "==0.10.2"
+        },
+        "pexpect": {
+            "version": "==4.2.1"
+        },
+        "pickleshare": {
+            "version": "==0.7.4"
+        },
+        "prompt-toolkit": {
+            "version": "==1.0.14"
+        },
+        "ptyprocess": {
+            "version": "==0.5.2"
+        },
+        "pygments": {
+            "version": "==2.2.0"
+        },
+        "setuptools": {
+            "version": "==36.1.1"
+        },
+        "simplegeneric": {
+            "version": "==0.8.1"
+        },
+        "six": {
+            "version": "==1.10.0"
+        },
+        "traitlets": {
+            "version": "==4.3.2"
+        },
+        "wcwidth": {
+            "version": "==0.1.7"
+        }
+    }
+}

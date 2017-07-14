@@ -10,32 +10,50 @@
 # BasePort + 3 => Data port. Receive data from device.
 # (see README file for more details)
 
-# NOTE: 
+# NOTE:
 # before run this example please execute:
-# pip install pyzmq protobuf 
-
-# and then compile protos like this:
-# export SRC_DIR=../../protocol-buffers/malos
-# protoc -I=$SRC_DIR --python_out=./ $SRC_DIR/driver.proto
+# pip install pyzmq protobuf matrix_io-proto
 
 import zmq
 import time
-import driver_pb2 as driver_proto
+from matrix_io.proto.malos.v1 import driver_pb2
+from matrix_io.proto.malos.v1 import io_pb2
 
-creator_ip = '127.0.0.1' # or local ip of MATRIX creator
+# or local ip of MATRIX creator
+creator_ip = '127.0.0.1'
 creator_gpio_base_port = 20013 + 36
 
+# Grab a zmq context
 context = zmq.Context()
+
+# Create a zmq push socket
 socket = context.socket(zmq.PUSH)
-socket.connect('tcp://' + creator_ip + ':' + str(creator_gpio_base_port)) 
 
-config = driver_proto.DriverConfig()
+# Connect to push socket
+socket.connect('tcp://{0}:{1}'.format(creator_ip, creator_gpio_base_port))
+
+# Create a new driver config
+config = driver_pb2.DriverConfig()
+
+# Set pin number to control
 config.gpio.pin = 15
-config.gpio.mode = driver_proto.GpioParams.OUTPUT 
 
+# Set pin 15 to output mode
+config.gpio.mode = io_pb2.GpioParams.OUTPUT
+
+# Start the unescapable loop!
 while True:
-    config.gpio.value ^= 1
-    print ('GPIO'+str(config.gpio.pin)+'='+str(config.gpio.value))
-    socket.send(config.SerializeToString())
-    time.sleep(1)
 
+    # Bit shift the value on the pin
+    # from high to low to high to low...
+    config.gpio.value ^= 1
+
+    # Print some debug statements
+    print ('GPIO{0}={1}'.format(config.gpio.pin, config.gpio.value))
+
+    # Serialize the configuration we created
+    # and send it to the socket
+    socket.send(config.SerializeToString())
+
+    # Nap time
+    time.sleep(1)
