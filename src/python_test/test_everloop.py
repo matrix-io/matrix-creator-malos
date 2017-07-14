@@ -18,6 +18,7 @@
 # there seems to be a delay when running this at high framerates
 # look into using queues to pass messages between threads
 
+import os
 import zmq
 import time
 from matrix_io.proto.malos.v1 import driver_pb2
@@ -29,7 +30,7 @@ from zmq.eventloop import ioloop
 from utils import register_error_callback
 
 # or local ip of MATRIX creator
-creator_ip = '127.0.0.1'
+creator_ip = os.environ.get('CREATOR_IP', '127.0.0.1')
 
 # port for everloop driver
 creator_everloop_base_port = 20013 + 8

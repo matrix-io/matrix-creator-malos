@@ -17,13 +17,14 @@
 # NOTE:
 # THIS NEEDS TO BE TESTED! I DON'T HAVE A SERVO TO TEST ON!
 
+import os
 import zmq
 from matrix_io.proto.malos.v1 import driver_pb2
 
 
 def send_servo_command(pin=4):
     # or local ip of MATRIX creator
-    creator_ip = '127.0.0.1'
+    creator_ip = os.environ.get('CREATOR_IP', '127.0.0.1')
     creator_servo_base_port = 20013 + 32
 
     # Set a base count of 0
