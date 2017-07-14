@@ -1,5 +1,6 @@
 [Unit]
 Description=Matrix Abstraction Layer for OS
+After=matrix-creator-firmware.service
 
 [Service]
 Type=simple
@@ -7,4 +8,3 @@ ExecStart=/usr/bin/malos
 
 [Install]
 WantedBy=multi-user.target
-After=matrix-creator-firmware.service
