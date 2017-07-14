@@ -12,17 +12,13 @@
 
 # NOTE:
 # before run this example please execute:
-# pip install pyzmq protobuf
-
-# and then compile protos like this:
-# export SRC_DIR=../../protocol-buffers/malos
-# protoc -I=$SRC_DIR --python_out=./ $SRC_DIR/driver.proto
+# pip install pyzmq protobuf matrix_io-proto
 
 # NOTE:
 # THIS NEEDS TO BE TESTED! I DON'T HAVE A SERVO TO TEST ON!
 
 import zmq
-import driver_pb2 as driver_proto
+from matrix_io.proto.malos.v1 import driver_pb2
 
 
 def send_servo_command(pin=4):
@@ -39,7 +35,7 @@ def send_servo_command(pin=4):
     socket.connect('tcp://{0}:{1}'.format(creator_ip, creator_servo_base_port))
 
     # Create a new driver configuration
-    servo_config = driver_proto.DriverConfig()
+    servo_config = driver_pb2.DriverConfig()
 
     # Set a pin that the servo will operate on
     servo_config.servo.pin = pin

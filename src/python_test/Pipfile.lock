@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "24517a2efd4193eada4a720cdc0ddf1b5e02d6e1682cd4d449b1446d31837371"
+            "sha256": "5d123505bb106e715d9ed680064156c35b6e7b0674d97a244c3e04ba5ce13eda"
         },
         "requires": {},
         "sources": [
@@ -12,23 +12,17 @@
         ]
     },
     "default": {
-        "appdirs": {
-            "version": "==1.4.3"
-        },
-        "packaging": {
-            "version": "==16.8"
+        "matrix-io-proto": {
+            "version": "==0.0.10"
         },
         "protobuf": {
             "version": "==3.3.0"
-        },
-        "pyparsing": {
-            "version": "==2.2.0"
         },
         "pyzmq": {
             "version": "==16.0.2"
         },
         "setuptools": {
-            "version": "==35.0.2"
+            "version": "==36.1.1"
         },
         "six": {
             "version": "==1.10.0"
@@ -38,12 +32,6 @@
         }
     },
     "develop": {
-        "Pygments": {
-            "version": "==2.2.0"
-        },
-        "appdirs": {
-            "version": "==1.4.3"
-        },
         "appnope": {
             "version": "==0.1.0"
         },
@@ -51,16 +39,13 @@
             "version": "==4.0.11"
         },
         "ipython": {
-            "version": "==6.0.0"
+            "version": "==6.1.0"
         },
-        "ipython_genutils": {
+        "ipython-genutils": {
             "version": "==0.2.0"
         },
         "jedi": {
             "version": "==0.10.2"
-        },
-        "packaging": {
-            "version": "==16.8"
         },
         "pexpect": {
             "version": "==4.2.1"
@@ -68,17 +53,17 @@
         "pickleshare": {
             "version": "==0.7.4"
         },
-        "prompt_toolkit": {
+        "prompt-toolkit": {
             "version": "==1.0.14"
         },
         "ptyprocess": {
-            "version": "==0.5.1"
+            "version": "==0.5.2"
         },
-        "pyparsing": {
+        "pygments": {
             "version": "==2.2.0"
         },
         "setuptools": {
-            "version": "==35.0.2"
+            "version": "==36.1.1"
         },
         "simplegeneric": {
             "version": "==0.8.1"

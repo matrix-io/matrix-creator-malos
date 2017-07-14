@@ -12,15 +12,12 @@
 
 # NOTE:
 # before run this example please execute:
-# pip install pyzmq protobuf
-
-# and then compile protos like this:
-# export SRC_DIR=../../protocol-buffers/malos
-# protoc -I=$SRC_DIR --python_out=./ $SRC_DIR/driver.proto
+# pip install pyzmq protobuf matrix_io-proto
 
 import zmq
 import time
-import driver_pb2 as driver_proto
+from matrix_io.proto.malos.v1 import driver_pb2
+from matrix_io.proto.malos.v1 import io_pb2
 
 # or local ip of MATRIX creator
 creator_ip = '127.0.0.1'
@@ -36,13 +33,13 @@ socket = context.socket(zmq.PUSH)
 socket.connect('tcp://{0}:{1}'.format(creator_ip, creator_gpio_base_port))
 
 # Create a new driver config
-config = driver_proto.DriverConfig()
+config = driver_pb2.DriverConfig()
 
 # Set pin number to control
 config.gpio.pin = 15
 
 # Set pin 15 to output mode
-config.gpio.mode = driver_proto.GpioParams.OUTPUT
+config.gpio.mode = io_pb2.GpioParams.OUTPUT
 
 # Start the unescapable loop!
 while True:

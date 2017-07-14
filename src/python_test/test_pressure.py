@@ -4,7 +4,7 @@
 #
 # (see README file for more details)
 
-import driver_pb2 as driver_proto
+from matrix_io.proto.malos.v1 import sense_pb2
 
 from multiprocessing import Process
 from zmq.eventloop import ioloop
@@ -18,7 +18,7 @@ pressure_port = 20013 + 12
 
 def pressure_data_callback(data):
     """Callback that prints new data updates to stdout"""
-    pressure_info = driver_proto.Pressure().FromString(data[0])
+    pressure_info = sense_pb2.Pressure().FromString(data[0])
     print('{0}'.format(pressure_info))
 
 

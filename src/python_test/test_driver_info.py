@@ -12,15 +12,11 @@
 
 # NOTE:
 # before run this example please execute:
-# pip install pyzmq protobuf
-
-# and then compile protos like this:
-# export SRC_DIR=../../protocol-buffers/malos
-# protoc -I=$SRC_DIR --python_out=./ $SRC_DIR/driver.proto
+# pip install pyzmq protobuf matrix_io-proto
 
 import zmq
 import time
-import driver_pb2 as driver_proto
+from matrix_io.proto.malos.v1 import driver_pb2 as driver_proto
 
 # or local ip of MATRIX creator
 creator_ip = '127.0.0.1'
