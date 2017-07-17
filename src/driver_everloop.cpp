@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
+#include <algorithm>
 
 #include "./driver_everloop.h"
 #include <matrix_io/malos/v1/driver.pb.h>
@@ -44,6 +44,11 @@ bool EverloopDriver::ProcessConfig(const pb::driver::DriverConfig& config) {
     image_for_hal.leds[idx].green = value.green();
     image_for_hal.leds[idx].blue = value.blue();
     image_for_hal.leds[idx].white = value.white();
+    if (std::max({value.red(), value.green(), value.blue(), value.white()}) >
+        255) {
+      zmq_push_error_->Send("ERROR: LED values go from 0 to 255.");
+      return false;
+    }
     ++idx;
   }
 
