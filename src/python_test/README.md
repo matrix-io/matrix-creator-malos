@@ -17,10 +17,16 @@ The MALOS driver follows the [MALOS protocol](../../README.md#protocol).
 install python packages dependences:
 ``` bash
 sudo apt-get install build-essential python-dev
-pip install pyzmq protobuf tornado 
+pip install -r requirements.txt
 ```
 
-### MATRIX Creator software 
+If you use [pipenv](https://github.com/kennethreitz/pipenv):
+```bash
+# Install deps
+pipenv install
+```
+
+### MATRIX Creator software
 
 install MALOS and perform device reboot. For more details: [Getting Started Guide](https://github.com/matrix-io/matrix-creator-quickstart/wiki/2.-Getting-Started)
 
@@ -34,63 +40,48 @@ reboot
 ```
 ### Protobuf installation
 
-#### (option 1) installation on Raspbian
-
-``` bash
-echo "deb http://unstable-packages.matrix.one/ stable main" | sudo tee --append /etc/apt/sources.list
-sudo apt-get update
-sudo apt-get upgrade
-sudo apt-get install matrix-creator-protobuf
-```
-
-#### (option 2) installation on PC 
-
-For install protobuf on PC please see oficial [documentation](https://github.com/google/protobuf). Then compile proto driver messages like this:
-
-
-### Building protobuf driver messages
-
-``` bash
-git clone --recursive https://github.com/matrix-io/matrix-creator-malos.git
-cd matrix-creator-malos/src/python_test/
-export SRC_DIR=../../protocol-buffers/malos
-protoc -I=$SRC_DIR --python_out=./ $SRC_DIR/driver.proto
-```
+Python examples no longer require you to build the protocol buffer messages, these will now get installed as a python module.
 
 ----
 
 ## Running basic sample
 
 ``` bash
-$ python test_gpio.py 
+$ python test_gpio.py
 GPIO15=0
 GPIO15=1
 GPIO15=0
 
 ```
+
+If you use [pipenv](https://github.com/kennethreitz/pipenv):
+```
+pipenv run python test_gpio.py
+```
+
 (on this example: pin 15 on write mode, toggle value 0 and 1)
 
 #### Basic Example details
 
 Enhanced description of the [sample source code](./test_gpio.py).
 
-First, define the address of the MATRIX Creator. In this case we make it be `127.0.0.1`
-because we are connecting from the local host but it needs to be different if we
-connect from another computer. There is also the base port reserved by MALOS for
-the Pressure driver.
+First, define the address of the MATRIX Creator. In this case we make it be `127.0.0.1` because we are connecting from the local host. It will be your creator's IP address if you wish to run the python samples from a different computer, in such case you can `export CREATOR_IP=<ip>` variable, and the samples will connect to the specified host.
+
+We also set the base port for the MALOS Pressure driver (20013).
 
 ``` python
 import zmq
 import time
 import driver_pb2 as driver_proto # proto buffer precompiled
 
-creator_ip = '127.0.0.1' # or local ip of MATRIX creator
+# Either local host or the value you set in env var
+creator_ip = os.environ.get('CREATOR_IP', '127.0.0.1')
 creator_gpio_base_port = 20013 + 36
 
 # connection to device
 context = zmq.Context()
 socket = context.socket(zmq.PUSH)
-socket.connect('tcp://' + creator_ip + ':' + str(creator_gpio_base_port)) 
+socket.connect('tcp://' + creator_ip + ':' + str(creator_gpio_base_port))
 
 # instance for config driver message
 config = driver_proto.DriverConfig()
@@ -104,7 +95,7 @@ while True:
     time.sleep(1)
 ```
 ### Advanced sample
-MATRIX MALOS layer use ZMQ push/subscriptions for driver configuration and for get driver updates for it. For more info: [MALOS protocol](../../README.md#protocol) and see MALOS driver details below.
+MATRIX MALOS layer uses ZMQ push/subscriptions to send driver configurations and to get driver updates. For more info see [MALOS protocol](../../README.md#protocol) driver details.
 
 Enhanced description of the [sample source code](./test_gpio_read_write.py).
 
@@ -116,14 +107,15 @@ from  multiprocessing import Process
 from zmq.eventloop import ioloop, zmqstream
 ioloop.install()
 
-creator_ip = '127.0.0.1' # or local ip of MATRIX creator
+# Either local host or the value you set in env var
+creator_ip = os.environ.get('CREATOR_IP', '127.0.0.1')
 creator_gpio_base_port = 20013 + 36
 
 # setup GPIO pin to output mode and set gpio value
 def config_gpio_write(pin,value):
     config = driver_proto.DriverConfig()
     config.gpio.pin = pin
-    config.gpio.mode = driver_proto.GpioParams.OUTPUT 
+    config.gpio.mode = driver_proto.GpioParams.OUTPUT
     config.gpio.value = value
     sconfig.send(config.SerializeToString())
 
@@ -138,7 +130,7 @@ def config_gpio_read(pin):
     config.gpio.mode = driver_proto.GpioParams.INPUT
     sconfig.send(config.SerializeToString())
 
-# get complete GPIO register status. (all pines) 
+# get complete GPIO register status. (all pines)
 def gpio_callback(msg):
     print "Received gpio register: %s" % msg
 
@@ -146,7 +138,7 @@ def gpio_callback(msg):
 def register_gpio_callback():
     ssub = context.socket(zmq.SUB)
     ssub_port = str(creator_gpio_base_port+3)
-    ssub.connect('tcp://' + creator_ip + ':' + ssub_port) 
+    ssub.connect('tcp://' + creator_ip + ':' + ssub_port)
     ssub.setsockopt(zmq.SUBSCRIBE,"")
     stream = zmqstream.ZMQStream(ssub)
     stream.on_recv(gpio_callback)
@@ -239,6 +231,3 @@ All pins on matrix creator start as inputs. For change to outputs the driver nee
 ### Read
 
 The driver will send a serialized message of integer *values* which reprensets of state from all GPIO pins [see figure 1](https://github.com/matrix-io/matrix-creator-malos/blob/av/doc_gpio/docs/gpio_diagram.jpg). For example: *values=5* represents *101* (pin 0 on 1, pin 1 on 0 and pin 2 on 1).
-
-
-
