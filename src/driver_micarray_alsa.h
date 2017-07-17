@@ -56,7 +56,7 @@ class MicArrayAlsaDriver : public MalosWishboneBase {
   }
 
   // Read configuration of Mic Array (from the outside world).
-  bool ProcessConfig(const DriverConfig& config) override;
+  bool ProcessConfig(const pb::driver::DriverConfig& config) override;
 
   // Send update to 0MQ zqm_push_update_ queue when called.
   bool SendUpdate() override;

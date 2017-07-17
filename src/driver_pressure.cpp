@@ -17,9 +17,10 @@
 
 #include <string>
 #include "./driver_pressure.h"
-
-#include "./src/driver.pb.h"
+#include <matrix_io/malos/v1/driver.pb.h>
 #include "matrix_hal/pressure_data.h"
+
+namespace pb = matrix_io::malos::v1;
 
 namespace matrix_malos {
 
@@ -29,7 +30,7 @@ bool PressureDriver::SendUpdate() {
     return false;
   }
 
-  Pressure pressure_pb;
+  pb::sense::Pressure pressure_pb;
   pressure_pb.set_pressure(data.pressure);
   pressure_pb.set_altitude(data.altitude);
   pressure_pb.set_temperature(data.temperature);

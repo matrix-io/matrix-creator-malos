@@ -17,8 +17,10 @@
 
 #include <string>
 #include "./driver_imu.h"
-#include "./src/driver.pb.h"
+#include <matrix_io/malos/v1/driver.pb.h>
 #include "matrix_hal/imu_data.h"
+
+namespace pb = matrix_io::malos::v1;
 
 namespace matrix_malos {
 
@@ -28,7 +30,7 @@ bool ImuDriver::SendUpdate() {
     return false;
   }
 
-  Imu imu_pb;
+  pb::sense::Imu imu_pb;
   imu_pb.set_yaw(data.yaw);
   imu_pb.set_pitch(data.pitch);
   imu_pb.set_roll(data.roll);
