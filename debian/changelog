@@ -1,7 +1,7 @@
 matrix-creator-malos (0.2.2) unstable; urgency=medium
 
   * Protocol buffers namespaces support
-  * Examples migrated to last proto specs
+  * Examples migrated to latest proto specs
 
  -- Admobilize <info@admobilize.com>  Thu, 23 Feb 2017 22:56:53 +0000
 
