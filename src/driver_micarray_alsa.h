@@ -18,17 +18,19 @@
 #ifndef SRC_DRIVER_MICARRAY_ALSA_H_
 #define SRC_DRIVER_MICARRAY_ALSA_H_
 
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <fcntl.h>
 
 #include <memory>
 #include <thread>
+#include <mutex>
 
 #include "./malos_wishbone_base.h"
 
-#include "matrix_hal/wishbone_bus.h"
+#include "matrix_hal/direction_of_arrival.h"
 #include "matrix_hal/microphone_array.h"
+#include "matrix_hal/wishbone_bus.h"
 
 const char kMicArrayAlsaDriverName[] = "MicArray_Alsa";
 
@@ -36,7 +38,8 @@ namespace matrix_malos {
 
 class MicArrayAlsaDriver : public MalosWishboneBase {
  public:
-  MicArrayAlsaDriver() : MalosWishboneBase(kMicArrayAlsaDriverName) {
+  MicArrayAlsaDriver()
+      : MalosWishboneBase(kMicArrayAlsaDriverName), doa_(mics_) {
     SetProvidesUpdates(false);
     SetNeedsKeepalives(false);
     SetNotesForHuman(
@@ -45,8 +48,7 @@ class MicArrayAlsaDriver : public MalosWishboneBase {
 
   // Receive a copy of the shared wishbone bus. Not owned.
   void SetupWishboneBus(matrix_hal::WishboneBus* wishbone) override {
-    mics_.reset(new matrix_hal::MicrophoneArray);
-    mics_->Setup(wishbone);
+    mics_.Setup(wishbone);
 
     // alsa thread.
     std::thread alsa_thread(&MicArrayAlsaDriver::AlsaThread, this);
@@ -54,14 +56,19 @@ class MicArrayAlsaDriver : public MalosWishboneBase {
   }
 
   // Read configuration of Mic Array (from the outside world).
-  bool ProcessConfig(const DriverConfig& config) override;
+  bool ProcessConfig(const pb::driver::DriverConfig& config) override;
+
+  // Send update to 0MQ zqm_push_update_ queue when called.
+  bool SendUpdate() override;
 
   // Thread that send audio stream to named pipes
   void AlsaThread();
 
  private:
   // Microphone array driver
-  std::unique_ptr<matrix_hal::MicrophoneArray> mics_;
+  matrix_hal::MicrophoneArray mics_;
+  matrix_hal::DirectionOfArrival doa_;
+  mutable std::mutex mutex_;
 };
 
 }  // namespace matrix_malos

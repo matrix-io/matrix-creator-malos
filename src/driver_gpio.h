@@ -47,7 +47,7 @@ class GpioDriver : public MalosWishboneBase {
   bool SendUpdate() override;
 
   // Read configuration from GpioParams (from the outside world).
-  bool ProcessConfig(const DriverConfig& config) override;
+  bool ProcessConfig(const pb::driver::DriverConfig& config) override;
 
  private:
   // GPIO control

@@ -47,7 +47,7 @@ class HumidityDriver : public MalosWishboneBase {
   bool SendUpdate() override;
 
   // Read configuration of Humidity command
-  bool ProcessConfig(const DriverConfig& config) override;
+  bool ProcessConfig(const pb::driver::DriverConfig& config) override;
 
  private:
   // Reader of Humidity data.

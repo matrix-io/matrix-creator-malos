@@ -37,7 +37,7 @@ class LircDriver : public MalosWishboneBase {
   }
 
   // Read configuration of IR command (from the outside world).
-  bool ProcessConfig(const DriverConfig& config) override;
+  bool ProcessConfig(const pb::driver::DriverConfig& config) override;
 
  private:
   // Validation of lirsend parameters to avoid  shell injection.

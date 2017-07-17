@@ -46,7 +46,7 @@ class EverloopDriver : public MalosWishboneBase {
   }
 
   // Read configuration of LEDs (from the outside world).
-  bool ProcessConfig(const DriverConfig& config) override;
+  bool ProcessConfig(const pb::driver::DriverConfig& config) override;
 
  private:
   // Everloop writer.

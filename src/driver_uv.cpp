@@ -17,9 +17,10 @@
 
 #include <string>
 #include "./driver_uv.h"
-
-#include "./src/driver.pb.h"
+#include <matrix_io/malos/v1/driver.pb.h>
 #include "matrix_hal/uv_data.h"
+
+namespace pb = matrix_io::malos::v1;
 
 namespace matrix_malos {
 
@@ -29,7 +30,7 @@ bool UVDriver::SendUpdate() {
     return false;
   }
 
-  UV uv_pb;
+  pb::sense::UV uv_pb;
   uv_pb.set_uv_index(data.uv);
   std::string oms_risk;
   if (data.uv < 3.0) {

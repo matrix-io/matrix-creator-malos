@@ -18,7 +18,7 @@
 #include <iostream>
 
 #include "./driver_servo.h"
-#include "./src/driver.pb.h"
+#include <matrix_io/malos/v1/driver.pb.h>
 
 const int kGpioOutputMode = 1;
 const int kGpioPWMFunction = 1;
@@ -29,12 +29,14 @@ const float kServoRatio = 37.7;
 const int kServoOffset = 1800;
 const float kServoPeriod = 0.02;
 
+namespace pb = matrix_io::malos::v1;
+
 namespace matrix_malos {
 
 const bool kServoDriverDebugEnabled = false;
 
-bool ServoDriver::ProcessConfig(const DriverConfig& config) {
-  ServoParams servo(config.servo());
+bool ServoDriver::ProcessConfig(const pb::driver::DriverConfig& config) {
+  pb::io::ServoParams servo(config.servo());
   const int16_t pin = servo.pin();
   const int16_t channel = pin % 4;
   const int16_t bank = pin / 4;

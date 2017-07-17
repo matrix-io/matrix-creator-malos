@@ -10,6 +10,9 @@ include /usr/share/dpkg/default.mk
 # package maintainers to append LDFLAGS
 #export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
+override_dh_shlibdeps:
+	dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info
+
 # main packaging script based on dh7 syntax
 %:
 	dh $@ 
