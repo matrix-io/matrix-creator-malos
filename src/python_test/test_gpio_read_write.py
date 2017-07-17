@@ -14,6 +14,7 @@
 # before run this example please execute:
 # pip install pyzmq protobuf tornado matrix_io-proto
 
+import os
 import zmq
 import time
 from matrix_io.proto.malos.v1 import driver_pb2
@@ -24,7 +25,7 @@ from zmq.eventloop import ioloop, zmqstream
 
 from utils import driver_keep_alive, register_data_callback, register_error_callback
 
-creator_ip = '127.0.0.1'
+creator_ip = os.environ.get('CREATOR_IP', '127.0.0.1')
 creator_gpio_base_port = 20013 + 36
 
 
@@ -120,4 +121,4 @@ if __name__ == "__main__":
     Process(target=driver_keep_alive, args=(creator_ip, creator_gpio_base_port, 1)).start()
 
     # Register the callback to send data from the read pin
-    Process(target=register_data_callback, args=(gpio_callback, creator_ip, creator_gpio_base_port))
+    Process(target=register_data_callback, args=(gpio_callback, creator_ip, creator_gpio_base_port)).start()

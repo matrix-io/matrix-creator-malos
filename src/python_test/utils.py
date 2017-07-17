@@ -26,7 +26,7 @@ def register_data_callback(callback, creator_ip, sensor_port):
     socket.connect('tcp://{0}:{1}'.format(creator_ip, data_port))
 
     # Set socket options to subscribe and send off en empty string to let it know we're ready
-    socket.setsockopt_string(zmq.SUBSCRIBE, '')
+    socket.setsockopt(zmq.SUBSCRIBE, b'')
 
     # Create the stream to listen to
     stream = zmqstream.ZMQStream(socket)
@@ -56,7 +56,7 @@ def register_error_callback(callback, creator_ip, sensor_port):
     socket.connect('tcp://{0}:{1}'.format(creator_ip, error_port))
 
     # Set socket options to subscribe and send off en empty string to let it know we're ready
-    socket.setsockopt_string(zmq.SUBSCRIBE, '')
+    socket.setsockopt(zmq.SUBSCRIBE, b'')
 
     # Create a stream to listen to
     stream = zmqstream.ZMQStream(socket)

@@ -14,12 +14,13 @@
 # before run this example please execute:
 # pip install pyzmq protobuf matrix_io-proto
 
+import os
 import zmq
 import time
 from matrix_io.proto.malos.v1 import driver_pb2 as driver_proto
 
 # or local ip of MATRIX creator
-creator_ip = '127.0.0.1'
+creator_ip = os.environ.get('CREATOR_IP', '127.0.0.1')
 creator_base_port = 20012
 
 # grab zmq context

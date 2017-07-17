@@ -14,6 +14,9 @@
 # before run this example please execute:
 # pip install pyzmq protobuf matrix_io-proto
 
+import os
+import random
+import time
 import zmq
 from matrix_io.proto.malos.v1 import driver_pb2
 from matrix_io.proto.malos.v1 import io_pb2
@@ -23,7 +26,7 @@ def set_everloop_color(red=0, green=0, blue=0, white=0):
     """Submit a R,G,B,W value between 0-255"""
 
     # or local ip of MATRIX creator
-    creator_ip = '127.0.0.1'
+    creator_ip = os.environ.get('CREATOR_IP', '127.0.0.1')
 
     # port for everloop driver
     creator_everloop_base_port = 20013 + 8
@@ -58,5 +61,9 @@ def set_everloop_color(red=0, green=0, blue=0, white=0):
     # to the config socket
     config_socket.send(config.SerializeToString())
 
+
 if __name__ == '__main__':
-    set_everloop_color(0, 0, 255, 0)
+    while True:
+        # Set random values for R, G and B
+        set_everloop_color(*random.sample(range(0, 255), 3))
+        time.sleep(1)

@@ -4,6 +4,7 @@
 #
 # (see README file for more details)
 
+import os
 import zmq
 import time
 from matrix_io.proto.malos.v1 import driver_pb2
@@ -15,7 +16,8 @@ from zmq.eventloop import ioloop
 from utils import driver_keep_alive, register_data_callback, register_error_callback
 
 # or local ip of MATRIX creator
-creator_ip = '127.0.0.1'
+creator_ip = os.environ.get('CREATOR_IP', '127.0.0.1')
+
 humidity_port = 20013 + 4
 
 
