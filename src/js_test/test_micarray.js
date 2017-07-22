@@ -24,35 +24,34 @@ var fs = require('fs');
 // BasePort + 3 => Data port. Receive data from device.
 
 
-var creator_ip = '127.0.0.1'
+var creator_ip = process.env.CREATOR_IP || '127.0.0.1'
 var creator_micarray_base_port = 20037 
+
+var zmq = require('zmq')
+
+// Import MATRIX Proto messages
+var matrix_io = require('matrix-protos').matrix_io
 
 //
 // Micarray setup with MALOS
 //
-var protoBuf = require("protobufjs");
-var protoBuilder = protoBuf.loadProtoFile('../../protocol-buffers/malos/driver.proto')
-var matrixMalosBuilder = protoBuilder.build("matrix_malos")
 
-var zmq = require('zmq')
 var configSocket = zmq.socket('push')
 configSocket.connect('tcp://' + creator_ip + ':' + creator_micarray_base_port /* config */)
 
 function setupMicarray() {
-  var micarray_cfg = new matrixMalosBuilder.MicArrayParams
+  var micarray_cfg = matrix_io.malos.v1.io.MicArrayParams.create({
+    gain: 16,          // set gain for all microphones 
+    azimutalAngle: 0,  // set a sound source perpendicular to the MATRIX Creator
+    polarAngle: 0,
+    radialDistanceMm: 1000,
+    soundSpeedMmseg: 340.3 * 1000
+  })
  
-  // setup gain for all microphones 
-  micarray_cfg.set_gain(16)
-
-  // setup a sound source perpendicular to the MATRIX Creator
-  micarray_cfg.set_azimutal_angle(0)
-  micarray_cfg.set_polar_angle(0)
-  micarray_cfg.set_radial_distance_mm(1000)
-  micarray_cfg.set_sound_speed_mmseg(340.3 * 1000)
-
-  var config = new matrixMalosBuilder.DriverConfig
-  config.set_micarray(micarray_cfg)
-  configSocket.send(config.encode().toBuffer());
+  var config = matrix_io.malos.v1.driver.DriverConfig.create({
+    micarray: micarray_cfg
+  })
+  configSocket.send(matrix_io.malos.v1.driver.DriverConfig.encode(config).finish())
 }
 
 setupMicarray()
@@ -62,59 +61,65 @@ setupMicarray()
 // ALSA recorder
 //
 // mic_channel8 is a beamformed channel using the delay and sum method
-var micInstance = mic({ 'device':'mic_channel8','rate': '16000', 'channels': '1', 'debug': true, 'exitOnSilence': 6 });
+var micInstance = mic({ 
+  device: 'mic_channel8',
+  rate: '16000', 
+  channels: '1', 
+  debug: true, 
+  exitOnSilence: 6 
+})
 var micInputStream = micInstance.getAudioStream();
 var outputFileStream = fs.WriteStream('output.wav');
 
 micInputStream.pipe(outputFileStream);
 
-micInputStream.on('data', function(data) {
-    console.log("Recieved Input Stream: " + data.length);
+micInputStream.on('data', (data) => {
+  console.log("Recieved Input Stream: " + data.length);
 });
 
 
-micInputStream.on('error', function(err) {
-    cosole.log("Error in Input Stream: " + err);
+micInputStream.on('error', (err) => {
+  cosole.log("Error in Input Stream: " + err);
 });
 
 
-micInputStream.on('startComplete', function() {
-        console.log("Got SIGNAL startComplete");
-        setTimeout(function() {
-                micInstance.pause();
-            }, 5000);
-    });
+micInputStream.on('startComplete', () => {
+  console.log("Got SIGNAL startComplete");
+  setTimeout(() => {
+    micInstance.pause();
+  }, 5000);
+});
 
 
-micInputStream.on('stopComplete', function() {
-        console.log("Got SIGNAL stopComplete");
-    });
+micInputStream.on('stopComplete', () => {
+  console.log("Got SIGNAL stopComplete");
+});
 
 
-micInputStream.on('pauseComplete', function() {
-        console.log("Got SIGNAL pauseComplete");
-        setTimeout(function() {
-                micInstance.resume();
-            }, 5000);
-    });
+micInputStream.on('pauseComplete', () => {
+  console.log("Got SIGNAL pauseComplete");
+  setTimeout(() => {
+    micInstance.resume();
+  }, 5000);
+});
 
 
-micInputStream.on('resumeComplete', function() {
-        console.log("Got SIGNAL resumeComplete");
-        setTimeout(function() {
-                micInstance.stop();
-            }, 5000);
-    });
+micInputStream.on('resumeComplete', () => {
+  console.log("Got SIGNAL resumeComplete");
+  setTimeout(() => {
+    micInstance.stop();
+  }, 5000);
+});
 
 
-micInputStream.on('silence', function() {
-        console.log("Got SIGNAL silence");
-    });
+micInputStream.on('silence', () => {
+  console.log("Got SIGNAL silence");
+});
 
 
-micInputStream.on('processExitComplete', function() {
-        console.log("Got SIGNAL processExitComplete");
-    });
+micInputStream.on('processExitComplete', () => {
+  console.log("Got SIGNAL processExitComplete");
+});
 
 
 micInstance.start();

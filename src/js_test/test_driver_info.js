@@ -9,24 +9,19 @@
 // BasePort + 2 => Error port. Receive errros from device.
 // BasePort + 3 => Data port. Receive data from device.
 
-var creator_ip = '127.0.0.1'
+var creator_ip = process.env.CREATOR_IP || '127.0.0.1';
 var creator_info_base_port = 20012
 
-var protoBuf = require("protobufjs")
-
-
-// Parse proto file
-var protoBuilder = protoBuf.loadProtoFile('../../protocol-buffers/malos/driver.proto')
-// Parse matrix_malos package (namespace).
-var matrixMalosBuilder = protoBuilder.build("matrix_malos")
-
 var zmq = require('zmq')
-
 var requestSocket = zmq.socket('req')
 
-requestSocket.on("message", function(reply) {
-    var proto_data = new matrixMalosBuilder.MalosDriverInfo.decode(reply)
-    console.log(proto_data)
+// Import MATRIX Proto messages
+var matrix_io = require('matrix-protos').matrix_io
+
+
+requestSocket.on('message', (buffer) => {
+    var msg_inst = matrix_io.malos.v1.driver.MalosDriverInfo.decode(buffer)
+    console.log(msg_inst)
     process.exit(0)
 });
 
