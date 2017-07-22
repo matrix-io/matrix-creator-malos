@@ -33,16 +33,11 @@ configSocket.connect('tcp://' + creator_ip + ':' + creator_everloop_base_port /*
 var max_intensity = 50
 var intensity_value = max_intensity
 
-function setEverloop() {
+function setEverloop(led_values) {
     var image = matrix_io.malos.v1.io.EverloopImage.create()
     for (var j = 0; j < 35; ++j) {
-      var ledValue = matrix_io.malos.v1.io.LedValue.create({
-        red: 0,
-        green: intensity_value,
-        blue: 0,
-        white: 0
-      });
-      image.led.push(ledValue)
+      var led_conf = matrix_io.malos.v1.io.LedValue.create(led_values);
+      image.led.push(led_conf)
     }
     var config = matrix_io.malos.v1.driver.DriverConfig.create({
       image: image
@@ -55,5 +50,10 @@ setInterval(() => {
   intensity_value -= 1
   if (intensity_value < 0)
     intensity_value = max_intensity
-  setEverloop()
+  setEverloop({
+    red: 0,
+    green: intensity_value,
+    blue: 0,
+    white: 0
+  })
 }, 50);
