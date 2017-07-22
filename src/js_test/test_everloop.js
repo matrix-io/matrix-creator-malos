@@ -45,7 +45,6 @@ function setEverloop(led_values) {
     configSocket.send(matrix_io.malos.v1.driver.DriverConfig.encode(config).finish());
 }
 
-setEverloop(intensity_value)
 setInterval(() => {
   intensity_value -= 1
   if (intensity_value < 0)
