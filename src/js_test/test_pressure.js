@@ -26,7 +26,7 @@ var errorSocket = zmq.socket('sub')
 errorSocket.connect('tcp://' + creator_ip + ':' + (creator_pressure_base_port + 2))
 errorSocket.subscribe('')
 errorSocket.on('message', (error_message) => {
-  process.stdout.write('Message received: Pressure error: ' + error_message.toString('utf8') + "\n")
+  console.log('Message received: Pressure error: ', error_message.toString('utf8'))
 });
 // ********** End error management.
 
@@ -55,7 +55,7 @@ updateSocket.on('message', (buffer) => {
 // ********** Ping the driver
 var pingSocket = zmq.socket('push')
 pingSocket.connect('tcp://' + creator_ip + ':' + (creator_pressure_base_port + 1))
-process.stdout.write("Sending pings every 5 seconds");
+console.log('Sending pings every 5 seconds');
 pingSocket.send(''); // Ping the first time.
 setInterval(() => {
   pingSocket.send('');

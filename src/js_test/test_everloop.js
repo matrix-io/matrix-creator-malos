@@ -56,4 +56,4 @@ setInterval(() => {
   if (intensity_value < 0)
     intensity_value = max_intensity
   setEverloop()
-}, 10);
+}, 50);
