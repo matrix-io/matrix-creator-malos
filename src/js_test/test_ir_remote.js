@@ -9,14 +9,15 @@
 // BasePort + 2 => Error port. Receive errros from device.
 // BasePort + 3 => Data port. Receive data from device.
 
-var creator_ip = '127.0.0.1'
+var creator_ip = process.env.CREATOR_IP || '127.0.0.1'
 var creator_lirc_base_port = 20013 + 28 // port for Lirc driver.
 
-var protoBuf = require("protobufjs");
-var protoBuilder = protoBuf.loadProtoFile('../../protocol-buffers/malos/driver.proto')
-var matrixMalosBuilder = protoBuilder.build("matrix_malos")
-
 var zmq = require('zmq')
+
+// Import MATRIX Proto messages
+var matrix_io = require('matrix-protos').matrix_io
+
+
 var configSocket = zmq.socket('push')
 configSocket.connect('tcp://' + creator_ip + ':' + creator_lirc_base_port /* config */)
 
@@ -32,66 +33,57 @@ var remote_url="http://assets.admobilize.com/lirc-remotes/sony/RM-AAU014.lircd.c
 var remote_output="RM-AAU014.lircd.conf"
 
 /**
- * configRemote: Main function, set configuration from 
- * remote.conf file downloaded
+ * Sets Lirc remote control configuration from a lirc config file
  *
- * Params:
- * config: file downloaded path
+ * @param {string} [configPath] config file path
+ * @param {function} [callback] callback function
  */
-
-function configRemote(config){
-  process.stdout.write('set remote to config..')
-  fs.readFile(config, 'utf8', function (err,data) {
+function configRemote(configPath, callback) {
+  console.log('Setting remote to config to %s', configPath)
+  fs.readFile(configPath, 'utf8', (err, data) => {
     if (err) { return console.log(err); }
-    var ir_cfg_cmd = new matrixMalosBuilder.LircParams
-    ir_cfg_cmd.set_config(data)
+    var ir_cfg_cmd = matrix_io.malos.v1.comm.LircParams.create({
+      config: data
+    })
     sendIRConfigProto(ir_cfg_cmd) 
-    console.log('done.')
-    // sending commands
-    continousSendRemoteCommand()
+    callback()
   });
 }
 
 /**
- * sendIrCommand: send once command.
+ * Sends an IR command
  * Please see *.conf content for details
  *
- * Params:
- * device: LIRC remote device name
- * command: LIRC remote command
+ * @param {string} [device] LIRC remote device name i.e Sony_RM-AAU014
+ * @param {string} [command] LIRC remote command i.e BTN_MUTING
  */
-
 function sendIrCommand(device, command) {
-  var ir_cfg_cmd = new matrixMalosBuilder.LircParams
-  ir_cfg_cmd.set_device(device)
-  ir_cfg_cmd.set_command(command)
+  var ir_cfg_cmd = matrix_io.malos.v1.comm.LircParams.create({
+    device: device,
+    command: command
+  })
+  console.log('sending IR command: %s -> %s', device, command)
   sendIRConfigProto(ir_cfg_cmd) 
 }
 
 /**
- * sendIRConfigProto: build Proto message 
- * and send it.
+ * Build DriverConfig proto message and send it
  *
- * Params:
- * ir_cfg: LircParams proto message
+ * @param {ProtoMessage} [ir_cfg] LircParams proto message
  */
-
 function sendIRConfigProto(ir_cfg){
-  var config = new matrixMalosBuilder.DriverConfig
-  config.set_lirc(ir_cfg)
-  configSocket.send(config.encode().toBuffer());
+  var config = matrix_io.malos.v1.driver.DriverConfig.create({
+    lirc: ir_cfg
+  })
+  configSocket.send(matrix_io.malos.v1.driver.DriverConfig.encode(config).finish())
 }
 
 /**
- * continousSendRemoteCommand: loop for test
- * of sending IR commands
+ * Loops command a command to infinity for testing
  */
-
-function continousSendRemoteCommand(){
-  setInterval(function() {
-    process.stdout.write('sending IR command: BTN_MUTING to SONY_RM device..')
+function loopRemoteCommand(){
+  setInterval(() => {
     sendIrCommand('SONY_RM-AAU014','BTN_MUTING') // check LED on MATRIX
-    console.log('done.')
   }, 3000);
 }
 
@@ -104,13 +96,21 @@ function continousSendRemoteCommand(){
  * cb: callback on finish
  */
 
-function download (url, dest, cb) {
-  process.stdout.write('downloading remote config..')
+function download(url, dest, cb) {
+
+  if (fs.existsSync(dest)) {
+    console.log('Config found locally ...')
+    process.nextTick(() => {
+      cb(dest)
+    })
+    return
+  }
+
+  console.log('Downloading remote config ...')
   var file = fs.createWriteStream(dest);
-  var request = http.get(url, function(response) {
+  var request = http.get(url, (response) => {
     response.pipe(file);
-    file.on('finish', function() {
-      console.log('done.')
+    file.on('finish', () => {
       file.close(cb(dest));
     });
   });
@@ -120,6 +120,7 @@ function download (url, dest, cb) {
  **** MAIN ****/
 
 // download remote configuration and send continous MUTE commands
-download(remote_url,remote_output,configRemote)
-
+download(remote_url, remote_output, (configPath) => {
+  configRemote(configPath, loopRemoteCommand)
+})
 
