@@ -16,7 +16,7 @@ The MALOS driver follows the [MALOS protocol](../../README.md#protocol).
 
 install python packages dependences:
 ``` bash
-sudo apt-get install build-essential python-dev
+sudo apt-get install build-essential python-dev libzmq3-dev
 pip install -r requirements.txt
 ```
 
