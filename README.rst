@@ -316,8 +316,8 @@ Below is a simple implementation via NodeJS to read a ``humidity`` from
 MALOS via 0MQ. See `Humidty Example <src/js_test/test_humidity.js>`__
 for the full example.
 
-.. literalinclude:: src/js_test/test_humidity.js
-   :language: javascript
+.. code-block:: javascript
+   :include: src/js_test/test_humidity.js
 
 
 Available Protobuf Packages
