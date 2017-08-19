@@ -12,9 +12,9 @@ and 0MQ, Connections to MALOS can be made both from localhost
 (127.0.0.1) and from remote computers that are in the same network.
 
 Pre-Requisites
-~~~~~~~~~~~~~~
+--------------
 
-.. code-block:: shell-session
+::
 
     echo "deb http://packages.matrix.one/matrix-creator/ ./" | sudo tee --append /etc/apt/sources.list;
     sudo apt-get update;
@@ -22,9 +22,9 @@ Pre-Requisites
     sudo apt-get install libzmq3-dev xc3sprog matrix-creator-openocd wiringpi cmake g++ git;
 
 Install
-~~~~~~~
+-------
 
-.. code-block:: shell-session
+::
 
     sudo apt-get install matrix-creator-init matrix-creator-malos
     sudo reboot
@@ -33,17 +33,17 @@ Install
 service.
 
 Upgrade
-~~~~~~~
+-------
 
-.. code-block:: shell-session
+::
 
     sudo apt-get update && sudo apt-get upgrade
     sudo reboot
 
 Starting manually
-~~~~~~~~~~~~~~~~~
+-----------------
 
-.. code-block:: shell-session
+::
 
     # MALOS runs as a service, but to stop it run:
     sudo pkill -9 malos
@@ -52,7 +52,7 @@ Starting manually
     malos
 
 Protocol
-~~~~~~~~
+--------
 
 All the MALOS drivers use the same protocol to interact with other
 programs. Drivers allow read-only, write-only or read-write modes.
@@ -77,7 +77,7 @@ Each port reserves a range of 4 ports that are used for a driver. They
 are described in the following sections.
 
 Base port
-^^^^^^^^^
+~~~~~~~~~
 
 This is the first port of the driver and the one used to denote the
 ``driver port``. It is used to configure the device and it makes sense
@@ -125,7 +125,7 @@ discarded and an error message will be generated and sent to the error
 channel described below.
 
 Error port
-^^^^^^^^^^
+~~~~~~~~~~
 
 Programs can subscribe to the 0MQ error port. It is a PUSH port. The
 port number is obtained by adding 2 to the base port (Also known as
@@ -136,7 +136,7 @@ Please do not depend on errors reported as strings as we will change the
 errors to protocol buffers soon.
 
 Keep-alive port
-^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~
 
 The port number is obtained by adding 1 to the base port (Also known as
 driver port). It is a PUSH port.
@@ -153,7 +153,6 @@ relevant field while doing other driver specific configuration (if this
 is required).
 
 ::
-
 
     message DriverConfig {
       // Delay between updates. In seconds.
@@ -177,7 +176,7 @@ port will be discarded, so the empty string "" makes for a good
 keep-alive message.
 
 Data update port
-^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~
 
 The port number is obtained by adding 3 to the base port (Also known as
 driver port). This port is used by drivers that send data (for instance
@@ -203,7 +202,7 @@ serialized messages of type UV (within the matrix\_malos namespace).
 Then this message needs to be deserialized and the values can be used.
 
 Workflow
-^^^^^^^^
+~~~~~~~~
 
 Wrapping up the protocol section, a program that talks to MALOS can:
 
@@ -215,7 +214,7 @@ Wrapping up the protocol section, a program that talks to MALOS can:
 -  Subscribe to updates from the driver if the drivers produces them.
 
 Interfaces
-~~~~~~~~~~
+----------
 
 -  `Everloop <docs/everloop.md>`__
 -  `Humidity <docs/humidity.md>`__
@@ -230,13 +229,13 @@ Interfaces
 -  `GPIO <docs/gpio.md>`__
 
 Examples
-~~~~~~~~
+--------
 
 **Note:** pre-requisite is NodeJS. Don't use the one shipped with
 Raspbian because it's a bit old. If you don't have it, please check a
 recipe included below.
 
-.. code-block:: shell-session
+::
 
     git clone https://github.com/matrix-io/matrix-creator-malos.git && cd matrix-creator-malos
     git submodule init && git submodule update
@@ -257,11 +256,11 @@ recipe included below.
 --------------
 
 NodeJS Dependency
-~~~~~~~~~~~~~~~~~
+-----------------
 
 For instance (in the Raspberry):
 
-.. code-block:: shell-session
+::
 
     # Install npm (doesn't really matter what version, apt-get node is v0.10...)
     sudo apt-get install npm
@@ -279,10 +278,10 @@ Using MALOS
 ===========
 
 MALOS Examples
-~~~~~~~~~~~~~~
+--------------
 
 Connecting to MALOS with NodeJS
-'''''''''''''''''''''''''''''''
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Note:** You'll need ``protobufjs`` and ``zmq`` npm packages, and
 protobuf as a submodule. See the `Everloop
@@ -319,7 +318,7 @@ for the full implementation of the code below.
     ...
 
 Passing Commands to MALOS
-'''''''''''''''''''''''''
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Below is an example of some NodeJS interfacing with the Everloop via
 MALOS. See the `Everloop
@@ -360,7 +359,7 @@ for the full implementation of the code below.
     }, 10);
 
 Reading from MALOS
-''''''''''''''''''
+~~~~~~~~~~~~~~~~~~
 
 Below is a simple implementation via NodeJS to read a ``humidity`` from
 MALOS via 0MQ. See `Humidty
@@ -393,7 +392,7 @@ for the full example.
     // ********** End updates
 
 Available Protobufs
-'''''''''''''''''''
+~~~~~~~~~~~~~~~~~~~
 
 ::
 
