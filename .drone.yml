@@ -1,0 +1,72 @@
+pipeline:
+  build-debs:
+    when:
+      event: tag
+    image: gcr.io/admobilize-testing/builder-qemu:latest
+    privileged: true
+    mountimg: ${MOUNTIMG}
+    mountoffset: ${MOUNTOFFSET}
+    body: |
+      curl https://apt.matrix.one/doc/apt-key.gpg | apt-key add -
+      echo "deb https://apt.matrix.one/raspbian ${CODENAME} main" > /etc/apt/sources.list.d/matrixlabs.list
+      apt-get update
+      apt-get install --yes libmatrixio-malos-dev,libmatrixio-creator-hal-dev
+      debuild -us -uc -b
+      mv ../*.deb .
+
+  upload-debs:
+    when:
+      event: tag
+    image: gcr.io/admobilize-testing/gce-builder:latest
+    secrets: [aws_access_key_id, aws_secret_access_key, gpg_key, gpg_pass]
+    commands:
+      # Prepare GPG
+      - echo "$${GPG_KEY}" > /tmp/tmpkey && gpg --import /tmp/tmpkey && rm /tmp/tmpkey
+      - echo "personal-digest-preferences SHA512" >> /root/.gnupg/gpg.conf
+
+      # Upload packages
+      - mv matrixio-malos_${DRONE_TAG##v}_armhf.deb 
+           matrixio-malos_${DISTRIBUTION}-${CODENAME}-${DRONE_TAG##v}_armhf.deb
+
+      - echo "$${GPG_PASS}" | deb-s3 upload --bucket apt.matrix.one 
+        --prefix $DISTRIBUTION
+        --codename $CODENAME
+        --access-key-id $${AWS_ACCESS_KEY_ID}
+        --secret-access-key $${AWS_SECRET_ACCESS_KEY}
+        --sign info@matrix.one 
+        --gpg-options="--batch --passphrase-fd 0"
+        matrixio-malos_${DISTRIBUTION}-${CODENAME}-${DRONE_TAG##v}_armhf.deb
+
+  notify-always:
+    image: plugins/slack
+    secrets: [slack_webhook]
+    username: drone-ci-builder
+    channel: notifications
+    when:
+      status: [ success, failure ]
+      event: tag 
+    template: |
+      {{#success build.status}}
+        {{build.author}} just built `{{repo.name}}:{{build.branch}}` from <${DRONE_COMMIT_LINK}|#{{truncate build.commit 8}}>
+        :new: {{build.message}}
+        :debian: The new `matrixio-malos_${DISTRIBUTION}-${CODENAME}-${DRONE_TAG##v}_armhf.deb` was published to apt.matrix.one
+      {{else}}
+        {{build.author}} just broke the build of `{{repo.name}}:{{build.branch}}` with <${DRONE_COMMIT_LINK}|#{{truncate build.commit 8}}>
+        :new: :zombie: {{build.message}}
+        :debian: The package `matrixio-malos_${DISTRIBUTION}-${CODENAME}-${DRONE_TAG##v}_armhf.deb` failed to build.
+      {{/success}}
+      :stopwatch: {{ since build.started}}
+      :gear: {{build.link}}
+
+matrix:
+  include: 
+    - CODENAME: jessie
+      DISTRIBUTION: raspbian
+      MOUNTOFFSET: 48234496
+      MOUNTDIR: /drone/src/bitbucket.org/admobilize/matrix-creator-malos
+      MOUNTIMG: https://storage.googleapis.com/raspbian-images/2017-07-05-raspbian-jessie-debuild.img.gz
+    - CODENAME: stretch
+      MOUNTOFFSET: 48234496
+      MOUNTDIR: /drone/src/bitbucket.org/admobilize/matrix-creator-malos
+      DISTRIBUTION: raspbian
+      MOUNTIMG: https://storage.googleapis.com/raspbian-images/2017-08-16-raspbian-stretch-debuild.img.gz
