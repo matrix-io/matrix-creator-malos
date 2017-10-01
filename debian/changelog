@@ -1,11 +1,11 @@
-matrix-creator-malos (0.2.2) unstable; urgency=medium
+matrixio-malos (0.2.2) unstable; urgency=medium
 
   * Protocol buffers namespaces support
   * Examples migrated to latest proto specs
 
  -- MATRIX Labs <info@matrix.one>  Thu, 23 Feb 2017 22:56:53 +0000
 
-matrix-creator-malos (0.2.0) unstable; urgency=medium
+matrixio-malos (0.2.0) unstable; urgency=medium
 
   * ZigBee has been graduated as a service
   * MATRIX MALOS has been refactored
@@ -14,7 +14,7 @@ matrix-creator-malos (0.2.0) unstable; urgency=medium
 
  -- Admobilize <info@admobilize.com>  Thu, 23 Feb 2017 22:56:53 +0000
 
-matrix-creator-malos (0.1-4.7) unstable; urgency=medium
+matrixio-malos (0.1-4.7) unstable; urgency=medium
 
   * Add gpio driver.
   * Improve micarray.
@@ -22,7 +22,7 @@ matrix-creator-malos (0.1-4.7) unstable; urgency=medium
 
  --  Admobilize <info@admobilize.com>  Wed, 16 Nov 2016 10:58:30 -0900
 
-matrix-creator-malos (0.1-4.6) unstable; urgency=medium
+matrixio-malos (0.1-4.6) unstable; urgency=medium
 
   * Add GPIO driver.
   * Add basic beamforming .
@@ -30,13 +30,13 @@ matrix-creator-malos (0.1-4.6) unstable; urgency=medium
 
  --  Admobilize <info@admobilize.com>  Fri, 04 Nov 2016 13:24:42 -0800
 
-matrix-creator-malos (0.1-4.5) unstable; urgency=medium
+matrixio-malos (0.1-4.5) unstable; urgency=medium
 
   * Add startup dependency - useful when the MCU is programmed for the first time.
 
  --  Admobilize <info@admobilize.com>  Tue, 04 Oct 2016 09:38:28 -0800
 
-matrix-creator-malos (0.1-4.4) unstable; urgency=medium
+matrixio-malos (0.1-4.4) unstable; urgency=medium
 
   Add LIRC.
   Add Mic array support.
@@ -44,13 +44,13 @@ matrix-creator-malos (0.1-4.4) unstable; urgency=medium
 
  --  Admobilize <info@admobilize.com>  Tue, 04 Oct 2016 08:40:40 -0800
 
-matrix-creator-malos (0.1-1.3) unstable; urgency=medium
+matrixio-malos (0.1-1.3) unstable; urgency=medium
 
   * Add startup scripts.
 
  --  Admobilize <info@admobilize.com>  Tue, 27 Sep 2016 17:30:55 -0800
 
-matrix-creator-malos (0.1-1) unstable; urgency=low
+matrixio-malos (0.1-1) unstable; urgency=low
 
   * Initial release.
 
