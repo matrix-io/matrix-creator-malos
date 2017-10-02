@@ -10,7 +10,7 @@ pipeline:
       curl https://apt.matrix.one/doc/apt-key.gpg | apt-key add -
       echo "deb https://apt.matrix.one/raspbian ${CODENAME} main" > /etc/apt/sources.list.d/matrixlabs.list
       apt-get update
-      apt-get install --yes libmatrixio-malos-dev,libmatrixio-creator-hal-dev
+      apt-get install --yes libmatrixio-malos-dev libmatrixio-creator-hal-dev
       debuild -us -uc -b
       mv ../*.deb .
 
