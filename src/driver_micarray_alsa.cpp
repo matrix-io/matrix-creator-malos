@@ -37,6 +37,8 @@ bool MicArrayAlsaDriver::ProcessConfig(const pb::driver::DriverConfig& config) {
                         micarray_config.radial_distance_mm(),
                         micarray_config.sound_speed_mmseg());
 
+  mics_.SetSamplingRate(micarray_config.sampling_frequency_hz());
+
   return true;
 }
 
@@ -71,9 +73,12 @@ void MicArrayAlsaDriver::AlsaThread() {
     }
   }
 
+  mics_.SetSamplingRate(kInitialSamplingFrequency); /* Set Sampling Frequency in 16Khz */ 
+
   int named_pipe_handle;
   std::valarray<int16_t> buffer(mics_.NumberOfSamples());
   while (true) {
+
     mics_.Read(); /* Reading 8-mics buffer from de FPGA */
 
     doa_.Calculate();
