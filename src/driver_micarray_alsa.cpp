@@ -48,6 +48,9 @@ bool MicArrayAlsaDriver::SendUpdate() {
   mics_params.set_azimutal_angle(doa_.GetAzimutalAngle());
   mics_params.set_polar_angle(doa_.GetPolarAngle());
 
+  mics_params.set_sampling_frequency_hz(mics_.SamplingRate());
+  mics_params.set_gain(mics_.Gain());
+
   std::string buffer;
   mics_params.SerializeToString(&buffer);
   zqm_push_update_->Send(buffer);
