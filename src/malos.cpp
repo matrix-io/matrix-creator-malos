@@ -27,7 +27,6 @@
 #include "./driver_uv.h"
 #include "./driver_everloop.h"
 #include "./driver_micarray_alsa.h"
-#include "./driver_lirc.h"
 #include "./driver_servo.h"
 #include "./driver_gpio.h"
 
@@ -100,13 +99,7 @@ int RunServer() {
     return 1;
   }
   driver_manager.RegisterDriver(&driver_micarray_drive);
-/*
-  LircDriver driver_lirc;
-  if (!driver_lirc.Init(kBasePort + 4 * 7 + 1, kUnsecureBindScope)) {
-    return 1;
-  }
-  driver_manager.RegisterDriver(&driver_lirc);
-*/
+
   ServoDriver driver_servo;
   driver_servo.SetupWishboneBus(wishbone_bus);
   if (!driver_servo.Init(kBasePort + 4 * 8 + 1, kUnsecureBindScope)) {
