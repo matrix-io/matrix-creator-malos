@@ -33,8 +33,6 @@
 #include "matrix_hal/wishbone_bus.h"
 
 const char kMicArrayAlsaDriverName[] = "MicArray_Alsa";
-const uint32_t kInitialSamplingFrequency = 16000;
-
 
 namespace matrix_malos {
 
