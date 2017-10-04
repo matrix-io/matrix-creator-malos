@@ -1,10 +1,13 @@
 
 # Pre-Requisites
 ```
-echo "deb http://packages.matrix.one/matrix-creator/ ./" | sudo tee --append /etc/apt/sources.list;
-sudo apt-get update;
-sudo apt-get upgrade;
-sudo apt-get install libmatrixio-malos-dev libmatrixio-creator-hal-dev cmake g++ git;
+# Add repo and key
+curl https://apt.matrix.one/doc/apt-key.gpg | sudo apt-key add -
+echo "deb https://apt.matrix.one/raspbian $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/matrixlabs.list
+
+# Update packages and install
+sudo apt-get update
+sudo apt-get upgrade
 ```
 
 # MALOS
@@ -17,11 +20,15 @@ Connections to MALOS can be made both from localhost (127.0.0.1) and from remote
 
 ### Install
 ```
-sudo apt-get install matrixio-creator-init matrixio-malos
+sudo apt-get install matrixio-malos
 sudo reboot
 ```
 
-**Note:** At this point, on next start, `malos` will be running as a service.
+**Note:** At this point, on next start, `matrixio-malos` will be running as a service.
+
+``` 
+sudo systemctl status matrixio-malos
+```
 
 ### Upgrade
 ```
