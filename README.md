@@ -4,7 +4,7 @@
 echo "deb http://packages.matrix.one/matrix-creator/ ./" | sudo tee --append /etc/apt/sources.list;
 sudo apt-get update;
 sudo apt-get upgrade;
-sudo apt-get install libzmq3-dev xc3sprog matrix-creator-openocd wiringpi cmake g++ git;
+sudo apt-get install libmatrixio-malos-dev libmatrixio-creator-hal-dev cmake g++ git;
 ```
 
 # MALOS
@@ -17,7 +17,7 @@ Connections to MALOS can be made both from localhost (127.0.0.1) and from remote
 
 ### Install
 ```
-sudo apt-get install matrix-creator-init matrix-creator-malos
+sudo apt-get install matrixio-creator-init matrixio-malos
 sudo reboot
 ```
 
@@ -53,9 +53,7 @@ Registered driver Humidity with port 20017.
 Registered driver Everloop with port 20021.
 Registered driver Pressure with port 20025.
 Registered driver UV with port 20029.
-Registered driver ZigbeeBulb with port 20033.
 Registered driver MicArray_Alsa with port 20037.
-Registered driver Lirc with port 20041.
 ```
 
 Each port reserves a range of 4 ports that are used for a driver. They are described in the following sections.

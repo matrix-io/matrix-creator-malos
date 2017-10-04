@@ -1,1 +1,1 @@
-matrix-creator-malos.service lib/systemd/system
+matrixio-malos.service lib/systemd/system
