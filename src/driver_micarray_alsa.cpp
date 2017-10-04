@@ -37,6 +37,8 @@ bool MicArrayAlsaDriver::ProcessConfig(const pb::driver::DriverConfig& config) {
                         micarray_config.radial_distance_mm(),
                         micarray_config.sound_speed_mmseg());
 
+  mics_.SetSamplingRate(micarray_config.sampling_frequency_hz());
+
   return true;
 }
 
@@ -45,6 +47,9 @@ bool MicArrayAlsaDriver::SendUpdate() {
 
   mics_params.set_azimutal_angle(doa_.GetAzimutalAngle());
   mics_params.set_polar_angle(doa_.GetPolarAngle());
+
+  mics_params.set_sampling_frequency_hz(mics_.SamplingRate());
+  mics_params.set_gain(mics_.Gain());
 
   std::string buffer;
   mics_params.SerializeToString(&buffer);
@@ -70,10 +75,11 @@ void MicArrayAlsaDriver::AlsaThread() {
       }
     }
   }
-
+  doa_.Init();
   int named_pipe_handle;
   std::valarray<int16_t> buffer(mics_.NumberOfSamples());
   while (true) {
+
     mics_.Read(); /* Reading 8-mics buffer from de FPGA */
 
     doa_.Calculate();

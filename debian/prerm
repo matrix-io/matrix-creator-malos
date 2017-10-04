@@ -1,8 +1,8 @@
 #!/bin/bash -e
 
 echo "Removing MALOS service"
-systemctl stop matrix-creator-malos
-systemctl disable matrix-creator-malos
+systemctl stop matrixio-malos
+systemctl disable matrixio-malos
 systemctl daemon-reload
 systemctl reset-failed
 
