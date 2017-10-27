@@ -24,12 +24,18 @@ pipeline:
       - echo "$${GPG_KEY}" > /tmp/tmpkey && gpg --import /tmp/tmpkey && rm /tmp/tmpkey
       - echo "personal-digest-preferences SHA512" >> /root/.gnupg/gpg.conf
 
+      # Pick which repo component to upload
+      - export RCEXPR="*-rc*"
+      - export PKGVER="${DRONE_TAG}"
+      - export COMPONENT=$(/bin/bash -c '[[ $PKGVER == $RCEXPR ]] && echo "experimental" || echo "main"')
+
       # Upload packages
       - mv matrixio-malos_${DRONE_TAG##v}_armhf.deb 
            matrixio-malos_${DISTRIBUTION}-${CODENAME}-${DRONE_TAG##v}_armhf.deb
 
       - echo "$${GPG_PASS}" | deb-s3 upload --bucket apt.matrix.one 
         --prefix $DISTRIBUTION
+        --component $COMPONENT
         --codename $CODENAME
         --access-key-id $${AWS_ACCESS_KEY_ID}
         --secret-access-key $${AWS_SECRET_ACCESS_KEY}

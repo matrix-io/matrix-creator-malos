@@ -1,3 +1,9 @@
+matrixio-malos (0.2.3-rc0) unstable; urgency=medium
+
+  * Tests with native libprotobuf
+
+ -- MATRIX Labs <info@matrix.one>  Thu, 27 Oct 2017 23:26:04 +0000
+
 matrixio-malos (0.2.2) unstable; urgency=medium
 
   * Protocol buffers namespaces support
