@@ -16,6 +16,7 @@
  */
 #include <fstream>
 #include <iostream>
+#include <cmath>
 #include "./driver_humidity.h"
 #include <matrix_io/malos/v1/driver.pb.h>
 
@@ -29,7 +30,7 @@ const char kDefaultCpuTemperatureFileName[] =
     "/sys/class/thermal/thermal_zone0/temp";
 
 bool ApproximatelyEqual(float a, float b, float epsilon) {
-  return fabs(a - b) <= ((fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
+  return std::fabs(a - b) <= ((std::fabs(a) < std::fabs(b) ? std::fabs(b) : std::fabs(a)) * epsilon);
 }
 
 bool ReadCpuTemperature(const std::string &file_name, float *temperature) {

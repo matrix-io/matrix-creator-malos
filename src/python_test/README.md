@@ -15,6 +15,7 @@ The MALOS driver follows the [MALOS protocol](../../README.md#protocol).
 ### Python packages
 
 install python packages dependences:
+
 ``` bash
 sudo apt-get install build-essential python-dev libzmq3-dev
 pip install -r requirements.txt
@@ -28,13 +29,13 @@ pipenv install
 
 ### MATRIX Creator software
 
-install MALOS and perform device reboot. For more details: [Getting Started Guide](https://github.com/matrix-io/matrix-creator-quickstart/wiki/2.-Getting-Started)
+Install MALOS and perform device reboot. For more details: [Getting Started Guide](https://github.com/matrix-io/matrix-creator-quickstart/wiki/2.-Getting-Started)
 
 ``` bash
 echo "deb http://packages.matrix.one/matrix-creator/ ./" | sudo tee --append /etc/apt/sources.list
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-get install matrix-creator-init matrix-creator-malos cmake g++ git libzmq3-dev --no-install-recommends
+sudo apt-get install matrixio-creator-init matrixio-malos cmake g++ git --yes
 reboot
 
 ```
