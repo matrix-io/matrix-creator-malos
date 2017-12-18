@@ -12,7 +12,7 @@ pipeline:
       export COMPONENT=$([ "${DRONE_BUILD_EVENT}" = "tag" ] && echo "main" || echo "unstable")
       echo "deb https://apt.matrix.one/raspbian ${CODENAME} $COMPONENT" > /etc/apt/sources.list.d/matrixlabs.list
       apt-get update
-      apt-get install --yes libmatrixio-malos-dev libmatrixio-creator-hal-dev libzmq3-dev
+      apt-get install --yes libmatrixio-malos-dev libmatrixio-creator-hal-dev libzmq3-dev libmatrixio-protos-dev
       debuild -us -uc -b
       mv ../*.deb .
 
