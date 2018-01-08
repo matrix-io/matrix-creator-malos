@@ -1,3 +1,9 @@
+matrixio-malos (0.2.3) unstable; urgency=medium
+
+  * Updated name of service that flashes all chips firmwares in matrixio-malos.
+
+ -- MATRIX Labs <info@matrix.one>  Mon, 08 Jan 2018 14:02:53 +0000
+
 matrixio-malos (0.2.2) unstable; urgency=medium
 
   * Protocol buffers namespaces support
