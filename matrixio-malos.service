@@ -1,6 +1,6 @@
 [Unit]
 Description=Matrix Abstraction Layer for OS
-After=matrixio-creator-firmware.service
+After=matrixio-devices-firmware.service
 
 [Service]
 Type=simple
