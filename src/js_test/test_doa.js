@@ -38,6 +38,12 @@ configSocket.connect('tcp://' + creator_ip + ':' + creator_micarray_base_port)
 var config = matrix_io.malos.v1.driver.DriverConfig.create({
   delayBetweenUpdates: 1.0, // 1 seconds between updates
   timeoutAfterLastPing: 6.0, // Stop sending updates 6 seconds after pings
+  micarray: matrix_io.malos.v1.io.MicArrayParams.create({
+    gain: 3,
+    radialDistanceMm: 100,
+    soundSpeedMmseg: 320 * 1000.0,
+    samplingFrequencyHz: 16000
+  })
 });
 configSocket.send(matrix_io.malos.v1.driver.DriverConfig.encode(config).finish())
 // ********** End configuration.
