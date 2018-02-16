@@ -29,14 +29,11 @@ namespace matrix_malos {
 
 bool MicArrayAlsaDriver::ProcessConfig(const pb::driver::DriverConfig& config) {
   pb::io::MicArrayParams micarray_config(config.micarray());
-
   mics_.SetGain(static_cast<int16_t>(micarray_config.gain()));
-
   mics_.CalculateDelays(micarray_config.azimutal_angle(),
                         micarray_config.polar_angle(),
                         micarray_config.radial_distance_mm(),
                         micarray_config.sound_speed_mmseg());
-
   mics_.SetSamplingRate(micarray_config.sampling_frequency_hz());
 
   return true;
