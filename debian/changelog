@@ -1,3 +1,10 @@
+matrixio-malos (0.3.2) unstable; urgency=medium
+
+  * Set libmatrixio-matrix-creator-hal as a shared library.
+  * Support new hal implementation.
+
+ -- MATRIX Labs <info@matrix.one>  Tue, 27 Mar 2018 11:02:53 +0000
+ 
 matrixio-malos (0.3.1) unstable; urgency=medium
 
   * Bug Fix: Fix float point exception
