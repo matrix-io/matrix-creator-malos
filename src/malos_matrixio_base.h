@@ -15,9 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <chrono>
-#include <iostream>
-#include <memory>
-#include <thread>
+#ifndef SRC_MALOS_WISHBONE_BASE_H_
+#define SRC_MALOS_WISHBONE_BASE_H_
 
-#include "./malos_wishbone_base.h"
+#include <memory>
+#include <string>
+
+#include <matrix_malos/zmq_push.h>
+#include <matrix_malos/zmq_pull.h>
+#include <matrix_malos/malos_base.h>
+
+#include "matrix_hal/matrixio_bus.h"
+
+#include <matrix_io/malos/v1/driver.pb.h>
+
+namespace pb = matrix_io::malos::v1;
+
+namespace matrix_malos {
+
+class MalosWishboneBase : public MalosBase {
+ public:
+  explicit MalosWishboneBase(const std::string& driver_name)
+      : MalosBase(driver_name) {}
+
+  // This function should be overridden by drivers that use the wishbone bus.
+  virtual void SetupMatrixIOBus(matrix_hal::MatrixIOBus*) {}
+};
+
+}  // namespace matrix_malos
+
+#endif  // SRC_MALOS_WISHBONE_BASE_H_

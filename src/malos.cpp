@@ -30,7 +30,7 @@
 #include "./driver_servo.h"
 #include "./driver_gpio.h"
 
-#include "matrix_hal/wishbone_bus.h"
+#include "matrix_hal/matrixio_bus.h"
 
 const int kBasePort = 20012;
 
@@ -46,8 +46,8 @@ int RunServer() {
   std::cerr << "**************" << std::endl;
   std::cerr << std::endl;
 
-  matrix_hal::WishboneBus* wishbone_bus = new matrix_hal::WishboneBus();
-  wishbone_bus->SpiInit();
+  matrix_hal::MatrixIOBus* wishbone_bus = new matrix_hal::MatrixIOBus();
+  wishbone_bus->Init();
 
   DriverManager driver_manager(kBasePort, kUnsecureBindScope);
   std::cerr << "You can query specific driver info using port " +
@@ -55,35 +55,35 @@ int RunServer() {
             << "." << std::endl;
 
   ImuDriver driver_imu;
-  driver_imu.SetupWishboneBus(wishbone_bus);
+  driver_imu.SetupMatrixIOBus(wishbone_bus);
   if (!driver_imu.Init(kBasePort + 1, kUnsecureBindScope)) {
     return 1;
   }
   driver_manager.RegisterDriver(&driver_imu);
 
   HumidityDriver driver_humidity;
-  driver_humidity.SetupWishboneBus(wishbone_bus);
+  driver_humidity.SetupMatrixIOBus(wishbone_bus);
   if (!driver_humidity.Init(kBasePort + 4 * 1 + 1, kUnsecureBindScope)) {
     return 1;
   }
   driver_manager.RegisterDriver(&driver_humidity);
 
   EverloopDriver driver_everloop;
-  driver_everloop.SetupWishboneBus(wishbone_bus);
+  driver_everloop.SetupMatrixIOBus(wishbone_bus);
   if (!driver_everloop.Init(kBasePort + 4 * 2 + 1, kUnsecureBindScope)) {
     return 1;
   }
   driver_manager.RegisterDriver(&driver_everloop);
 
   PressureDriver driver_pressure;
-  driver_pressure.SetupWishboneBus(wishbone_bus);
+  driver_pressure.SetupMatrixIOBus(wishbone_bus);
   if (!driver_pressure.Init(kBasePort + 4 * 3 + 1, kUnsecureBindScope)) {
     return 1;
   }
   driver_manager.RegisterDriver(&driver_pressure);
 
   UVDriver driver_uv;
-  driver_uv.SetupWishboneBus(wishbone_bus);
+  driver_uv.SetupMatrixIOBus(wishbone_bus);
   if (!driver_uv.Init(kBasePort + 4 * 4 + 1, kUnsecureBindScope)) {
     return 1;
   }
@@ -93,7 +93,7 @@ int RunServer() {
   // its own repo.
 
   MicArrayAlsaDriver driver_micarray_drive;
-  driver_micarray_drive.SetupWishboneBus(wishbone_bus);
+  driver_micarray_drive.SetupMatrixIOBus(wishbone_bus);
 
   if (!driver_micarray_drive.Init(kBasePort + 4 * 6 + 1, kUnsecureBindScope)) {
     return 1;
@@ -101,14 +101,14 @@ int RunServer() {
   driver_manager.RegisterDriver(&driver_micarray_drive);
 
   ServoDriver driver_servo;
-  driver_servo.SetupWishboneBus(wishbone_bus);
+  driver_servo.SetupMatrixIOBus(wishbone_bus);
   if (!driver_servo.Init(kBasePort + 4 * 8 + 1, kUnsecureBindScope)) {
     return 1;
   }
   driver_manager.RegisterDriver(&driver_servo);
 
   GpioDriver driver_gpio;
-  driver_gpio.SetupWishboneBus(wishbone_bus);
+  driver_gpio.SetupMatrixIOBus(wishbone_bus);
   if (!driver_gpio.Init(kBasePort + 4 * 9 + 1, kUnsecureBindScope)) {
     return 1;
   }

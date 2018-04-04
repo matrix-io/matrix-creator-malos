@@ -18,8 +18,8 @@
 #ifndef SRC_DRIVER_SERVO_H_
 #define SRC_DRIVER_SERVO_H_
 
-#include "./malos_wishbone_base.h"
-#include "matrix_hal/wishbone_bus.h"
+#include "./malos_matrixio_base.h"
+#include "matrix_hal/matrixio_bus.h"
 #include "matrix_hal/gpio_control.h"
 
 const char kServoDriverName[] = "Servo";
@@ -35,7 +35,7 @@ class ServoDriver : public MalosWishboneBase {
   }
 
   // Receive a copy of the shared wishbone bus. Not owned.
-  void SetupWishboneBus(matrix_hal::WishboneBus* wishbone) override {
+  void SetupMatrixIOBus(matrix_hal::MatrixIOBus* wishbone) override {
     gpio_.reset(new matrix_hal::GPIOControl);
     gpio_->Setup(wishbone);
   }

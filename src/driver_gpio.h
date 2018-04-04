@@ -20,8 +20,8 @@
 
 #include <memory>
 
-#include "./malos_wishbone_base.h"
-#include "matrix_hal/wishbone_bus.h"
+#include "./malos_matrixio_base.h"
+#include "matrix_hal/matrixio_bus.h"
 #include "matrix_hal/gpio_control.h"
 
 const char kGpioDriverName[] = "Gpio";
@@ -38,7 +38,7 @@ class GpioDriver : public MalosWishboneBase {
 
   // Load Gpio control for read value or write it
   // in the first case a value is returned in the update channel.
-  void SetupWishboneBus(matrix_hal::WishboneBus* wishbone) override {
+  void SetupMatrixIOBus(matrix_hal::MatrixIOBus* wishbone) override {
     gpio_.reset(new matrix_hal::GPIOControl);
     gpio_->Setup(wishbone);
   }

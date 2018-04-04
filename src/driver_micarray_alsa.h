@@ -26,11 +26,11 @@
 #include <thread>
 #include <mutex>
 
-#include "./malos_wishbone_base.h"
+#include "./malos_matrixio_base.h"
 
 #include "matrix_hal/direction_of_arrival.h"
 #include "matrix_hal/microphone_array.h"
-#include "matrix_hal/wishbone_bus.h"
+#include "matrix_hal/matrixio_bus.h"
 
 const char kMicArrayAlsaDriverName[] = "MicArray_Alsa";
 
@@ -47,7 +47,7 @@ class MicArrayAlsaDriver : public MalosWishboneBase {
   }
 
   // Receive a copy of the shared wishbone bus. Not owned.
-  void SetupWishboneBus(matrix_hal::WishboneBus* wishbone) override {
+  void SetupMatrixIOBus(matrix_hal::MatrixIOBus* wishbone) override {
     mics_.Setup(wishbone);
 
     // alsa thread.

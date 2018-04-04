@@ -20,9 +20,9 @@
 
 #include <memory>
 
-#include "./malos_wishbone_base.h"
+#include "./malos_matrixio_base.h"
 
-#include "matrix_hal/wishbone_bus.h"
+#include "matrix_hal/matrixio_bus.h"
 #include "matrix_hal/imu_sensor.h"
 
 namespace matrix_malos {
@@ -35,7 +35,7 @@ class ImuDriver : public MalosWishboneBase {
   }
 
   // Receive a copy of the shared wishbone bus. Not owned.
-  void SetupWishboneBus(matrix_hal::WishboneBus* wishbone) override {
+  void SetupMatrixIOBus(matrix_hal::MatrixIOBus* wishbone) override {
     imu_reader_.reset(new matrix_hal::IMUSensor);
     imu_reader_->Setup(wishbone);
   }
