@@ -17,8 +17,8 @@
 
 #include <algorithm>
 
-#include "./driver_everloop.h"
 #include <matrix_io/malos/v1/driver.pb.h>
+#include "./driver_everloop.h"
 #include "matrix_hal/everloop_image.h"
 
 namespace pb = matrix_io::malos::v1;

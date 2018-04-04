@@ -19,8 +19,8 @@
 #define SRC_DRIVER_SERVO_H_
 
 #include "./malos_matrixio_base.h"
-#include "matrix_hal/matrixio_bus.h"
 #include "matrix_hal/gpio_control.h"
+#include "matrix_hal/matrixio_bus.h"
 
 const char kServoDriverName[] = "Servo";
 

@@ -22,8 +22,8 @@
 
 #include "./malos_matrixio_base.h"
 
-#include "matrix_hal/matrixio_bus.h"
 #include "matrix_hal/everloop.h"
+#include "matrix_hal/matrixio_bus.h"
 
 const char kEverloopDriverName[] = "Everloop";
 

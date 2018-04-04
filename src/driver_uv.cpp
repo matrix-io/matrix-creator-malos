@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <string>
 #include "./driver_uv.h"
 #include <matrix_io/malos/v1/driver.pb.h>
+#include <string>
 #include "matrix_hal/uv_data.h"
 
 namespace pb = matrix_io::malos::v1;

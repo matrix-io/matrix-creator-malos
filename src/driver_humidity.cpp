@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <fstream>
-#include <iostream>
-#include <cmath>
 #include "./driver_humidity.h"
 #include <matrix_io/malos/v1/driver.pb.h>
+#include <cmath>
+#include <fstream>
+#include <iostream>
 
 #include "matrix_hal/humidity_data.h"
 
@@ -30,7 +30,9 @@ const char kDefaultCpuTemperatureFileName[] =
     "/sys/class/thermal/thermal_zone0/temp";
 
 bool ApproximatelyEqual(float a, float b, float epsilon) {
-  return std::fabs(a - b) <= ((std::fabs(a) < std::fabs(b) ? std::fabs(b) : std::fabs(a)) * epsilon);
+  return std::fabs(a - b) <=
+         ((std::fabs(a) < std::fabs(b) ? std::fabs(b) : std::fabs(a)) *
+          epsilon);
 }
 
 bool ReadCpuTemperature(const std::string &file_name, float *temperature) {

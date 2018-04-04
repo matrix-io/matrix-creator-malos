@@ -21,9 +21,9 @@
 #include <memory>
 #include <string>
 
-#include <matrix_malos/zmq_push.h>
-#include <matrix_malos/zmq_pull.h>
 #include <matrix_malos/malos_base.h>
+#include <matrix_malos/zmq_pull.h>
+#include <matrix_malos/zmq_push.h>
 
 #include "matrix_hal/matrixio_bus.h"
 

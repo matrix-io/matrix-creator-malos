@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <string>
 #include <iostream>
+#include <string>
 
-#include "./driver_gpio.h"
 #include <matrix_io/malos/v1/driver.pb.h>
+#include "./driver_gpio.h"
 
 namespace pb = matrix_io::malos::v1;
 
