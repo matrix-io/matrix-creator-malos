@@ -21,11 +21,11 @@
 #include <memory>
 #include <string>
 
-#include <matrix_malos/zmq_push.h>
-#include <matrix_malos/zmq_pull.h>
 #include <matrix_malos/malos_base.h>
+#include <matrix_malos/zmq_pull.h>
+#include <matrix_malos/zmq_push.h>
 
-#include "matrix_hal/wishbone_bus.h"
+#include "matrix_hal/matrixio_bus.h"
 
 #include <matrix_io/malos/v1/driver.pb.h>
 
@@ -39,7 +39,7 @@ class MalosWishboneBase : public MalosBase {
       : MalosBase(driver_name) {}
 
   // This function should be overridden by drivers that use the wishbone bus.
-  virtual void SetupWishboneBus(matrix_hal::WishboneBus*) {}
+  virtual void SetupMatrixIOBus(matrix_hal::MatrixIOBus*) {}
 };
 
 }  // namespace matrix_malos

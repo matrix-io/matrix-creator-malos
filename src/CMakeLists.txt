@@ -31,7 +31,7 @@ include_directories(${PROJECT_BINARY_DIR})
 
 set(malos_src
   malos.cpp
-  malos_wishbone_base.cpp malos_wishbone_base.h
+  malos_matrixio_base.cpp malos_matrixio_base.h
   driver_imu.cpp driver_imu.h
   driver_humidity.cpp driver_humidity.h
   driver_pressure.cpp driver_pressure.h

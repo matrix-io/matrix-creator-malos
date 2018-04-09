@@ -19,8 +19,8 @@
 
 #include <string>
 
-#include "./driver_micarray_alsa.h"
 #include <matrix_io/malos/v1/driver.pb.h>
+#include "./driver_micarray_alsa.h"
 #include "matrix_hal/microphone_array.h"
 
 namespace pb = matrix_io::malos::v1;
@@ -76,7 +76,6 @@ void MicArrayAlsaDriver::AlsaThread() {
   int named_pipe_handle;
   std::valarray<int16_t> buffer(mics_.NumberOfSamples());
   while (true) {
-
     mics_.Read(); /* Reading 8-mics buffer from de FPGA */
 
     doa_.Calculate();

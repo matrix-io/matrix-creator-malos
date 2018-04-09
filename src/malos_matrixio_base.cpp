@@ -20,4 +20,4 @@
 #include <memory>
 #include <thread>
 
-#include "./malos_wishbone_base.h"
+#include "./malos_matrixio_base.h"

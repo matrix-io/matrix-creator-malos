@@ -21,8 +21,8 @@
 #include <iostream>
 #include <string>
 
-#include "./driver_lirc.h"
 #include <matrix_io/malos/v1/driver.pb.h>
+#include "./driver_lirc.h"
 namespace pb = matrix_io::malos::v1;
 
 namespace matrix_malos {

@@ -20,7 +20,7 @@
 
 #include <string>
 
-#include "./malos_wishbone_base.h"
+#include "./malos_matrixio_base.h"
 
 const char kLircDriverName[] = "Lirc";
 

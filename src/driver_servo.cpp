@@ -17,8 +17,8 @@
 
 #include <iostream>
 
-#include "./driver_servo.h"
 #include <matrix_io/malos/v1/driver.pb.h>
+#include "./driver_servo.h"
 
 const int kGpioOutputMode = 1;
 const int kGpioPWMFunction = 1;

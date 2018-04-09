@@ -1,3 +1,10 @@
+matrixio-malos (0.3.3) unstable; urgency=medium
+
+  * Support changes in libmatrixio-creator-hal.
+  * MatrixIO Malos support MatrixIO-Kernel-Modules
+
+ -- MATRIX Labs <info@matrix.one>  Mon, 9 Apr 2018 11:02:53 +0000
+
 matrixio-malos (0.3.2) unstable; urgency=medium
 
   * Set libmatrixio-matrix-creator-hal as a shared library.
