@@ -35,8 +35,8 @@ class EverloopDriver : public MalosWishboneBase {
     SetProvidesUpdates(false);
     SetNeedsKeepalives(false);
     SetNotesForHuman(
-        "Write-only. There are 35 leds. Values range from 0 to 255. Check "
-        "message EverloopImage (protocol buffer)");
+        "Write-only. Values range from 0 to 255. For more details "
+        "check message EverloopImage (protocol buffer)");
   }
 
   // Receive a copy of the shared wishbone bus. Not owned.

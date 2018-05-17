@@ -22,22 +22,24 @@
 #include "matrix_hal/everloop_image.h"
 
 namespace pb = matrix_io::malos::v1;
+using namespace matrix_hal;
 
 namespace matrix_malos {
 
 bool EverloopDriver::ProcessConfig(const pb::driver::DriverConfig& config) {
   pb::io::EverloopImage image(config.image());
 
-  if (image.led_size() != matrix_hal::kMatrixCreatorNLeds) {
-    std::string error_msg("35, Invalid number of leds for ");
-    error_msg += kEverloopDriverName;
-    error_msg += ". MATRIX Creator has " +
-                 std::to_string(matrix_hal::kMatrixCreatorNLeds) + " leds.";
+  if (image.led_size() != writer_->MatrixLeds()) {
+    std::string error_msg("Invalid number of leds. MATRIX ");
+    error_msg +=
+        (writer_->MatrixName() == kMatrixCreator) ? "Creator " : "Voice ";
+    error_msg +=
+        "board has " + std::to_string(writer_->MatrixLeds()) + " leds.";
     zmq_push_error_->Send(error_msg);
     return false;
   }
 
-  matrix_hal::EverloopImage image_for_hal;
+  EverloopImage image_for_hal;
   int idx = 0;
   for (const pb::io::LedValue& value : image.led()) {
     image_for_hal.leds[idx].red = value.red();
