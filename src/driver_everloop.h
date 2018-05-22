@@ -38,7 +38,7 @@ class EverloopDriver : public MalosWishboneBase {
         "message EverloopImage (protocol buffer)");
   }
 
-  uint32_t MatrixLeds(){return matrix_leds_;}
+  int32_t MatrixLeds(){return matrix_leds_;}
 
   // Receive a copy of the shared wishbone bus. Not owned.
   void SetupMatrixIOBus(matrix_hal::MatrixIOBus* wishbone) override {
@@ -56,7 +56,7 @@ class EverloopDriver : public MalosWishboneBase {
  private:
   // Everloop writer.
   std::unique_ptr<matrix_hal::Everloop> writer_;
-  uint32_t matrix_leds_;
+  int32_t matrix_leds_;
 };
 
 }  // namespace matrix_malos

@@ -56,9 +56,15 @@ bool EverloopDriver::ProcessConfig(const pb::driver::DriverConfig& config) {
 }
 
 
-bool ImuDriver::SendUpdate() {
-  const pb::io::EverloopImage erverloop_pb;
-  everloop_pb.set_everloop_length(MatrixLeds());
+bool EverloopDriver::SendUpdate() {
+  pb::io::EverloopImage everloop_pb;
+  int32_t matrix_leds = MatrixLeds();
+  std::cout << "NLEDs : " << matrix_leds<< std::endl;
+  everloop_pb.set_everloop_length(matrix_leds);
+
+  std::string buffer;
+  everloop_pb.SerializeToString(&buffer);
+  zqm_push_update_->Send(buffer);
   return true;
 }
 }  // namespace matrix_malos
