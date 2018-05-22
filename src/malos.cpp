@@ -48,7 +48,7 @@ int RunServer() {
 
   matrix_hal::MatrixIOBus* bus = new matrix_hal::MatrixIOBus();
   
-  if (!bus.Init()) return false;
+  if (!bus->Init()) return false;
 
   DriverManager driver_manager(kBasePort, kUnsecureBindScope);
   std::cerr << "You can query specific driver info using port " +
