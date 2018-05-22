@@ -28,11 +28,11 @@ namespace matrix_malos {
 bool EverloopDriver::ProcessConfig(const pb::driver::DriverConfig& config) {
   pb::io::EverloopImage image(config.image());
 
-  if (image.led_size() != matrix_hal::kMatrixCreatorNLeds) {
-    std::string error_msg("35, Invalid number of leds for ");
+  if (image.led_size() != MatrixLeds()) {
+    std::string error_msg("Invalid number of leds for ");
     error_msg += kEverloopDriverName;
-    error_msg += ". MATRIX Creator has " +
-                 std::to_string(matrix_hal::kMatrixCreatorNLeds) + " leds.";
+    error_msg += ". MATRIX Device has " +
+                 std::to_string(MatrixLeds()) + " leds.";
     zmq_push_error_->Send(error_msg);
     return false;
   }
@@ -55,4 +55,10 @@ bool EverloopDriver::ProcessConfig(const pb::driver::DriverConfig& config) {
   return writer_->Write(&image_for_hal);
 }
 
+
+bool ImuDriver::SendUpdate() {
+  const pb::io::EverloopImage erverloop_pb;
+  everloop_pb.set_everloop_length(MatrixLeds());
+  return true;
+}
 }  // namespace matrix_malos
