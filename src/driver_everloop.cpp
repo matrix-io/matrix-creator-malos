@@ -28,16 +28,7 @@ namespace matrix_malos {
 bool EverloopDriver::ProcessConfig(const pb::driver::DriverConfig& config) {
   pb::io::EverloopImage image(config.image());
 
-  if (image.led_size() != MatrixLeds()) {
-    std::string error_msg("Invalid number of leds for ");
-    error_msg += kEverloopDriverName;
-    error_msg += ". MATRIX Device has " +
-                 std::to_string(MatrixLeds()) + " leds.";
-    zmq_push_error_->Send(error_msg);
-    return false;
-  }
-
-  matrix_hal::EverloopImage image_for_hal;
+  matrix_hal::EverloopImage image_for_hal(MatrixLeds());
   int idx = 0;
   for (const pb::io::LedValue& value : image.led()) {
     image_for_hal.leds[idx].red = value.red();
@@ -59,7 +50,7 @@ bool EverloopDriver::ProcessConfig(const pb::driver::DriverConfig& config) {
 bool EverloopDriver::SendUpdate() {
   pb::io::EverloopImage everloop_pb;
   int32_t matrix_leds = MatrixLeds();
-  std::cout << "NLEDs : " << matrix_leds<< std::endl;
+  
   everloop_pb.set_everloop_length(matrix_leds);
 
   std::string buffer;
