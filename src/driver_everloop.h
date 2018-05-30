@@ -31,26 +31,32 @@ namespace matrix_malos {
 
 class EverloopDriver : public MalosWishboneBase {
  public:
+
   EverloopDriver() : MalosWishboneBase(kEverloopDriverName) {
-    SetProvidesUpdates(false);
-    SetNeedsKeepalives(false);
     SetNotesForHuman(
-        "Write-only. There are 35 leds. Values range from 0 to 255. Check "
+        "Write-only. There are N leds. Values range from 0 to 255. Check "
         "message EverloopImage (protocol buffer)");
   }
+
+  int32_t MatrixLeds(){return matrix_leds_;}
 
   // Receive a copy of the shared wishbone bus. Not owned.
   void SetupMatrixIOBus(matrix_hal::MatrixIOBus* wishbone) override {
     writer_.reset(new matrix_hal::Everloop);
     writer_->Setup(wishbone);
+    matrix_leds_ = wishbone->MatrixLeds();
   }
 
   // Read configuration of LEDs (from the outside world).
   bool ProcessConfig(const pb::driver::DriverConfig& config) override;
 
+  // Send update to 0MQ zqm_push_update_ queue when called.
+  bool SendUpdate() override;
+
  private:
   // Everloop writer.
   std::unique_ptr<matrix_hal::Everloop> writer_;
+  int32_t matrix_leds_;
 };
 
 }  // namespace matrix_malos

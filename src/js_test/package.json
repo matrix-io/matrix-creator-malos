@@ -7,7 +7,7 @@
   "repository": "https://github.com/matrix-io/matrix-creator-malos",
   "devDependencies": {},
   "dependencies": {
-    "matrix-protos": "0.0.17",
+    "matrix-protos":"",
     "mic": "^2.1.1",
     "zmq": "^2.15.3"
   }

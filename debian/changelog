@@ -1,3 +1,11 @@
+matrixio-malos (0.3.4) unstable; urgency=medium
+
+  * Bug Fix: Handle Everloop in MATRIX Voice and MATRIX Creator.
+  * Info: Comptible with protoc >= 0.3.5
+  * Bug Fix: Handle Bus init error.
+
+ -- MATRIX Labs <info@matrix.one>  Wed, 30 Apr 2018 15:02:53 +0000
+
 matrixio-malos (0.3.3) unstable; urgency=medium
 
   * Support changes in libmatrixio-creator-hal.
