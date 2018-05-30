@@ -46,11 +46,10 @@ bool EverloopDriver::ProcessConfig(const pb::driver::DriverConfig& config) {
   return writer_->Write(&image_for_hal);
 }
 
-
 bool EverloopDriver::SendUpdate() {
   pb::io::EverloopImage everloop_pb;
   int32_t matrix_leds = MatrixLeds();
-  
+
   everloop_pb.set_everloop_length(matrix_leds);
 
   std::string buffer;
