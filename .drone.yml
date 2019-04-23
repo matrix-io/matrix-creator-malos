@@ -3,10 +3,8 @@ pipeline:
     when:
       branch: master
       event: [ push, pull_request, tag ]
-    image: gcr.io/admobilize-testing/builder-qemu:latest
+    image: gcr.io/admobilize-testing/creator-builder-${ARCHITECTURE}-${DISTRIBUTION}-${CODENAME}-${IMAGE_TAG}
     privileged: true
-    mountimg: ${MOUNTIMG}
-    mountoffset: ${MOUNTOFFSET}
     body: |
       curl https://apt.matrix.one/doc/apt-key.gpg | apt-key add -
       export COMPONENT=$([ "${DRONE_BUILD_EVENT}" = "tag" ] && echo "main" || echo "unstable")
@@ -53,21 +51,36 @@ pipeline:
     secrets: [slack_webhook]
     username: drone-ci-builder
     channel: notifications
+    template: |    
+      {{#success build.status}}
+        {{build.author}} just built `{{repo.name}}:{{build.branch}}` from <${DRONE_COMMIT_LINK}|#{{truncate build.commit 8}}>
+        :new: {{build.message}}
+      {{else}}
+        {{build.author}} just broke the build of `{{repo.name}}:{{build.branch}}` with >${DRONE_COMMIT_LINK}|#{{truncate build.commit 8}}
+        :new: :zombie: {{build.message}}
+      {{/success}}
+      :stopwatch: {{ since build.started }}
+      :gear: {{build.link}}
+
+  notify-master:
+    image: plugins/slack
+    secrets: [slack_webhook]
+    username: drone-ci-builder
+    channel: notifications
     when:
-      status: [ success, failure ]
       branch: master
-      event: [ push, pull_request, tag ]
-    template: file:///drone/src/github.com/matrix-io/matrix-creator-malos/notification.tpl
+      event: [ push, tag ]
+    template: |
+      :loudspeaker: #{{truncate build.commit 8}} was uploaded to matrixio-malos
 
 matrix:
   include: 
     - CODENAME: jessie
       DISTRIBUTION: raspbian
-      MOUNTOFFSET: 48234496
-      MOUNTDIR: /drone/src/github.com/matrix-io/matrix-creator-malos
-      MOUNTIMG: https://storage.googleapis.com/raspbian-images/2017-07-05-raspbian-jessie-debuild.img.gz
+      ARCHITECTURE: armhf
+      IMAGE_TAG: 3181f193
+    
     - CODENAME: stretch
-      MOUNTOFFSET: 48234496
-      MOUNTDIR: /drone/src/github.com/matrix-io/matrix-creator-malos
       DISTRIBUTION: raspbian
-      MOUNTIMG: https://storage.googleapis.com/raspbian-images/2017-08-16-raspbian-stretch-debuild.img.gz
+      ARCHITECTURE: armhf
+      IMAGE_TAG: 3181f193
