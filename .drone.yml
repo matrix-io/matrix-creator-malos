@@ -86,3 +86,4 @@ matrix:
       ARCHITECTURE: armhf
       UPDATE_CMD: "apt update -y --allow-releaseinfo-change"
       IMAGE_TAG: 84d9bfb7
+
