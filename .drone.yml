@@ -9,7 +9,7 @@ pipeline:
       - curl https://apt.matrix.one/doc/apt-key.gpg | apt-key add -
       - export COMPONENT=$([ "${DRONE_BUILD_EVENT}" = "tag" ] && echo "main" || echo "unstable")
       - echo "deb https://apt.matrix.one/raspbian ${CODENAME} $COMPONENT" > /etc/apt/sources.list.d/matrixlabs.list
-      - apt-get update
+      - ${UPDATE_CMD}
       - apt-get install --yes libmatrixio-malos-dev libmatrixio-creator-hal-dev libzmq3-dev libmatrixio-protos-dev
       - debuild -us -uc -b
       - mv ../*.deb .
@@ -78,9 +78,11 @@ matrix:
     - CODENAME: stretch
       DISTRIBUTION: raspbian
       ARCHITECTURE: armhf
+      UPDATE_CMD: "apt update"
       IMAGE_TAG: 84d9bfb7 
 
     - CODENAME: buster
       DISTRIBUTION: raspbian
       ARCHITECTURE: armhf
+      UPDATE_CMD: "apt update -y --allow-releaseinfo-change"
       IMAGE_TAG: 84d9bfb7
