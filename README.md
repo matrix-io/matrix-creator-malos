@@ -4,7 +4,7 @@ Visit the MATRIX CORE [Getting Started](https://matrix-io.github.io/matrix-docum
 ## Installation
 Before starting, ensure you have access to the terminal of your Raspberry Pi via an <a href="https://www.raspberrypi.org/documentation/remote-access/ssh/" target="_blank">SSH-session</a> or a connected screen, mouse, and keyboard. Then insert and run the following commands into your Raspberry Pi's terminal, one at a time.
 ```language-bash
-curl https://apt.matrix.one/doc/apt-key.gpg | sudo apt-key add -
+curl -L https://apt.matrix.one/doc/apt-key.gpg | sudo apt-key add -
 echo "deb https://apt.matrix.one/raspbian $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/matrixlabs.list
 sudo apt-get update
 sudo apt-get upgrade 
