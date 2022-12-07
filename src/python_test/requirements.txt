@@ -1,6 +1,6 @@
 appdirs==1.4.3
 backports-abc==0.5
-certifi==2017.4.17
+certifi==2022.12.7
 matrix_io-proto==0.0.10
 packaging==16.8
 protobuf==3.3.0
